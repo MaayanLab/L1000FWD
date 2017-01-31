@@ -1,0 +1,4 @@
+lib/textures/
+*.pyc
+data/
+log/
