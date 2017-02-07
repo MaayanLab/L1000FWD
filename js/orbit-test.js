@@ -40,8 +40,8 @@ function init() {
     controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.addEventListener( 'change', render ); // remove when using animation loop
     // enable animation loop when using damping or autorotation
-    //controls.enableDamping = true;
-    //controls.dampingFactor = 0.25;
+    // controls.enableDamping = true;
+    // controls.dampingFactor = 0.25;
     controls.enableZoom = true;
 
     // scatter plot
@@ -170,7 +170,7 @@ function init() {
 
     // Mouse events
     raycaster = new THREE.Raycaster();
-    // raycaster.params.Points.threshold = 0.1;
+    raycaster.params.Points.threshold = 0.5;
     
     // window.addEventListener( 'click', onMouseMove, false );
 
