@@ -2,10 +2,14 @@
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 var camera, controls, scene, renderer, raycaster, points;
+var projector;
 var mouse = new THREE.Vector2();
 var pointCount = 10000;
 var colors = new Float32Array( pointCount * 3 );
 var container;
+var WIDTH = window.innerWidth;
+var HEIGHT = window.innerHeight;
+var DPR = window.devicePixelRatio;
 
 init();
 render(); // remove when using next line for animation loop (requestAnimationFrame)
@@ -16,6 +20,7 @@ function init() {
     var HEIGHT = window.innerHeight;
     var aspectRatio = WIDTH / HEIGHT;
 
+    projector = new THREE.Projector();
     // The scene
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
@@ -26,9 +31,10 @@ function init() {
     renderer.setSize( WIDTH, HEIGHT );
     // Put the renderer's DOM into the container
     container = document.body;
+    renderer.domElement.id = "renderer";
     container.appendChild( renderer.domElement );
     // The camera
-    camera = new THREE.PerspectiveCamera( 60, aspectRatio, 1, 1000 );
+    camera = new THREE.PerspectiveCamera( 45, aspectRatio, 1, 1000 );
     camera.position.z = 300;
     // The controls for zooming and panning behaviors
     controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -212,11 +218,13 @@ function render() {
     points.geometry.computeBoundingSphere();
     points.updateMatrix();
     
-    
-    var textLabel = scene.getObjectByName('text-label');
-    scene.remove( textLabel );
+    // remove text-label if exists
+    var textLabel = document.getElementById('text-label')
+    if (textLabel){
+        textLabel.remove();
+    }
 
-
+    // add interactivities if there is intesecting points
     if ( intersects.length > 0 ) {
         // console.log(intersects)
         // only highlight the closest object
@@ -227,60 +235,26 @@ function render() {
         points.geometry.attributes.color.array[idx*3] = 0.1;
         points.geometry.attributes.color.array[idx*3+1] = 0.8;
         points.geometry.attributes.color.array[idx*3+2] = 0.1;
-        // add text sprite
+        // add text canvas
 
-        var spritey = makeTextSprite( points.geometry.attributes.label.array[idx], 
-            {
-                fontsize: 32, 
-                backgroundColor: {r:0, g:0, b:0, a:0.0},
-                borderThickness: 0,
-                // borderColor: {r:0, g:0, b:0, a:0.0},
+        // find the position of the point
+        var pointPosition = { 
+            x: points.geometry.attributes.position.array[idx*3],
+            y: points.geometry.attributes.position.array[idx*3+1],
+            z: points.geometry.attributes.position.array[idx*3+2],
+        }
 
-            });
-        spritey.position.set(intersect.point.x, intersect.point.y, intersect.point.z)
-        console.log(spritey)
-        spritey.name = "text-label";
-        scene.add( spritey );
+
+        var textCanvas = makeTextCanvas( points.geometry.attributes.label.array[idx], 
+            pointPosition.x, pointPosition.y, pointPosition.z,
+            { fontsize: 24, fontface: "Ariel", textColor: {r:0, g:0, b:255, a:1.0} }); 
+
+        
+        textCanvas.id = "text-label"
+        document.body.appendChild(textCanvas);
 
        // points.geometry.computeBoundingSphere();
     }
 
-
     renderer.render( scene, camera );
 }
-
-function makeTextSprite( message, parameters ) {
-    // from: http://stemkoski.github.io/Three.js/Labeled-Geometry.html
-    if ( parameters === undefined ) parameters = {};
-    var fontface = parameters.hasOwnProperty("fontface") ? parameters["fontface"] : "Arial";
-    var fontsize = parameters.hasOwnProperty("fontsize") ? parameters["fontsize"] : 18;
-    var borderThickness = parameters.hasOwnProperty("borderThickness") ? parameters["borderThickness"] : 4;
-    var borderColor = parameters.hasOwnProperty("borderColor") ?parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
-    var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
-    var textColor = parameters.hasOwnProperty("textColor") ?parameters["textColor"] : { r:0, g:0, b:0, a:1.0 };
-
-    var canvas = document.createElement('canvas');
-    var context = canvas.getContext('2d');
-    context.font = fontsize + "px " + fontface;
-    var metrics = context.measureText( message );
-    var textWidth = metrics.width;
-
-    context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + "," + backgroundColor.b + "," + backgroundColor.a + ")";
-    context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + "," + borderColor.b + "," + borderColor.a + ")";
-
-    context.lineWidth = borderThickness;
-    roundRect(context, borderThickness/2, borderThickness/2, (textWidth + borderThickness) * 1.1, fontsize * 1.4 + borderThickness, 8);
-
-    context.fillStyle = "rgba("+textColor.r+", "+textColor.g+", "+textColor.b+", 1.0)";
-    context.fillText( message, borderThickness, fontsize + borderThickness);
-
-    var texture = new THREE.Texture(canvas) 
-    texture.needsUpdate = true;
-
-    var spriteMaterial = new THREE.SpriteMaterial( { map: texture, useScreenCoordinates: false } );
-    var sprite = new THREE.Sprite( spriteMaterial );
-    sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
-    return sprite;  
-}
-
-function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath(); ctx.fill(); ctx.stroke(); }
