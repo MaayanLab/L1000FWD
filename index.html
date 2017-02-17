@@ -4,7 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Zichen Wang (zichen.wang@mssm.edu)">    
-    <title>THREE.js test</title>
+    <title>3D Scatter</title>
     <style>
       html { height: 100% }
       body { height: 100%; margin: 0; padding: 0; position: relative; }
@@ -13,40 +13,19 @@
   </head>
   <body>
     <canvas id="text-label"></canvas>
+
+    <script src="lib/jquery.min.js"></script>
+
+    <script src="lib/underscore-min.js"></script>
+    <script src="lib/backbone-min.js"></script>
+    
     <script src="lib/d3.v3.min.js"></script>
     <script src="lib/three.min.js"></script>
     <script src="lib/OrbitControls.js"></script>
     <script src="lib/Detector.js"></script>
     
-    <script src="js/text-label.js"></script>
-
-    <script type="x-shader/x-vertex" id="vertexshader">
-      
-      attribute float size;
-      attribute vec3 ca;
-      varying vec3 vColor;
-      void main() {
-        vColor = ca;
-        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-        gl_PointSize = size * ( 300.0 / -mvPosition.z );
-        gl_Position = projectionMatrix * mvPosition;
-      }
-
-    </script>
-
-    <script type="x-shader/x-fragment" id="fragmentshader">
-
-      uniform vec3 color;
-      uniform sampler2D texture;
-      varying vec3 vColor;
-      void main() {
-        vec4 color = vec4( color * vColor, 1.0 ) * texture2D( texture, gl_PointCoord );
-        gl_FragColor = color;
-      }
-
-    </script>
-    
-    <script src="js/orbit-test.js"></script>
+    <script src="js/classes.js"></script>
+    <script src="js/main.js"></script>    
 
   </body>
 </html>

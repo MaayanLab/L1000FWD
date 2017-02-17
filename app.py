@@ -4,7 +4,7 @@ import numpy as np
 np.random.seed(10)
 import pandas as pd
 
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, jsonify
 
 
 
@@ -33,14 +33,15 @@ def send_file():
 @app.route(ENTER_POINT + '/toy', methods=['GET'])
 def toy_data():
 	if request.method == 'GET':
-		n = request.args.get('n', 10)
+		n = int(request.args.get('n', 10))
 		rand_idx = np.random.choice(range(N_SIGS), n, replace=False)
 
 		rand_coords = np.random.randn(n, 3)
 		df = meta_df.iloc[rand_idx]
 		df = df.assign(x=rand_coords[:,0], y=rand_coords[:,1], z=rand_coords[:,2])
 
-		return df.to_json(orient='records')
+		# return df.to_json(orient='values')
+		return jsonify(df.to_dict(orient='list'))
 
 
 @app.route(ENTER_POINT + '/pca', methods=['GET'])
