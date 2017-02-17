@@ -11,7 +11,6 @@ function getCanvasColor(color){
 	return "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")"; 
 }
 
-
 var ScatterData = Backbone.Model.extend({
 	// model for the data (positions) and metadata. 
 	defaults: {
@@ -27,6 +26,7 @@ var ScatterData = Backbone.Model.extend({
 	parse: function(response){
 		// called whenever a model's data is returned by the server
 		// fill metadata
+		console.log(response)
 		nPoints = response.x.length;
 		metaKeys = [];
 		xyz = ['x', 'y', 'z'];
@@ -38,16 +38,11 @@ var ScatterData = Backbone.Model.extend({
 		}
 
 		// fill arrays with data in response
-		var color = new THREE.Color()
 		for (var i = response.x.length - 1; i >= 0; i--) {
 			this.indices[i] = i;
 			this.positions[ i*3 ] = response.x[i];
 			this.positions[ i*3 +1 ] = response.y[i];
 			this.positions[ i*3 +2 ] = response.z[i];
-
-			color.setRGB( 0.8, 0.1, 0.1 )
-			color.toArray( this.colors, i * 3 );
-
 		};
 	},
 
@@ -58,10 +53,7 @@ var ScatterData = Backbone.Model.extend({
 		_.defaults(this, options)
 		// init arrays for points
 		this.positions = new Float32Array( this.n * 3 );
-		// this.sizes = new Float32Array( this.n );
-		this.colors = new Float32Array( this.n * 3 );
 		this.indices = new Uint32Array( this.n );
-		// this.labels = new Array( this.n );
 
 		// fetch json data from server
 		this.fetch()
@@ -91,6 +83,9 @@ var Scatter3dView = Backbone.View.extend({
 		this.listenTo(this.model, 'sync', function(){
 			this.setUpStage();
 			this.setUpScatterGeometry();
+			this.colorBy('dose');
+			// this.sizeBy('dose');
+
 			this.renderScatter();
 
 		});
@@ -111,7 +106,7 @@ var Scatter3dView = Backbone.View.extend({
 		this.renderer.setSize( this.WIDTH, this.HEIGHT );
 
 		this.camera = new THREE.PerspectiveCamera( 45, this.aspectRatio, 1, 1000 );
-		this.camera.position.z = 200;
+		this.camera.position.z = 20;
 
 		// Put the renderer's DOM into the container
 		this.renderer.domElement.id = "renderer";
@@ -149,10 +144,16 @@ var Scatter3dView = Backbone.View.extend({
 		this.geometry = new THREE.BufferGeometry();
 		this.geometry.setIndex( new THREE.BufferAttribute( model.indices, 1 ) );
 		this.geometry.addAttribute( 'position', new THREE.BufferAttribute( model.positions, 3 ) );
-		// geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1 ) );
-		this.geometry.addAttribute( 'color', new THREE.BufferAttribute( model.colors.slice(), 3 ) );
-
+		
 		this.geometry.addAttribute( 'label', new THREE.BufferAttribute( model.meta[this.labelKey], 1 ) );
+
+
+		var normals = new Int16Array( model.n * 9 );
+
+
+
+
+		this.geometry.addAttribute( 'normal', new THREE.BufferAttribute( normals, 3 ) );
 
 	    this.geometry.computeBoundingSphere();
 
@@ -176,11 +177,13 @@ var Scatter3dView = Backbone.View.extend({
 		// calculate objects intersecting the picking ray
 		var intersects = this.raycaster.intersectObject( this.points );
 
-		this.points.geometry.attributes.color.needsUpdate = true;
+		var geometry = this.points.geometry;
+
+		geometry.attributes.color.needsUpdate = true;
 
 		// reset colors
-		this.points.geometry.attributes.color.array = this.model.colors.slice();
-		this.points.geometry.computeBoundingSphere();
+		geometry.attributes.color.array = this.colors.slice();
+		geometry.computeBoundingSphere();
 		this.points.updateMatrix();
 
 		// remove text-label if exists
@@ -197,20 +200,20 @@ var Scatter3dView = Backbone.View.extend({
 			// console.log(intersect)
 			var idx = intersect.index;
 			// change color of the point
-			this.points.geometry.attributes.color.array[idx*3] = 0.1;
-			this.points.geometry.attributes.color.array[idx*3+1] = 0.8;
-			this.points.geometry.attributes.color.array[idx*3+2] = 0.1;
+			geometry.attributes.color.array[idx*3] = 0.1;
+			geometry.attributes.color.array[idx*3+1] = 0.8;
+			geometry.attributes.color.array[idx*3+2] = 0.1;
 			// add text canvas
 
 			// find the position of the point
 			var pointPosition = { 
-			    x: this.points.geometry.attributes.position.array[idx*3],
-			    y: this.points.geometry.attributes.position.array[idx*3+1],
-			    z: this.points.geometry.attributes.position.array[idx*3+2],
+			    x: geometry.attributes.position.array[idx*3],
+			    y: geometry.attributes.position.array[idx*3+1],
+			    z: geometry.attributes.position.array[idx*3+2],
 			}
 
 
-			var textCanvas = this.makeTextCanvas( this.points.geometry.attributes.label.array[idx], 
+			var textCanvas = this.makeTextCanvas( geometry.attributes.label.array[idx], 
 			    pointPosition.x, pointPosition.y, pointPosition.z,
 			    { fontsize: 24, fontface: "Ariel", textColor: {r:0, g:0, b:255, a:1.0} }); 
 
@@ -218,7 +221,7 @@ var Scatter3dView = Backbone.View.extend({
 			textCanvas.id = "text-label"
 			this.container.appendChild(textCanvas);
 
-			// this.points.geometry.computeBoundingSphere();
+			// geometry.computeBoundingSphere();
 		}
 
 		this.renderer.render( this.scene, this.camera );
@@ -270,6 +273,51 @@ var Scatter3dView = Backbone.View.extend({
 		return canvas;
 	},
 
+	colorBy: function(metaKey){
+		// Color points by a certain metaKey
+		var metas = this.model.meta[metaKey]
+		var uniqueCats = new Set(metas)
+		var nUniqueCats = uniqueCats.size;
+		console.log(uniqueCats, nUniqueCats)
+
+		if (nUniqueCats < 11){
+			var colorScale = d3.scale.category10().domain(uniqueCats);
+		} else {
+			var colorScale = d3.scale.category20().domain(uniqueCats);
+		}
+		// construct colors BufferAttribute
+		var colors = new Float32Array( this.model.n * 3);
+		for (var i = metas.length - 1; i >= 0; i--) {
+			var color = colorScale(metas[i]);
+			color = new THREE.Color(color);
+			color.toArray(colors, i*3)
+		};
+
+		this.colors = colors;
+
+		this.geometry.addAttribute( 'color', new THREE.BufferAttribute( colors.slice(), 3 ) );
+		this.geometry.attributes.color.needsUpdate = true;
+		
+		this.renderer.render( this.scene, this.camera );
+	},
+
+	// sizeBy: function(metaKey){
+	// 	// Size points by a certain metaKey
+	// 	var metas = this.model.meta[metaKey]
+	// 	var sizeExtent = d3.extent(metas)
+	// 	var sizeScale = d3.scale.linear()
+	// 		.domain(sizeExtent)
+	// 		.range([0.1, 4]);
+	// 	// construct sizes BufferAttribute
+	// 	var sizes = _.map(sizeScale, metas); 
+
+	// 	this.sizes = sizes;
+
+	// 	this.geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1 ) );
+	// 	this.geometry.attributes.size.needsUpdate = true;
+
+	// 	this.renderer.render( this.scene, this.camera );
+	// }
 
 });
 
