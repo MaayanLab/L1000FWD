@@ -2,7 +2,6 @@
 All the classes definitions.
 */
 
-// 
 /** 
  * convenience for converting JSON color to rgba that canvas wants
  * Be nice to handle different forms (e.g. no alpha, CSS style, etc.)
@@ -11,12 +10,156 @@ function getCanvasColor(color){
 	return "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")"; 
 }
 
+var _ScatterDataSubset = Backbone.Model.extend({
+	defaults: {
+		data: null, // an array of objects
+	},
+	// base model for data points 
+	initialize: function(options){
+		if (options === undefined) {options = {}}
+		_.defaults(options, this.defaults)
+		_.defaults(this, options)
+
+		this.n = this.data.length;
+
+		// generate arrays of positions
+		this.indices = new Uint32Array( this.n );
+		this.positions = new Float32Array( this.n * 3 );
+
+		for (var i = this.data.length - 1; i >= 0; i--) {
+			this.indices[i] = i; 
+			this.positions[ i*3 ] = this.data[i].x;
+			this.positions[ i*3+1 ] = this.data[i].y;
+			this.positions[ i*3+2 ] = this.data[i].z;
+		};
+	},
+
+	getAttr: function(metaKey){
+		// return an array of attributes 
+		return _.map(this.data, function(record){ return record[metaKey]; });
+	},
+
+});
+
+
+var Scatter3dCloud = Backbone.View.extend({
+	// this is the view for points of a single shape
+	model: _ScatterDataSubset,
+
+	defaults: {
+		texturePath: null,
+		data: null, // expect data to be an array of objects
+		labelKey: 'sig_id',
+	},
+
+	initialize: function(options){
+		if (options === undefined) {options = {}}
+		_.defaults(options, this.defaults)
+		_.defaults(this, options)
+		//
+		this.setUpScatterGeometry();
+		// this.loadMaterial()
+		// this.on('textureLoaded', this.setUpScatterGeometry)
+
+	},
+
+	loadMaterial: function(){
+	    var self = this;
+	    if (this.texturePath){
+
+	    	var loader = new THREE.TextureLoader();
+	    	
+	    	loader.load(this.texturePath, function(texture){
+
+				var material = new THREE.PointsMaterial({ 
+					vertexColors: THREE.VertexColors,
+					size: 2, 
+					// sizeAttenuation: false, 
+					map: texture, 
+					alphaTest: 0.5, 
+					transparent: true,
+					opacity: 0.6
+					});
+				self.material = material;
+				self.trigger('textureLoaded');
+				// console.log('textureLoaded')
+	    	});
+	    } else{
+			var material = new THREE.PointsMaterial({
+				vertexColors: THREE.VertexColors,
+				size: 2,
+				// sizeAttenuation: false, 
+				opacity: 0.6,
+				transparent: true,
+			});
+			self.material = material;
+			self.trigger('textureLoaded');
+	    }		
+	},
+
+	setUpScatterGeometry: function(){
+		console.log('calling Scatter3dCloud.setUpScatterGeometry')
+		var model = this.model;
+
+		this.geometry = new THREE.BufferGeometry();
+		this.geometry.setIndex( new THREE.BufferAttribute( model.indices, 1 ) );
+		this.geometry.addAttribute( 'position', new THREE.BufferAttribute( model.positions, 3 ) );		
+		this.geometry.addAttribute( 'label', new THREE.BufferAttribute( model.getAttr(this.labelKey), 1 ) );
+
+	    this.geometry.computeBoundingSphere();
+
+	    if (this.texturePath){
+	    	var texture = new THREE.TextureLoader().load(this.texturePath)
+			var material = new THREE.PointsMaterial({ 
+				vertexColors: THREE.VertexColors,
+				size: 2, 
+				// sizeAttenuation: false, 
+				map: texture, 
+				alphaTest: 0.5, 
+				transparent: true,
+				opacity: 0.6
+				});
+	    } else{
+			var material = new THREE.PointsMaterial({
+				vertexColors: THREE.VertexColors,
+				size: 2,
+				// sizeAttenuation: false, 
+				opacity: 0.6,
+				transparent: true,
+			});
+	    }
+
+		this.points = new THREE.Points( this.geometry, material );
+
+	},
+
+	setColors: function(colorScale, metaKey){
+		// Color points by a certain metaKey given colorScale
+		var metas = this.model.getAttr(metaKey)
+		// construct colors BufferAttribute
+		var colors = new Float32Array( this.model.n * 3);
+		for (var i = metas.length - 1; i >= 0; i--) {
+			var color = colorScale(metas[i]);
+			color = new THREE.Color(color);
+			color.toArray(colors, i*3)
+		};
+
+		this.colors = colors;
+
+		this.geometry.addAttribute( 'color', new THREE.BufferAttribute( colors.slice(), 3 ) );
+		this.geometry.attributes.color.needsUpdate = true;
+	},
+
+});
+
+
 var ScatterData = Backbone.Model.extend({
 	// model for the data (positions) and metadata. 
 	defaults: {
 		url: 'toy',
 		n: 100, // Number of data points to retrieve
-		meta: {}, // store metadata
+		metaKeys: [],
+		data: [], // store data
 	},
 
 	url: function(){
@@ -25,25 +168,17 @@ var ScatterData = Backbone.Model.extend({
 
 	parse: function(response){
 		// called whenever a model's data is returned by the server
-		// fill metadata
 		console.log(response)
-		nPoints = response.x.length;
-		metaKeys = [];
+		nPoints = response.length;
+		var metaKeys = [];
 		xyz = ['x', 'y', 'z'];
-		for (var key in response){
+		for (var key in response[0]){
 			if (xyz.indexOf(key) === -1){ 
 				metaKeys.push(key);
-				this.meta[key] = response[key];
 			}
 		}
-
-		// fill arrays with data in response
-		for (var i = response.x.length - 1; i >= 0; i--) {
-			this.indices[i] = i;
-			this.positions[ i*3 ] = response.x[i];
-			this.positions[ i*3 +1 ] = response.y[i];
-			this.positions[ i*3 +2 ] = response.z[i];
-		};
+		this.metaKeys = metaKeys;
+		this.data = response;
 	},
 
 	initialize: function(options){
@@ -52,18 +187,35 @@ var ScatterData = Backbone.Model.extend({
 		_.defaults(options, this.defaults)
 		_.defaults(this, options)
 		// init arrays for points
-		this.positions = new Float32Array( this.n * 3 );
-		this.indices = new Uint32Array( this.n );
+		// this.positions = new Float32Array( this.n * 3 );
+		// this.indices = new Uint32Array( this.n );
 
 		// fetch json data from server
 		this.fetch()
 
 	},
 
+	groupBy: function(metaKey){
+		// group by a metaKey and return an object of _ScatterDataSubset objects keyed by metaKey
+		var dataSubsets = _.groupBy(this.data, metaKey);
+		var scatterDataSubsets = _.mapObject(dataSubsets, function(records, key){
+			return new _ScatterDataSubset({data: records}) 
+		});
+		return scatterDataSubsets;
+	},
+
+	getAttr: function(metaKey){
+		// return an array of attributes 
+		return _.map(this.data, function(record){ return record[metaKey]; });
+	},
+
 });
 
 
 var Scatter3dView = Backbone.View.extend({
+	// this is the view for all points
+	// TODO: implement sub-views for different shapes of points.
+
 	model: ScatterData,
 
 	defaults: {
@@ -72,7 +224,8 @@ var Scatter3dView = Backbone.View.extend({
 		DPR: window.devicePixelRatio,
 		container: document.body,
 		labelKey: 'sig_id', // which metaKey to use as labels
-
+		texturePath: null,
+		clouds: [], // to store Scatter3dCloud objects
 	},
 
 	initialize: function(options){
@@ -82,9 +235,14 @@ var Scatter3dView = Backbone.View.extend({
 
 		this.listenTo(this.model, 'sync', function(){
 			this.setUpStage();
-			this.setUpScatterGeometry();
-			this.colorBy('dose');
+			// this.setUpScatterGeometry();
+			// this.colorBy('dose');
 			// this.sizeBy('dose');
+
+			this.shapeBy('cell');
+			this.colorBy('dose');
+
+			// var nTexturesLoaded = 0;
 
 			this.renderScatter();
 
@@ -137,36 +295,28 @@ var Scatter3dView = Backbone.View.extend({
 		
 	},
 
+	shapeBy: function(metaKey){
+		// groupBy the model and init clouds
+		var scatterDataSubsets = this.model.groupBy(metaKey);
+		var texturePaths = [null, '../lib/textures/sprites/circle.png', 
+		'../lib/textures/sprite1.png',
+		'../lib/textures/sprite2.png'];
+		var i = 0;
+		var nTextures = 0; // counter for number of textures needed to be loaded
+		for (var key in scatterDataSubsets){
+			var texturePath = texturePaths[i % texturePaths.length];
+			if (texturePath) { nTextures ++ }
+			var cloud = new Scatter3dCloud({
+				model: scatterDataSubsets[key],
+				texturePath: texturePath, 
+			});
 
-	setUpScatterGeometry: function(){
-		var model = this.model;
+			this.clouds.push(cloud)
+			this.scene.add( cloud.points );
 
-		this.geometry = new THREE.BufferGeometry();
-		this.geometry.setIndex( new THREE.BufferAttribute( model.indices, 1 ) );
-		this.geometry.addAttribute( 'position', new THREE.BufferAttribute( model.positions, 3 ) );
-		
-		this.geometry.addAttribute( 'label', new THREE.BufferAttribute( model.meta[this.labelKey], 1 ) );
-
-
-		var normals = new Int16Array( model.n * 9 );
-
-
-
-
-		this.geometry.addAttribute( 'normal', new THREE.BufferAttribute( normals, 3 ) );
-
-	    this.geometry.computeBoundingSphere();
-
-
-		var material = new THREE.PointsMaterial({
-			vertexColors: THREE.VertexColors,
-			size: 2,
-			opacity: 0.6,
-			transparent: true,
-		});
-
-		this.points = new THREE.Points( this.geometry, material );
-		this.scene.add( this.points );
+			i ++;
+		}
+		// return nTextures;
 
 	},
 
@@ -175,16 +325,12 @@ var Scatter3dView = Backbone.View.extend({
 		this.raycaster.setFromCamera( this.mouse, this.camera );
 
 		// calculate objects intersecting the picking ray
-		var intersects = this.raycaster.intersectObject( this.points );
-
-		var geometry = this.points.geometry;
-
-		geometry.attributes.color.needsUpdate = true;
+		// var intersects = this.raycaster.intersectObject( this.points );
+		var allPoints = _.map(this.clouds, function(obj){ return obj.points; });
+		var intersects = this.raycaster.intersectObjects( allPoints );
 
 		// reset colors
-		geometry.attributes.color.array = this.colors.slice();
-		geometry.computeBoundingSphere();
-		this.points.updateMatrix();
+		this.colorBy('dose');
 
 		// remove text-label if exists
 		var textLabel = document.getElementById('text-label')
@@ -199,11 +345,17 @@ var Scatter3dView = Backbone.View.extend({
 			var intersect = intersects[0];
 			// console.log(intersect)
 			var idx = intersect.index;
+			var geometry = intersect.object.geometry;
+			
 			// change color of the point
+			geometry.attributes.color.needsUpdate = true;
+
 			geometry.attributes.color.array[idx*3] = 0.1;
 			geometry.attributes.color.array[idx*3+1] = 0.8;
 			geometry.attributes.color.array[idx*3+2] = 0.1;
-			// add text canvas
+
+			// geometry.computeBoundingSphere();
+			// intersect.object.updateMatrix();
 
 			// find the position of the point
 			var pointPosition = { 
@@ -212,11 +364,10 @@ var Scatter3dView = Backbone.View.extend({
 			    z: geometry.attributes.position.array[idx*3+2],
 			}
 
-
+			// add text canvas
 			var textCanvas = this.makeTextCanvas( geometry.attributes.label.array[idx], 
 			    pointPosition.x, pointPosition.y, pointPosition.z,
 			    { fontsize: 24, fontface: "Ariel", textColor: {r:0, g:0, b:255, a:1.0} }); 
-
 
 			textCanvas.id = "text-label"
 			this.container.appendChild(textCanvas);
@@ -275,8 +426,8 @@ var Scatter3dView = Backbone.View.extend({
 
 	colorBy: function(metaKey){
 		// Color points by a certain metaKey
-		var metas = this.model.meta[metaKey]
-		var uniqueCats = new Set(metas)
+		var metas = this.model.getAttr(metaKey);
+		var uniqueCats = new Set(metas);
 		var nUniqueCats = uniqueCats.size;
 		console.log(uniqueCats, nUniqueCats)
 
@@ -286,19 +437,23 @@ var Scatter3dView = Backbone.View.extend({
 			var colorScale = d3.scale.category20().domain(uniqueCats);
 		}
 		// construct colors BufferAttribute
-		var colors = new Float32Array( this.model.n * 3);
-		for (var i = metas.length - 1; i >= 0; i--) {
-			var color = colorScale(metas[i]);
-			color = new THREE.Color(color);
-			color.toArray(colors, i*3)
+		// var colors = new Float32Array( this.model.n * 3);
+		// for (var i = metas.length - 1; i >= 0; i--) {
+		// 	var color = colorScale(metas[i]);
+		// 	color = new THREE.Color(color);
+		// 	color.toArray(colors, i*3)
+		// };
+
+		// this.colors = colors;
+
+		// this.geometry.addAttribute( 'color', new THREE.BufferAttribute( colors.slice(), 3 ) );
+		// this.geometry.attributes.color.needsUpdate = true;
+		for (var i = this.clouds.length - 1; i >= 0; i--) {
+			var cloud = this.clouds[i];
+			cloud.setColors(colorScale, metaKey)
 		};
-
-		this.colors = colors;
-
-		this.geometry.addAttribute( 'color', new THREE.BufferAttribute( colors.slice(), 3 ) );
-		this.geometry.attributes.color.needsUpdate = true;
 		
-		this.renderer.render( this.scene, this.camera );
+		// this.renderer.render( this.scene, this.camera );
 	},
 
 	// sizeBy: function(metaKey){

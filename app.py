@@ -4,7 +4,7 @@ import numpy as np
 np.random.seed(10)
 import pandas as pd
 
-from flask import Flask, request, redirect, render_template, jsonify
+from flask import Flask, request, redirect, render_template, jsonify, send_from_directory
 
 
 
@@ -26,9 +26,11 @@ def load_globals():
 def index_page():
 	return app.send_static_file('index.html')
 
-@app.route('/lib/textures/sprites/disc.png')
-def send_file():
-	return app.send_static_file('lib/textures/sprites/disc.png')
+@app.route('/<path:filename>')
+def send_file(filename):
+	'''Serve static files.
+	'''
+	return send_from_directory(app.static_folder, filename)
 
 @app.route(ENTER_POINT + '/toy', methods=['GET'])
 def toy_data():
@@ -40,8 +42,8 @@ def toy_data():
 		df = meta_df.iloc[rand_idx]
 		df = df.assign(x=rand_coords[:,0], y=rand_coords[:,1], z=rand_coords[:,2])
 
-		# return df.to_json(orient='values')
-		return jsonify(df.to_dict(orient='list'))
+		return df.to_json(orient='records')
+		# return jsonify(df.to_dict(orient='list'))
 
 
 @app.route(ENTER_POINT + '/pca', methods=['GET'])
