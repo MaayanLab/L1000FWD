@@ -58,12 +58,10 @@ var Scatter3dCloud = Backbone.View.extend({
 		_.defaults(this, options)
 		//
 		this.setUpScatterGeometry();
-		// this.loadMaterial()
-		// this.on('textureLoaded', this.setUpScatterGeometry)
-
 	},
 
 	loadMaterial: function(){
+		// not in use...
 	    var self = this;
 	    if (this.texturePath){
 
@@ -98,7 +96,6 @@ var Scatter3dCloud = Backbone.View.extend({
 	},
 
 	setUpScatterGeometry: function(){
-		console.log('calling Scatter3dCloud.setUpScatterGeometry')
 		var model = this.model;
 
 		this.geometry = new THREE.BufferGeometry();
@@ -128,9 +125,7 @@ var Scatter3dCloud = Backbone.View.extend({
 				transparent: true,
 			});
 	    }
-
 		this.points = new THREE.Points( this.geometry, material );
-
 	},
 
 	setColors: function(colorScale, metaKey){
@@ -168,7 +163,6 @@ var ScatterData = Backbone.Model.extend({
 
 	parse: function(response){
 		// called whenever a model's data is returned by the server
-		console.log(response)
 		nPoints = response.length;
 		var metaKeys = [];
 		xyz = ['x', 'y', 'z'];
@@ -186,20 +180,15 @@ var ScatterData = Backbone.Model.extend({
 		if (options === undefined) {options = {}}
 		_.defaults(options, this.defaults)
 		_.defaults(this, options)
-		// init arrays for points
-		// this.positions = new Float32Array( this.n * 3 );
-		// this.indices = new Uint32Array( this.n );
-
 		// fetch json data from server
 		this.fetch()
-
 	},
 
 	groupBy: function(metaKey){
 		// group by a metaKey and return an object of _ScatterDataSubset objects keyed by metaKey
 		var dataSubsets = _.groupBy(this.data, metaKey);
 		var scatterDataSubsets = _.mapObject(dataSubsets, function(records, key){
-			return new _ScatterDataSubset({data: records}) 
+			return new _ScatterDataSubset({data: records});
 		});
 		return scatterDataSubsets;
 	},
@@ -214,8 +203,6 @@ var ScatterData = Backbone.Model.extend({
 
 var Scatter3dView = Backbone.View.extend({
 	// this is the view for all points
-	// TODO: implement sub-views for different shapes of points.
-
 	model: ScatterData,
 
 	defaults: {
@@ -224,6 +211,8 @@ var Scatter3dView = Backbone.View.extend({
 		DPR: window.devicePixelRatio,
 		container: document.body,
 		labelKey: 'sig_id', // which metaKey to use as labels
+		colorKey: 'dose', // which metaKey to use as colors
+		shapeKey: 'cell',
 		texturePath: null,
 		clouds: [], // to store Scatter3dCloud objects
 	},
@@ -235,17 +224,11 @@ var Scatter3dView = Backbone.View.extend({
 
 		this.listenTo(this.model, 'sync', function(){
 			this.setUpStage();
-			// this.setUpScatterGeometry();
-			// this.colorBy('dose');
-			// this.sizeBy('dose');
 
-			this.shapeBy('cell');
-			this.colorBy('dose');
+			this.shapeBy(this.shapeKey);
 
-			// var nTexturesLoaded = 0;
 
 			this.renderScatter();
-
 		});
 
 	},
@@ -295,14 +278,31 @@ var Scatter3dView = Backbone.View.extend({
 		
 	},
 
+	clearScene: function(){
+		// remove everythin in the scene
+		var scene = this.scene;
+		_.each(scene.children, function( object ) {
+			scene.remove(object);
+		});
+	},
+
 	shapeBy: function(metaKey){
 		// groupBy the model and init clouds
+		// update shapeKey
+		this.shapeKey = metaKey;
+		// re-coloring nodes
+		this.colorBy(this.colorKey);
+		// clear this.clouds
+		this.clouds = [];
+		this.clearScene();
+
 		var scatterDataSubsets = this.model.groupBy(metaKey);
 		var texturePaths = [null, '../lib/textures/sprites/circle.png', 
 		'../lib/textures/sprite1.png',
 		'../lib/textures/sprite2.png'];
 		var i = 0;
 		var nTextures = 0; // counter for number of textures needed to be loaded
+		
 		for (var key in scatterDataSubsets){
 			var texturePath = texturePaths[i % texturePaths.length];
 			if (texturePath) { nTextures ++ }
@@ -312,11 +312,10 @@ var Scatter3dView = Backbone.View.extend({
 			});
 
 			this.clouds.push(cloud)
-			this.scene.add( cloud.points );
-
+			this.scene.add( cloud.points );	
+			
 			i ++;
 		}
-		// return nTextures;
 
 	},
 
@@ -330,7 +329,7 @@ var Scatter3dView = Backbone.View.extend({
 		var intersects = this.raycaster.intersectObjects( allPoints );
 
 		// reset colors
-		this.colorBy('dose');
+		this.colorBy(this.colorKey);
 
 		// remove text-label if exists
 		var textLabel = document.getElementById('text-label')
@@ -353,7 +352,6 @@ var Scatter3dView = Backbone.View.extend({
 			geometry.attributes.color.array[idx*3] = 0.1;
 			geometry.attributes.color.array[idx*3+1] = 0.8;
 			geometry.attributes.color.array[idx*3+2] = 0.1;
-
 			// geometry.computeBoundingSphere();
 			// intersect.object.updateMatrix();
 
@@ -426,34 +424,24 @@ var Scatter3dView = Backbone.View.extend({
 
 	colorBy: function(metaKey){
 		// Color points by a certain metaKey
+		// update colorKey
+		this.colorKey = metaKey;
+
 		var metas = this.model.getAttr(metaKey);
 		var uniqueCats = new Set(metas);
 		var nUniqueCats = uniqueCats.size;
-		console.log(uniqueCats, nUniqueCats)
+		// console.log(uniqueCats, nUniqueCats)
 
 		if (nUniqueCats < 11){
 			var colorScale = d3.scale.category10().domain(uniqueCats);
 		} else {
 			var colorScale = d3.scale.category20().domain(uniqueCats);
 		}
-		// construct colors BufferAttribute
-		// var colors = new Float32Array( this.model.n * 3);
-		// for (var i = metas.length - 1; i >= 0; i--) {
-		// 	var color = colorScale(metas[i]);
-		// 	color = new THREE.Color(color);
-		// 	color.toArray(colors, i*3)
-		// };
 
-		// this.colors = colors;
-
-		// this.geometry.addAttribute( 'color', new THREE.BufferAttribute( colors.slice(), 3 ) );
-		// this.geometry.attributes.color.needsUpdate = true;
 		for (var i = this.clouds.length - 1; i >= 0; i--) {
 			var cloud = this.clouds[i];
 			cloud.setColors(colorScale, metaKey)
-		};
-		
-		// this.renderer.render( this.scene, this.camera );
+		};		
 	},
 
 	// sizeBy: function(metaKey){
