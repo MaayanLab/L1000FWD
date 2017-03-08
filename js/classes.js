@@ -10,6 +10,7 @@ function getCanvasColor(color){
 	return "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")"; 
 }
 
+
 var _ScatterDataSubset = Backbone.Model.extend({
 	defaults: {
 		data: null, // an array of objects
@@ -215,6 +216,7 @@ var Scatter3dView = Backbone.View.extend({
 		shapeKey: 'cell',
 		texturePath: null,
 		clouds: [], // to store Scatter3dCloud objects
+		textureBasePath: '../lib/textures/d3-symbols/',
 	},
 
 	initialize: function(options){
@@ -297,7 +299,12 @@ var Scatter3dView = Backbone.View.extend({
 		this.clearScene();
 
 		var scatterDataSubsets = this.model.groupBy(metaKey);
-		var texturePaths = [null, '../lib/textures/sprites/circle.png', 
+		console.log(this.textureBasePath)
+		var textureBasePath = this.textureBasePath;
+		// var texturePaths = _.map(d3.svg.symbolTypes, function(name){ return textureBasePath + name + '.png';});
+		// console.log(texturePaths)
+		var texturePaths = [null,
+		'../lib/textures/sprites/circle.png', 
 		'../lib/textures/sprite1.png',
 		'../lib/textures/sprite2.png'];
 		var i = 0;
@@ -463,5 +470,32 @@ var Scatter3dView = Backbone.View.extend({
 	// }
 
 });
+
+var Legends = Backbone.View.extend({
+	// A view for the legends of the Scatter3dView
+	tagName: 'div',
+	defaults: {
+		scatterPlot: Scatter3dView,
+		w: 400,
+		h: 400,
+	},
+
+	initialize: function(options){
+		if (options === undefined) {options = {}}
+		_.defaults(options, this.defaults)
+		_.defaults(this, options)
+
+		// this.listenTo
+		this.el = document.createElement(this.tagName);
+
+	},
+
+	render: function(){
+
+	},
+
+});
+
+
 
 
