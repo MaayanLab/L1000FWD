@@ -299,14 +299,12 @@ var Scatter3dView = Backbone.View.extend({
 		this.clearScene();
 
 		var scatterDataSubsets = this.model.groupBy(metaKey);
-		console.log(this.textureBasePath)
 		var textureBasePath = this.textureBasePath;
-		// var texturePaths = _.map(d3.svg.symbolTypes, function(name){ return textureBasePath + name + '.png';});
-		// console.log(texturePaths)
-		var texturePaths = [null,
-		'../lib/textures/sprites/circle.png', 
-		'../lib/textures/sprite1.png',
-		'../lib/textures/sprite2.png'];
+		var texturePaths = _.map(d3.svg.symbolTypes, function(name){ return textureBasePath + name + '.png';});
+		// var texturePaths = [null,
+		// '../lib/textures/sprites/circle.png', 
+		// '../lib/textures/sprite1.png',
+		// '../lib/textures/sprite2.png'];
 		var i = 0;
 		var nTextures = 0; // counter for number of textures needed to be loaded
 		
@@ -414,8 +412,8 @@ var Scatter3dView = Backbone.View.extend({
 		var point = new THREE.Vector3(x, y, z);
 		var pv = new THREE.Vector3().copy(point).project(this.camera);
 		var coords = {
-			x: ((pv.x + 1) / 2 * this.WIDTH) * this.DPR, 
-			y: -((pv.y - 1) / 2 * this.HEIGHT) * this.DPR
+			x: ((pv.x + 1) / 2 * this.WIDTH), // * this.DPR, 
+			y: -((pv.y - 1) / 2 * this.HEIGHT), // * this.DPR
 		};
 		// draw the text
 		context.fillText(message, coords.x, coords.y)
