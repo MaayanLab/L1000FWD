@@ -48,7 +48,7 @@ var Scatter3dCloud = Backbone.View.extend({
 	model: _ScatterDataSubset,
 
 	defaults: {
-		texturePath: null,
+		texture: null, // the THREE.Texture instance
 		data: null, // expect data to be an array of objects
 		labelKey: 'sig_id',
 	},
@@ -61,41 +61,6 @@ var Scatter3dCloud = Backbone.View.extend({
 		this.setUpScatterGeometry();
 	},
 
-	loadMaterial: function(){
-		// not in use...
-	    var self = this;
-	    if (this.texturePath){
-
-	    	var loader = new THREE.TextureLoader();
-	    	
-	    	loader.load(this.texturePath, function(texture){
-
-				var material = new THREE.PointsMaterial({ 
-					vertexColors: THREE.VertexColors,
-					size: 2, 
-					// sizeAttenuation: false, 
-					map: texture, 
-					alphaTest: 0.5, 
-					transparent: true,
-					opacity: 0.6
-					});
-				self.material = material;
-				self.trigger('textureLoaded');
-				// console.log('textureLoaded')
-	    	});
-	    } else{
-			var material = new THREE.PointsMaterial({
-				vertexColors: THREE.VertexColors,
-				size: 2,
-				// sizeAttenuation: false, 
-				opacity: 0.6,
-				transparent: true,
-			});
-			self.material = material;
-			self.trigger('textureLoaded');
-	    }		
-	},
-
 	setUpScatterGeometry: function(){
 		var model = this.model;
 
@@ -106,8 +71,8 @@ var Scatter3dCloud = Backbone.View.extend({
 
 	    this.geometry.computeBoundingSphere();
 
-	    if (this.texturePath){
-	    	var texture = new THREE.TextureLoader().load(this.texturePath)
+	    var texture = this.texture;
+	    if (texture){
 			var material = new THREE.PointsMaterial({ 
 				vertexColors: THREE.VertexColors,
 				size: 2, 
@@ -214,11 +179,10 @@ var Scatter3dView = Backbone.View.extend({
 		labelKey: 'sig_id', // which metaKey to use as labels
 		colorKey: 'dose', // which metaKey to use as colors
 		shapeKey: 'cell',
-		texturePath: null,
+		// texturePath: null,
 		clouds: [], // to store Scatter3dCloud objects
-		textureBasePath: '../lib/textures/d3-symbols/', // base path of texture png files
-		shapeLegends: {},
-		colorLegends: {},
+		// textureBasePath: '../lib/textures/d3-symbols/', // base path of texture png files
+		textures: null, // the Textures collection instance
 	},
 
 	initialize: function(options){
@@ -226,17 +190,17 @@ var Scatter3dView = Backbone.View.extend({
 		_.defaults(options, this.defaults)
 		_.defaults(this, options)
 
-		this.listenTo(this.model, 'sync', function(){
-			this.setUpStage();
+		var self = this;
+		this.listenToOnce(this.textures, 'allLoaded', function(){
 
-			this.shapeBy(this.shapeKey);
+			self.listenTo(self.model, 'sync', function(){
+				self.setUpStage();
+				self.colorBy(self.colorKey);
+				self.shapeBy(self.shapeKey);
+				// self.colorBy(self.colorKey);
 
-
-			this.renderScatter();
-			console.log('model sync')
-			
+			});
 		});
-
 	},
 
 	setUpStage: function(){
@@ -298,19 +262,14 @@ var Scatter3dView = Backbone.View.extend({
 		this.shapeKey = metaKey;
 		this.shapeLegends = {}; 
 		// re-coloring nodes
-		this.colorBy(this.colorKey);
+		// this.colorBy(this.colorKey);
+		// this.resetColors();
 		// clear this.clouds
 		this.clouds = [];
 		this.clearScene();
-		console.log(this.scene.children)
-
+		// get grouped datasets, each group is going to be a cloud
 		var scatterDataSubsets = this.model.groupBy(metaKey);
-		var textureBasePath = this.textureBasePath;
-		var texturePaths = _.map(d3.svg.symbolTypes, function(name){ return textureBasePath + name + '.png';});
-		// var texturePaths = [null,
-		// '../lib/textures/sprites/circle.png', 
-		// '../lib/textures/sprite1.png',
-		// '../lib/textures/sprite2.png'];
+		var textures = this.textures;
 
 		// make shapeScale for d3.legend
 		this.shapeScale = d3.scale.ordinal()
@@ -318,28 +277,25 @@ var Scatter3dView = Backbone.View.extend({
 			.range(_.map(d3.svg.symbolTypes, function(t){
 				return d3.svg.symbol().type(t)();
 			}));
-		this.trigger('shapeChanged')
-
-		var i = 0;
-		var nTextures = 0; // counter for number of textures needed to be loaded
+		
+		// symbolTypeScale is used for retrieving a texture instance from textures collection
+		var symbolTypeScale = d3.scale.ordinal()
+			.domain(Object.keys(scatterDataSubsets))
+			.range(textures.pluck('symbolType'));
 		
 		for (var key in scatterDataSubsets){
-			var idx = i % texturePaths.length;
-			var texturePath = texturePaths[idx];
-			if (texturePath) { nTextures ++ }
 			var cloud = new Scatter3dCloud({
 				model: scatterDataSubsets[key],
-				texturePath: texturePath, 
+				texture: textures.getTexture(symbolTypeScale(key)), 
 			});
-
-			this.shapeLegends[key] = d3.svg.symbolTypes[idx];
 
 			this.clouds.push(cloud)
 			this.scene.add( cloud.points );	
-			
-			i ++;
 		}
-		// console.log(this.shapeLegends)
+
+		this.trigger('shapeChanged')
+		console.log(this.colorScale)
+		this.renderScatter()
 
 	},
 
@@ -353,7 +309,7 @@ var Scatter3dView = Backbone.View.extend({
 		var intersects = this.raycaster.intersectObjects( allPoints );
 
 		// reset colors
-		this.colorBy(this.colorKey);
+		this.resetColors();
 
 		// remove text-label if exists
 		var textLabel = document.getElementById('text-label')
@@ -446,16 +402,22 @@ var Scatter3dView = Backbone.View.extend({
 		return canvas;
 	},
 
+	resetColors: function(){
+		// reset colors based on this.metaKey, do not trigger any events.
+		for (var i = this.clouds.length - 1; i >= 0; i--) {
+			var cloud = this.clouds[i];
+			cloud.setColors(this.colorScale, this.colorKey)
+		};
+	},
+
 	colorBy: function(metaKey){
 		// Color points by a certain metaKey
 		// update colorKey
 		this.colorKey = metaKey;
-		this.colorLegends = {};
 
 		var metas = this.model.getAttr(metaKey);
 		var uniqueCats = new Set(metas);
 		var nUniqueCats = uniqueCats.size;
-		// console.log(uniqueCats, nUniqueCats)
 
 		// make colorScale
 		if (nUniqueCats < 11){
@@ -465,20 +427,13 @@ var Scatter3dView = Backbone.View.extend({
 		}
 
 		this.colorScale = colorScale;
-		// console.log('colorChanged')
-		this.trigger('colorChanged');
-
-		// convert set to array
-		uniqueCats = Array.from(uniqueCats);
-		for (var i = uniqueCats.length - 1; i >= 0; i--) {
-			var category = uniqueCats[i];
-			this.colorLegends[category] = colorScale(category);	
-		};
 
 		for (var i = this.clouds.length - 1; i >= 0; i--) {
 			var cloud = this.clouds[i];
 			cloud.setColors(colorScale, metaKey)
-		};		
+		};
+		this.trigger('colorChanged');
+		this.renderScatter();
 	},
 
 	// sizeBy: function(metaKey){
@@ -518,7 +473,6 @@ var Legend = Backbone.View.extend({
 		this.setUpDOMs();
 		this.listenTo(this.scatterPlot, 'shapeChanged', this.render)
 		// this.listenTo(this.scatterPlot, 'colorChanged', this.render)
-
 	},
 
 	setUpDOMs: function(){
@@ -545,7 +499,7 @@ var Legend = Backbone.View.extend({
 		this.g.append('g')
 			.attr('id', 'legendColor')
 			.attr("class", "legendPanel")
-			.attr("transform", "translate(0, 170)");
+			.attr("transform", "translate(100, 0)");
 
 	},
 
@@ -557,17 +511,16 @@ var Legend = Backbone.View.extend({
 			.scale(scatterPlot.shapeScale)
 			.orient("vertical")
 			.title(scatterPlot.shapeKey);
-		// this.g.select("#legendShape")
-		// 	.call(legendShape);
+		this.g.select("#legendShape")
+			.call(legendShape);
 
 		// color legend
 		var legendColor = d3.legend.color()
 			.title(scatterPlot.colorKey)
-			.shape("path", d3.svg.symbol().type("circle").size(30)())
+			.shape("path", d3.svg.symbol().type("circle").size(50)())
 			.shapePadding(10)
 			.scale(scatterPlot.colorScale);
-
-		// console.log(this.g.select("#legendColor"))
+		console.log(scatterPlot.colorScale)
 		this.g.select("#legendColor")
 			.call(legendColor);
 
