@@ -179,9 +179,7 @@ var Scatter3dView = Backbone.View.extend({
 		labelKey: 'sig_id', // which metaKey to use as labels
 		colorKey: 'dose', // which metaKey to use as colors
 		shapeKey: 'cell',
-		// texturePath: null,
 		clouds: [], // to store Scatter3dCloud objects
-		// textureBasePath: '../lib/textures/d3-symbols/', // base path of texture png files
 		textures: null, // the Textures collection instance
 	},
 
@@ -195,9 +193,8 @@ var Scatter3dView = Backbone.View.extend({
 
 			self.listenTo(self.model, 'sync', function(){
 				self.setUpStage();
-				self.colorBy(self.colorKey);
-				self.shapeBy(self.shapeKey);
 				// self.colorBy(self.colorKey);
+				self.shapeBy(self.shapeKey);
 
 			});
 		});
@@ -261,9 +258,6 @@ var Scatter3dView = Backbone.View.extend({
 		// update shapeKey
 		this.shapeKey = metaKey;
 		this.shapeLegends = {}; 
-		// re-coloring nodes
-		// this.colorBy(this.colorKey);
-		// this.resetColors();
 		// clear this.clouds
 		this.clouds = [];
 		this.clearScene();
@@ -293,9 +287,10 @@ var Scatter3dView = Backbone.View.extend({
 			this.scene.add( cloud.points );	
 		}
 
+		// re-coloring nodes
+		this.colorBy(this.colorKey);
 		this.trigger('shapeChanged')
-		console.log(this.colorScale)
-		this.renderScatter()
+		this.renderScatter();
 
 	},
 
@@ -471,13 +466,13 @@ var Legend = Backbone.View.extend({
 		_.defaults(options, this.defaults)
 		_.defaults(this, options)
 		this.setUpDOMs();
+		// render if the scatterPlot changed
 		this.listenTo(this.scatterPlot, 'shapeChanged', this.render)
-		// this.listenTo(this.scatterPlot, 'colorChanged', this.render)
+		this.listenTo(this.scatterPlot, 'colorChanged', this.render)
 	},
 
 	setUpDOMs: function(){
 		// set up DOMs for the legends
-		// this.el = document.createElement(this.tagName);
 		this.el = d3.select(this.container)
 			.append('svg')
 			.attr('width', this.w)
@@ -488,7 +483,6 @@ var Legend = Backbone.View.extend({
 			.style('top', '0px')
 			;
 
-		// this.g = d3.select('svg').append('g')
 		this.g = this.el.append('g')
 			.attr('class', 'legend')
 			.attr('transform', 'translate(10, 20)');
@@ -520,7 +514,6 @@ var Legend = Backbone.View.extend({
 			.shape("path", d3.svg.symbol().type("circle").size(50)())
 			.shapePadding(10)
 			.scale(scatterPlot.colorScale);
-		console.log(scatterPlot.colorScale)
 		this.g.select("#legendColor")
 			.call(legendColor);
 
