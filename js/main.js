@@ -24,3 +24,5 @@ var sdv = new Scatter3dView({
 
 var legend = new Legend({scatterPlot: sdv})
 // legend.listenTo(sdv, 'colorChanged', legend.render)
+
+var controler = new Controler({scatterPlot: sdv})

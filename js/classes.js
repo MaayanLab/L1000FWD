@@ -119,7 +119,7 @@ var ScatterData = Backbone.Model.extend({
 	defaults: {
 		url: 'toy',
 		n: 100, // Number of data points to retrieve
-		metaKeys: [],
+		metas: [], // store information about meta [{name: 'metaKey', nUnique: nUnique, type: type}]
 		data: [], // store data
 	},
 
@@ -130,14 +130,18 @@ var ScatterData = Backbone.Model.extend({
 	parse: function(response){
 		// called whenever a model's data is returned by the server
 		nPoints = response.length;
-		var metaKeys = [];
 		xyz = ['x', 'y', 'z'];
 		for (var key in response[0]){
 			if (xyz.indexOf(key) === -1){ 
-				metaKeys.push(key);
+				var nUnique = _.unique(_.pluck(response, key)).length;
+				var type = typeof response[0][key];
+				this.metas.push({
+					name: key,
+					nUnique: nUnique,
+					type: type,
+				});
 			}
 		}
-		this.metaKeys = metaKeys;
 		this.data = response;
 	},
 
@@ -524,4 +528,99 @@ var Legend = Backbone.View.extend({
 
 
 
+var Controler = Backbone.View.extend({
+
+	defaults: {
+		container: document.body,
+		scatterPlot: Scatter3dView,
+		w: 300,
+		h: 800,
+	},
+
+	initialize: function(options){
+		if (options === undefined) {options = {}}
+		_.defaults(options, this.defaults)
+		_.defaults(this, options)
+
+		this.model = this.scatterPlot.model;
+
+		this.listenTo(this.model, 'sync', this.render);
+
+		var scatterPlot = this.scatterPlot;
+
+		scatterPlot.listenTo(this, 'shapeChanged', function(selectedMetaKey){
+			scatterPlot.shapeBy(selectedMetaKey);
+		});
+		scatterPlot.listenTo(this, 'colorChanged', function(selectedMetaKey){
+			scatterPlot.colorBy(selectedMetaKey);
+		});
+
+	},
+
+	render: function(){
+		// set up DOMs for the controler
+		this.el = d3.select(this.container)
+			.append('div')
+			.attr('id', 'controls')
+			.style('width', this.w)
+			.style('height', this.h)
+			.style('z-index', 10)
+			.style('position', 'absolute')
+			.style('right', '0px')
+			.style('top', '0px');
+
+		var model = this.model;
+		// filter out metas used as index
+		var metas = _.filter(model.metas, function(meta){ return meta.nUnique < model.n; });
+		var self = this;
+
+
+		// Shapes: 
+		var shapeControl = this.el.append('div')
+			.attr('class', 'form-group');
+		shapeControl.append('label')
+			.attr('class', 'control-label')
+			.text('Shape by:');
+
+		var shapeSelect = shapeControl.append('select')
+			.attr('id', 'shape')
+			.attr('class', 'form-control')
+			.on('change', function(){
+				var selectedMetaKey = d3.select('#shape').property('value');
+				self.trigger('shapeChanged', selectedMetaKey)
+			});
+
+		shapeOptions = shapeSelect
+			.selectAll('option')
+			.data(_.pluck(metas, 'name')).enter()
+			.append('option')
+			.text(function(d){return d;})
+			.attr('value', function(d){return d;});
+
+		// Colors
+		var colorControl = this.el.append('div')
+			.attr('class', 'form-group')
+		colorControl.append('label')
+			.attr('class', 'control-label')
+			.text('Color by:');
+
+		var colorSelect = colorControl.append('select')
+			.attr('id', 'color')
+			.attr('class', 'form-control')
+			.on('change', function(){
+				var selectedMetaKey = d3.select('#color').property('value');
+				self.trigger('colorChanged', selectedMetaKey)
+			});
+
+		colorOptions = colorSelect
+			.selectAll('option')
+			.data(_.pluck(metas, 'name')).enter()
+			.append('option')
+			.text(function(d){return d;})
+			.attr('value', function(d){return d;});
+
+		return this;
+	},
+
+});
 
