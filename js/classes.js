@@ -418,14 +418,24 @@ var Scatter3dView = Backbone.View.extend({
 		var uniqueCats = new Set(metas);
 		var nUniqueCats = uniqueCats.size;
 
+		var meta = _.findWhere(this.model.metas, {name: metaKey});
+		var dtype = meta.type;
+
 		// make colorScale
 		if (nUniqueCats < 11){
 			var colorScale = d3.scale.category10().domain(uniqueCats);
-		} else {
+		} else if (nUniqueCats > 10 && dtype !== 'number') {
 			var colorScale = d3.scale.category20().domain(uniqueCats);
+		} else {
+			var colorExtent = d3.extent(metas);
+			var min_score = colorExtent[0],
+				max_score = colorExtent[1];
+			var colorScale = d3.scale.pow()
+				.domain([min_score, (min_score+max_score)/2, max_score])
+				.range(["#1f77b4", "#ddd", "#d62728"]);
 		}
 
-		this.colorScale = colorScale;
+		this.colorScale = colorScale; // the d3 scale used for coloring nodes
 
 		for (var i = this.clouds.length - 1; i >= 0; i--) {
 			var cloud = this.clouds[i];
@@ -515,9 +525,10 @@ var Legend = Backbone.View.extend({
 		// color legend
 		var legendColor = d3.legend.color()
 			.title(scatterPlot.colorKey)
-			.shape("path", d3.svg.symbol().type("circle").size(50)())
-			.shapePadding(10)
+			.shapeWidth(20)
+			.cells(5)
 			.scale(scatterPlot.colorScale);
+
 		this.g.select("#legendColor")
 			.call(legendColor);
 
@@ -547,6 +558,8 @@ var Controler = Backbone.View.extend({
 		this.listenTo(this.model, 'sync', this.render);
 
 		var scatterPlot = this.scatterPlot;
+
+		this.listenTo(scatterPlot, 'shapeChanged', this.changeSelection)
 
 		scatterPlot.listenTo(this, 'shapeChanged', function(selectedMetaKey){
 			scatterPlot.shapeBy(selectedMetaKey);
@@ -620,6 +633,12 @@ var Controler = Backbone.View.extend({
 			.attr('value', function(d){return d;});
 
 		return this;
+	},
+
+	changeSelection: function(){
+		// change the current selected option to value
+		$('#shape').val(this.scatterPlot.shapeKey); 
+		$('#color').val(this.scatterPlot.colorKey);
 	},
 
 });
