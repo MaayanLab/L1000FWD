@@ -16,7 +16,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 @app.before_first_request
 def load_globals():
 	global meta_df, N_SIGS
-	meta_df = pd.read_csv('log/CD_lm978_978dims/metadata.tsv', sep='\t')
+	meta_df = pd.read_csv('data/metadata.tsv', sep='\t')
 	print meta_df.shape
 	N_SIGS = meta_df.shape[0]
 	return
@@ -50,8 +50,10 @@ def toy_data():
 def load_pca_coords():
 	if request.method == 'GET':
 		coords = np.load('data/pca_coords.npy')
+		print 'coords shape:', coords.shape
+		print 'meta_df.shape', meta_df.shape
 		df = meta_df.assign(x=coords[:,0], y=coords[:,1], z=coords[:,2])
-
+		print 'df.shape: ', df.shape
 	return df.to_json(orient='records')
 
 
