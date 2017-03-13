@@ -34,7 +34,7 @@ var Textures = Backbone.Collection.extend({
 		var self = this;
 
 		// add all the textures
-		for (var i = symbolTypes.length - 1; i >= 0; i--) {
+		for (var i = 0; i < symbolTypes.length; i++) {	
 			var model = new Texture({symbolType: symbolTypes[i]})
 			this.add(model);
 
