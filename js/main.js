@@ -15,7 +15,10 @@ var textures = new Textures()
 // })
 
 
-var sd = new ScatterData()
+var sd = new ScatterData({
+	// n: 10000,
+	url: 'pca'
+})
 
 var sdv = new Scatter3dView({
 	model: sd,

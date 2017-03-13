@@ -75,7 +75,7 @@ var Scatter3dCloud = Backbone.View.extend({
 	    if (texture){
 			var material = new THREE.PointsMaterial({ 
 				vertexColors: THREE.VertexColors,
-				size: 2, 
+				size: 0.01, 
 				// sizeAttenuation: false, 
 				map: texture, 
 				alphaTest: 0.5, 
@@ -85,8 +85,9 @@ var Scatter3dCloud = Backbone.View.extend({
 	    } else{
 			var material = new THREE.PointsMaterial({
 				vertexColors: THREE.VertexColors,
-				size: 2,
+				size: 0.1,
 				// sizeAttenuation: false, 
+				alphaTest: 0.5, 
 				opacity: 0.6,
 				transparent: true,
 			});
@@ -105,7 +106,7 @@ var Scatter3dCloud = Backbone.View.extend({
 			color.toArray(colors, i*3)
 		};
 
-		this.colors = colors;
+		// this.colors = colors;
 
 		this.geometry.addAttribute( 'color', new THREE.BufferAttribute( colors.slice(), 3 ) );
 		this.geometry.attributes.color.needsUpdate = true;
@@ -210,31 +211,43 @@ var Scatter3dView = Backbone.View.extend({
 		
 		// set up scene, camera, renderer
 		this.scene = new THREE.Scene();
-		this.scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+		// this.scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
 
 		this.renderer = new THREE.WebGLRenderer();
-		this.renderer.setClearColor( this.scene.fog.color );
+		// this.renderer.setClearColor( this.scene.fog.color );
+		this.renderer.setClearColor( 0xcccccc );
 		this.renderer.setPixelRatio( this.DPR );
 		this.renderer.setSize( this.WIDTH, this.HEIGHT );
 
-		this.camera = new THREE.PerspectiveCamera( 45, this.aspectRatio, 1, 1000 );
-		this.camera.position.z = 20;
+		this.camera = new THREE.PerspectiveCamera( 70, this.aspectRatio, 0.01, 100 );
+		this.camera.position.z = 1;
 
 		// Put the renderer's DOM into the container
 		this.renderer.domElement.id = "renderer";
 		this.container.appendChild( this.renderer.domElement );
 
-		// set up orbit controls
-		controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
 		var self = this;
-		controls.addEventListener( 'change', function(){
+		// set up orbit controls
+		this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
+		this.controls.addEventListener( 'change', function(){
 			self.renderScatter()
 		} );
-		controls.enableZoom = true;
+		this.controls.enableZoom = true;
+		// this.controls.dampingFactor = 0.5;
+
+		// this.controls = new THREE.TrackballControls( this.camera );
+		// this.controls.rotateSpeed = 1.0;
+		// this.controls.zoomSpeed = 1.2;
+		// this.controls.panSpeed = 0.8;
+		// this.controls.noZoom = false;
+		// this.controls.noPan = false;
+		// this.controls.staticMoving = true;
+		// this.controls.dynamicDampingFactor = 0.3;
 
 		// set up raycaster, mouse
 		this.raycaster = new THREE.Raycaster();
-		this.raycaster.params.Points.threshold = 0.5;
+		// this.raycaster.params.Points.threshold = 0.5;
+		this.raycaster.params.Points.threshold = 0.01;
 		this.mouse = new THREE.Vector2();
 
 		// mousemove event
@@ -261,7 +274,6 @@ var Scatter3dView = Backbone.View.extend({
 		// groupBy the model and init clouds
 		// update shapeKey
 		this.shapeKey = metaKey;
-		this.shapeLegends = {}; 
 		// clear this.clouds
 		this.clouds = [];
 		this.clearScene();
@@ -299,6 +311,7 @@ var Scatter3dView = Backbone.View.extend({
 	},
 
 	renderScatter: function(){
+		// this.controls.update();
 		// update the picking ray with the camera and mouse position
 		this.raycaster.setFromCamera( this.mouse, this.camera );
 
