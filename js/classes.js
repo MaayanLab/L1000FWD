@@ -188,6 +188,7 @@ var Scatter3dView = Backbone.View.extend({
 		clouds: [], // to store Scatter3dCloud objects
 		textures: null, // the Textures collection instance
 		pointSize: 0.01, // the size of the points
+		showStats: false, // whether to show Stats
 	},
 
 	initialize: function(options){
@@ -253,6 +254,11 @@ var Scatter3dView = Backbone.View.extend({
 		this.raycaster.params.Points.threshold = this.pointSize/5;
 		this.mouse = new THREE.Vector2();
 
+		if (this.showStats) {
+			this.stats = new Stats();
+			this.container.appendChild( this.stats.dom );
+		}
+
 		// mousemove event
 		$(document).on( 'mousemove', function(event){
 			// update mouse position
@@ -261,6 +267,14 @@ var Scatter3dView = Backbone.View.extend({
 
 			self.renderScatter();
 
+		});
+		// window resize event
+		$(window).on( 'resize', function(event){
+			self.WIDTH = $(self.container).width(); 
+			self.HEIGHT = $(self.container).height(); 
+			self.camera.aspect = self.WIDTH / self.HEIGHT;
+			self.camera.updateProjectionMatrix();
+			self.renderer.setSize(self.WIDTH, self.HEIGHT)
 		});
 		
 	},
@@ -370,6 +384,10 @@ var Scatter3dView = Backbone.View.extend({
 		}
 
 		this.renderer.render( this.scene, this.camera );
+
+		if (this.showStats){
+			this.stats.update();	
+		}
 	},
 
 	makeTextCanvas: function(message, x, y, z, parameters){
