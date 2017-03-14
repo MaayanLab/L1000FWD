@@ -22,7 +22,8 @@ var sd = new ScatterData({
 
 var sdv = new Scatter3dView({
 	model: sd,
-	textures: textures
+	textures: textures,
+	pointSize: 0.1, 
 })
 
 var legend = new Legend({scatterPlot: sdv})

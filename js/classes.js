@@ -51,6 +51,7 @@ var Scatter3dCloud = Backbone.View.extend({
 		texture: null, // the THREE.Texture instance
 		data: null, // expect data to be an array of objects
 		labelKey: 'sig_id',
+		pointSize: 0.01,
 	},
 
 	initialize: function(options){
@@ -75,7 +76,7 @@ var Scatter3dCloud = Backbone.View.extend({
 	    if (texture){
 			var material = new THREE.PointsMaterial({ 
 				vertexColors: THREE.VertexColors,
-				size: 0.01, 
+				size: this.pointSize, 
 				// sizeAttenuation: false, 
 				map: texture, 
 				alphaTest: 0.5, 
@@ -119,7 +120,7 @@ var ScatterData = Backbone.Model.extend({
 	// model for the data (positions) and metadata. 
 	defaults: {
 		url: 'toy',
-		n: 100, // Number of data points to retrieve
+		n: 100, // Number of data points to retrieve, or number of data points retrieved
 		metas: [], // store information about meta [{name: 'metaKey', nUnique: nUnique, type: type}]
 		data: [], // store data
 	},
@@ -130,8 +131,8 @@ var ScatterData = Backbone.Model.extend({
 
 	parse: function(response){
 		// called whenever a model's data is returned by the server
-		nPoints = response.length;
-		xyz = ['x', 'y', 'z'];
+		this.n = response.length;
+		var xyz = ['x', 'y', 'z'];
 		for (var key in response[0]){
 			if (xyz.indexOf(key) === -1){ 
 				var nUnique = _.unique(_.pluck(response, key)).length;
@@ -152,7 +153,7 @@ var ScatterData = Backbone.Model.extend({
 		_.defaults(options, this.defaults)
 		_.defaults(this, options)
 		// fetch json data from server
-		this.fetch()
+		this.fetch();
 	},
 
 	groupBy: function(metaKey){
@@ -186,6 +187,7 @@ var Scatter3dView = Backbone.View.extend({
 		shapeKey: 'cell',
 		clouds: [], // to store Scatter3dCloud objects
 		textures: null, // the Textures collection instance
+		pointSize: 0.01, // the size of the points
 	},
 
 	initialize: function(options){
@@ -197,6 +199,7 @@ var Scatter3dView = Backbone.View.extend({
 		this.listenToOnce(this.textures, 'allLoaded', function(){
 
 			self.listenTo(self.model, 'sync', function(){
+				console.log('model synced')
 				self.setUpStage();
 				// self.colorBy(self.colorKey);
 				self.shapeBy(self.shapeKey);
@@ -220,7 +223,7 @@ var Scatter3dView = Backbone.View.extend({
 		this.renderer.setSize( this.WIDTH, this.HEIGHT );
 
 		this.camera = new THREE.PerspectiveCamera( 70, this.aspectRatio, 0.01, 100 );
-		this.camera.position.z = 1;
+		this.camera.position.z = this.pointSize * 120;
 
 		// Put the renderer's DOM into the container
 		this.renderer.domElement.id = "renderer";
@@ -247,7 +250,7 @@ var Scatter3dView = Backbone.View.extend({
 		// set up raycaster, mouse
 		this.raycaster = new THREE.Raycaster();
 		// this.raycaster.params.Points.threshold = 0.5;
-		this.raycaster.params.Points.threshold = 0.01;
+		this.raycaster.params.Points.threshold = this.pointSize/5;
 		this.mouse = new THREE.Vector2();
 
 		// mousemove event
@@ -297,6 +300,7 @@ var Scatter3dView = Backbone.View.extend({
 			var cloud = new Scatter3dCloud({
 				model: scatterDataSubsets[key],
 				texture: textures.getTexture(symbolTypeScale(key)), 
+				pointSize: this.pointSize,
 			});
 
 			this.clouds.push(cloud)
@@ -616,7 +620,7 @@ var Controler = Backbone.View.extend({
 				self.trigger('shapeChanged', selectedMetaKey)
 			});
 
-		shapeOptions = shapeSelect
+		var shapeOptions = shapeSelect
 			.selectAll('option')
 			.data(_.pluck(metas, 'name')).enter()
 			.append('option')
@@ -638,7 +642,7 @@ var Controler = Backbone.View.extend({
 				self.trigger('colorChanged', selectedMetaKey)
 			});
 
-		colorOptions = colorSelect
+		var colorOptions = colorSelect
 			.selectAll('option')
 			.data(_.pluck(metas, 'name')).enter()
 			.append('option')
