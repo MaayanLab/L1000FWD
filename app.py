@@ -3,6 +3,7 @@ import json
 import numpy as np
 np.random.seed(10)
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 from flask import Flask, request, redirect, render_template, jsonify, send_from_directory
 
@@ -49,7 +50,14 @@ def toy_data():
 @app.route(ENTER_POINT + '/pca', methods=['GET'])
 def load_pca_coords():
 	if request.method == 'GET':
-		coords = np.load('data/pca_coords.npy')
+		# coords = np.load('data/pca_coords.npy')
+		coords = np.load('data/zscored_pca_coords.npy')
+		scl = MinMaxScaler((-10, 10))
+		# scl.fit(coords[:, 0].reshape(-1, 1))
+		# for j in range(coords.shape[1]):
+		# 	coords[:, j] = scl.transform(coords[:,j].reshape(-1, 1))[:,0]
+		coords = scl.fit_transform(coords)
+
 		print 'coords shape:', coords.shape
 		print 'meta_df.shape', meta_df.shape
 		df = meta_df.assign(x=coords[:,0], y=coords[:,1], z=coords[:,2])

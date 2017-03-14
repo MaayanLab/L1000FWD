@@ -8,7 +8,7 @@ import math
 
 import numpy as np
 import pandas as pd
-from sklearn import decomposition
+from sklearn import decomposition, preprocessing
 from sqlalchemy import create_engine
 
 f = h5py.File('data/CD_matrix_45012xlm978.h5', 'r')
@@ -45,9 +45,11 @@ print meta_df['perturbation'].nunique()
 meta_df.to_csv('data/metadata.tsv', sep='\t')
 
 mat = mat[mask_shared,:]
+# z-score norm
 print mat.shape
 
 batch_size = 400
+scl = preprocessing.StandardScaler()
 ipca = decomposition.IncrementalPCA(n_components=3, batch_size=None)
 
 n_batchs = int(math.ceil(len(sig_ids_shared) / float(batch_size)))
@@ -56,15 +58,21 @@ for i in range(n_batchs):
 	start_idx = i * batch_size
 	end_idx = (i+1) * batch_size
 
-	ipca.partial_fit(mat[start_idx:end_idx])
+	scl.partial_fit(mat[start_idx:end_idx])
+
+for i in range(n_batchs):
+	start_idx = i * batch_size
+	end_idx = (i+1) * batch_size
+	scaled_sub_mat = scl.transform(mat[start_idx:end_idx])
+	ipca.partial_fit(scaled_sub_mat)
 
 mat_coords = np.zeros((len(sig_ids_shared), 3))
 for i in range(n_batchs):
 	start_idx = i * batch_size
 	end_idx = (i+1) * batch_size
+	scaled_sub_mat = scl.transform(mat[start_idx:end_idx])
+	mat_coords[start_idx:end_idx] = ipca.transform(scaled_sub_mat)
 
-	mat_coords[start_idx:end_idx] = ipca.transform(mat[start_idx:end_idx])
-
-np.save('data/pca_coords', mat_coords)
+np.save('data/zscored_pca_coords', mat_coords)
 
 
