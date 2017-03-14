@@ -30,3 +30,5 @@ var legend = new Legend({scatterPlot: sdv})
 // legend.listenTo(sdv, 'colorChanged', legend.render)
 
 var controler = new Controler({scatterPlot: sdv})
+
+var overlay = new Overlay({scatterPlot: sdv})
