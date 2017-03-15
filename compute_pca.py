@@ -9,6 +9,7 @@ import math
 import numpy as np
 import pandas as pd
 from sklearn import decomposition, preprocessing
+from sklearn.metrics.pairwise import pairwise_distances
 from sqlalchemy import create_engine
 
 f = h5py.File('data/CD_matrix_45012xlm978.h5', 'r')
@@ -39,12 +40,22 @@ meta_df = meta_df.ix[sig_ids_shared]
 print meta_df.head()
 print meta_df.shape
 
+meta_df['pvalue'] = meta_df['pvalue'].astype(np.float32)
+print meta_df.dtypes
+meta_df = meta_df.loc[meta_df['pvalue'] < 0.05]
+
 print meta_df['cell'].nunique()
 print meta_df['pert_id'].nunique()
 print meta_df['perturbation'].nunique()
-meta_df.to_csv('data/metadata.tsv', sep='\t')
+# meta_df.to_csv('data/metadata.tsv', sep='\t')
+
+meta_df.to_csv('data/metadata-sig-only.tsv', sep='\t')
+
+
+mask_shared = np.in1d(sig_ids, meta_df.index.tolist())
 
 mat = mat[mask_shared,:]
+# mat = pairwise_distances(mat, metric='cosine')
 # z-score norm
 print mat.shape
 
@@ -52,27 +63,29 @@ batch_size = 400
 scl = preprocessing.StandardScaler()
 ipca = decomposition.IncrementalPCA(n_components=3, batch_size=None)
 
-n_batchs = int(math.ceil(len(sig_ids_shared) / float(batch_size)))
+n_batchs = int(math.ceil(mat.shape[0] / float(batch_size)))
+
+# for i in range(n_batchs):
+# 	start_idx = i * batch_size
+# 	end_idx = (i+1) * batch_size
+
+# 	scl.partial_fit(mat[start_idx:end_idx])
 
 for i in range(n_batchs):
 	start_idx = i * batch_size
 	end_idx = (i+1) * batch_size
+	# scaled_sub_mat = scl.transform(mat[start_idx:end_idx])
+	# ipca.partial_fit(scaled_sub_mat)
+	ipca.partial_fit(mat[start_idx:end_idx])
 
-	scl.partial_fit(mat[start_idx:end_idx])
 
+mat_coords = np.zeros((mat.shape[0], 3))
 for i in range(n_batchs):
 	start_idx = i * batch_size
 	end_idx = (i+1) * batch_size
-	scaled_sub_mat = scl.transform(mat[start_idx:end_idx])
-	ipca.partial_fit(scaled_sub_mat)
+	# scaled_sub_mat = scl.transform(mat[start_idx:end_idx])
+	# mat_coords[start_idx:end_idx] = ipca.transform(scaled_sub_mat)
+	mat_coords[start_idx:end_idx] = ipca.transform(mat[start_idx:end_idx])
 
-mat_coords = np.zeros((len(sig_ids_shared), 3))
-for i in range(n_batchs):
-	start_idx = i * batch_size
-	end_idx = (i+1) * batch_size
-	scaled_sub_mat = scl.transform(mat[start_idx:end_idx])
-	mat_coords[start_idx:end_idx] = ipca.transform(scaled_sub_mat)
-
-np.save('data/zscored_pca_coords', mat_coords)
-
+np.save('data/pca_coords-sig-only', mat_coords)
 

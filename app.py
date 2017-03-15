@@ -17,7 +17,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 @app.before_first_request
 def load_globals():
 	global meta_df, N_SIGS
-	meta_df = pd.read_csv('data/metadata.tsv', sep='\t')
+	# meta_df = pd.read_csv('data/metadata.tsv', sep='\t')
+	meta_df = pd.read_csv('data/metadata-sig-only.tsv', sep='\t')
 	print meta_df.shape
 	N_SIGS = meta_df.shape[0]
 	return
@@ -51,7 +52,8 @@ def toy_data():
 def load_pca_coords():
 	if request.method == 'GET':
 		# coords = np.load('data/pca_coords.npy')
-		coords = np.load('data/zscored_pca_coords.npy')
+		# coords = np.load('data/zscored_pca_coords.npy')
+		coords = np.load('data/pca_coords-sig-only.npy')
 		scl = MinMaxScaler((-10, 10))
 		# scl.fit(coords[:, 0].reshape(-1, 1))
 		# for j in range(coords.shape[1]):
@@ -61,6 +63,15 @@ def load_pca_coords():
 		print 'coords shape:', coords.shape
 		print 'meta_df.shape', meta_df.shape
 		df = meta_df.assign(x=coords[:,0], y=coords[:,1], z=coords[:,2])
+		df['neglogp'] = -np.log10(df['pvalue'])
+		df['z'] = 0
+		frequent_cells = set(df['cell'].value_counts()[:19].index)
+		def encode_rare_cell(cell):
+			if cell in frequent_cells:
+				return cell
+			else:
+				return 'rare_cell'
+		df['cell'] = df['cell'].apply(encode_rare_cell)
 		print 'df.shape: ', df.shape
 	return df.to_json(orient='records')
 
