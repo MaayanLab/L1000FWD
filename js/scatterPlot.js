@@ -221,7 +221,8 @@ var Scatter3dView = Backbone.View.extend({
 
 		this.renderer = new THREE.WebGLRenderer();
 		// this.renderer.setClearColor( this.scene.fog.color );
-		this.renderer.setClearColor( 0xcccccc );
+		// this.renderer.setClearColor( 0xcccccc );
+		this.renderer.setClearColor( 0xffffff );
 		this.renderer.setPixelRatio( this.DPR );
 		this.renderer.setSize( this.WIDTH, this.HEIGHT );
 

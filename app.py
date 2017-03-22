@@ -14,11 +14,28 @@ app = Flask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
 app.debug = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 
+
+def encode_rare_categories(df, colname, max=19):
+	'''
+	Encode rare categories in a df as 'RARE'
+	'''
+	frequent_categories = set(df[colname].value_counts()[:max].index)
+	def _encode_rare(element):
+		if element in frequent_categories:
+			return element
+		else:
+			return 'rare'
+
+	df[colname] = df[colname].apply(_encode_rare)
+	return df
+
 @app.before_first_request
 def load_globals():
 	global meta_df, N_SIGS
 	# meta_df = pd.read_csv('data/metadata.tsv', sep='\t')
-	meta_df = pd.read_csv('data/metadata-sig-only.tsv', sep='\t')
+	# meta_df = pd.read_csv('data/metadata-sig-only.tsv', sep='\t')
+	meta_df = pd.read_csv('data/metadata-full.tsv', sep='\t')
+	meta_df = meta_df.set_index('sig_id')
 	print meta_df.shape
 	N_SIGS = meta_df.shape[0]
 	return
@@ -47,7 +64,7 @@ def toy_data():
 		return df.to_json(orient='records')
 		# return jsonify(df.to_dict(orient='list'))
 
-
+'''
 @app.route(ENTER_POINT + '/pca', methods=['GET'])
 def load_pca_coords():
 	if request.method == 'GET':
@@ -74,6 +91,40 @@ def load_pca_coords():
 		df['cell'] = df['cell'].apply(encode_rare_cell)
 		print 'df.shape: ', df.shape
 	return df.to_json(orient='records')
+'''
+
+@app.route(ENTER_POINT + '/graph', methods=['GET'])
+def load_graph_layout_coords():
+	if request.method == 'GET':
+		json_data = json.load(open('notebooks/Signature_Graph_12761nodes_99.9_SC.cyjs', 'rb'))
+		# json_data = json.load(open('notebooks/Signature_Graph_12761nodes_99.9_ERSC.cyjs', 'rb'))
+		json_data = json_data['elements']['nodes']
+
+		scl = MinMaxScaler((-10, 10))
+
+		coords = np.array([
+			[rec['position']['x'] for rec in json_data], 
+			[rec['position']['y'] for rec in json_data]
+			]).T
+		coords = scl.fit_transform(coords)
+
+		df = pd.DataFrame({
+			'sig_id': [rec['data']['name'] for rec in json_data],
+			'x': coords[:, 0],
+			'y': coords[:, 1],
+			}).set_index('sig_id')
+		df['z'] = 0
+		print df.shape
+		df = df.merge(meta_df, how='left', left_index=True, right_index=True)
+		
+		df['neglogp'] = -np.log10(df['pvalue']+1e-4)
+		df['z'] = 0
+
+		df = encode_rare_categories(df, 'cell')
+		df = encode_rare_categories(df, 'perturbation')
+
+		print df.shape
+		return df.reset_index().to_json(orient='records')
 
 
 if __name__ == '__main__':

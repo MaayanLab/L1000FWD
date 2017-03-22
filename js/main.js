@@ -17,15 +17,18 @@ var textures = new Textures()
 
 var sd = new ScatterData({
 	// n: 10000,
-	url: 'pca'
+	// url: 'pca'
+	url: 'graph'
 })
 
 var sdv = new Scatter3dView({
 	model: sd,
 	textures: textures,
 	// pointSize: 0.1, 
-	pointSize: 10,
+	pointSize: 12,
 	is3d: false,
+	colorKey: 'cell',
+	shapeKey: 'time',
 })
 
 var legend = new Legend({scatterPlot: sdv})
