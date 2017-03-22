@@ -52,6 +52,7 @@ var Scatter3dCloud = Backbone.View.extend({
 		data: null, // expect data to be an array of objects
 		labelKey: 'sig_id',
 		pointSize: 0.01,
+		sizeAttenuation: true, // true for 3d, false for 2d
 	},
 
 	initialize: function(options){
@@ -77,7 +78,7 @@ var Scatter3dCloud = Backbone.View.extend({
 			var material = new THREE.PointsMaterial({ 
 				vertexColors: THREE.VertexColors,
 				size: this.pointSize, 
-				// sizeAttenuation: false, 
+				sizeAttenuation: this.sizeAttenuation, 
 				map: texture, 
 				alphaTest: 0.5, 
 				transparent: true,
@@ -87,7 +88,7 @@ var Scatter3dCloud = Backbone.View.extend({
 			var material = new THREE.PointsMaterial({
 				vertexColors: THREE.VertexColors,
 				size: 0.1,
-				// sizeAttenuation: false, 
+				sizeAttenuation: this.sizeAttenuation, 
 				alphaTest: 0.5, 
 				opacity: 0.6,
 				transparent: true,
@@ -189,6 +190,7 @@ var Scatter3dView = Backbone.View.extend({
 		textures: null, // the Textures collection instance
 		pointSize: 0.01, // the size of the points
 		showStats: false, // whether to show Stats
+		is3d: true, // 3d or 2d
 	},
 
 	initialize: function(options){
@@ -223,8 +225,26 @@ var Scatter3dView = Backbone.View.extend({
 		this.renderer.setPixelRatio( this.DPR );
 		this.renderer.setSize( this.WIDTH, this.HEIGHT );
 
-		this.camera = new THREE.PerspectiveCamera( 70, this.aspectRatio, 0.01, 100 );
-		this.camera.position.z = this.pointSize * 120;
+		if (this.is3d){
+			this.camera = new THREE.PerspectiveCamera( 70, this.aspectRatio, 0.01, 1000000 );
+			this.camera.position.z = this.pointSize * 120;
+		} else { // 2d
+			ORTHO_CAMERA_FRUSTUM_HALF_EXTENT = 10;
+			var left = -ORTHO_CAMERA_FRUSTUM_HALF_EXTENT;
+			var right = ORTHO_CAMERA_FRUSTUM_HALF_EXTENT;
+			var bottom = -ORTHO_CAMERA_FRUSTUM_HALF_EXTENT;
+			var top = ORTHO_CAMERA_FRUSTUM_HALF_EXTENT;
+			// Scale up the larger of (w, h) to match the aspect ratio.
+			var aspectRatio = this.aspectRatio;
+			if (aspectRatio > 1) {
+				left *= aspectRatio;
+				right *= aspectRatio;
+			} else {
+				top /= aspectRatio;
+				bottom /= aspectRatio;
+			}
+			this.camera = new THREE.OrthographicCamera( left, right, top, bottom, -1000, 1000 );
+		}
 
 		// Put the renderer's DOM into the container
 		this.renderer.domElement.id = "renderer";
@@ -237,6 +257,12 @@ var Scatter3dView = Backbone.View.extend({
 			self.renderScatter()
 		} );
 		this.controls.enableZoom = true;
+		
+		if (!this.is3d){
+			this.controls.mouseButtons.ORBIT = null;
+			this.controls.enableRotate = false;
+			this.controls.mouseButtons.PAN = THREE.MOUSE.LEFT;			
+		}
 		// this.controls.dampingFactor = 0.5;
 
 		// this.controls = new THREE.TrackballControls( this.camera );
@@ -250,8 +276,12 @@ var Scatter3dView = Backbone.View.extend({
 
 		// set up raycaster, mouse
 		this.raycaster = new THREE.Raycaster();
+		if (this.is3d){
+			this.raycaster.params.Points.threshold = this.pointSize/5;	
+		} else {
+			this.raycaster.params.Points.threshold = this.pointSize/1000;	
+		}
 		// this.raycaster.params.Points.threshold = 0.5;
-		this.raycaster.params.Points.threshold = this.pointSize/5;
 		this.mouse = new THREE.Vector2();
 
 		if (this.showStats) {
@@ -315,6 +345,7 @@ var Scatter3dView = Backbone.View.extend({
 				model: scatterDataSubsets[key],
 				texture: textures.getTexture(symbolTypeScale(key)), 
 				pointSize: this.pointSize,
+				sizeAttenuation: this.is3d,
 			});
 
 			this.clouds.push(cloud)
@@ -329,12 +360,10 @@ var Scatter3dView = Backbone.View.extend({
 	},
 
 	renderScatter: function(){
-		// this.controls.update();
 		// update the picking ray with the camera and mouse position
 		this.raycaster.setFromCamera( this.mouse, this.camera );
 
 		// calculate objects intersecting the picking ray
-		// var intersects = this.raycaster.intersectObject( this.points );
 		var allPoints = _.map(this.clouds, function(obj){ return obj.points; });
 		var intersects = this.raycaster.intersectObjects( allPoints );
 
