@@ -135,11 +135,24 @@ var Scatter3dCloud = Backbone.View.extend({
 		var metas = this.model.getAttr(metaKey)
 		// construct colors BufferAttribute
 		var colors = new Float32Array( this.model.n * 3);
-		for (var i = metas.length - 1; i >= 0; i--) {
-			var color = colorScale(metas[i]);
-			color = new THREE.Color(color);
-			color.toArray(colors, i*3)
-		};
+		var frequentCategories = colorScale.domain().slice();
+		if (frequentCategories.length > 3){
+			for (var i = metas.length - 1; i >= 0; i--) {
+				if (frequentCategories.indexOf(metas[i]) === -1){
+					var color = colorScale(RARE);
+				} else {
+					var color = colorScale(metas[i]);
+				}
+				color = new THREE.Color(color);
+				color.toArray(colors, i*3)
+			};
+		} else {
+			for (var i = metas.length - 1; i >= 0; i--) {
+				var color = colorScale(metas[i]);
+				color = new THREE.Color(color);
+				color.toArray(colors, i*3)
+			};			
+		}
 
 		// this.colors = colors;
 
@@ -522,11 +535,12 @@ var Scatter3dView = Backbone.View.extend({
 		var meta = _.findWhere(this.model.metas, {name: metaKey});
 		var dtype = meta.type;
 		
-		// if (dtype !== 'number'){
-		// 	metas = encodeRareCategories(metas, 19);
-		// }
+		if (dtype !== 'number'){
+			metas = encodeRareCategories(metas, 19);
+		}
 		var uniqueCats = new Set(metas);
 		var nUniqueCats = uniqueCats.size;
+		uniqueCats = Array.from(uniqueCats);
 
 		// make colorScale
 		if (nUniqueCats < 11){
@@ -544,12 +558,12 @@ var Scatter3dView = Backbone.View.extend({
 
 		this.colorScale = colorScale; // the d3 scale used for coloring nodes
 
-		for (var i = this.clouds.length - 1; i >= 0; i--) {
-			var cloud = this.clouds[i];
-			cloud.setColors(colorScale, metaKey)
-		};
+		// for (var i = this.clouds.length - 1; i >= 0; i--) {
+		// 	var cloud = this.clouds[i];
+		// 	cloud.setColors(colorScale, metaKey)
+		// };
 		this.trigger('colorChanged');
-		this.renderScatter();
+		// this.renderScatter();
 	},
 
 	// sizeBy: function(metaKey){

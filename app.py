@@ -96,8 +96,9 @@ def load_pca_coords():
 @app.route(ENTER_POINT + '/graph', methods=['GET'])
 def load_graph_layout_coords():
 	if request.method == 'GET':
-		json_data = json.load(open('notebooks/Signature_Graph_12761nodes_99.9_SC.cyjs', 'rb'))
+		# json_data = json.load(open('notebooks/Signature_Graph_12761nodes_99.9_SC.cyjs', 'rb'))
 		# json_data = json.load(open('notebooks/Signature_Graph_12761nodes_99.9_ERSC.cyjs', 'rb'))
+		json_data = json.load(open('notebooks/Signature_Graph_17041nodes_0.56_ERSC.cyjs', 'rb'))
 		json_data = json_data['elements']['nodes']
 
 		scl = MinMaxScaler((-10, 10))
@@ -120,8 +121,8 @@ def load_graph_layout_coords():
 		df['neglogp'] = -np.log10(df['pvalue']+1e-4)
 		df['z'] = 0
 
-		df = encode_rare_categories(df, 'cell')
-		df = encode_rare_categories(df, 'perturbation')
+		# df = encode_rare_categories(df, 'cell')
+		# df = encode_rare_categories(df, 'perturbation')
 
 		print df.shape
 		return df.reset_index().to_json(orient='records')
