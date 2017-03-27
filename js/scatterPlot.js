@@ -10,6 +10,24 @@ function getCanvasColor(color){
 	return "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")"; 
 }
 
+RARE = 'rare'
+
+function encodeRareCategories(arr, k){
+	// Count occurences of each unique categories in arr, 
+	// then keep top k and encode rare categories as 'rares'
+	var counts = _.countBy(arr);
+	// sort values
+	var counts = _.sortBy(_.pairs(counts), function(tuple){ return -tuple[1]; });
+	// get top k frequent categories
+	var frequentCategories = _.map(counts.slice(0, k), function(tuple){ return tuple[0]; });
+	for (var i = 0; i < arr.length; i++) {
+		if (frequentCategories.indexOf(arr[i]) === -1){
+			arr[i] = RARE;
+		}
+	};
+	return arr;
+}
+
 
 var _ScatterDataSubset = Backbone.Model.extend({
 	defaults: {
@@ -40,6 +58,21 @@ var _ScatterDataSubset = Backbone.Model.extend({
 		return _.map(this.data, function(record){ return record[metaKey]; });
 	},
 
+	getLabels: function(labelKeys){
+		// return an array of label texts given a list of labelKeys
+		var labels = new Array( this.n );
+		for (var i = 0; i < this.data.length; i++) {
+			var record = this.data[i];
+			var label = '';
+			for (var j = 0; j < labelKeys.length; j++) {
+				var labelKey = labelKeys[j];
+				label += labelKey + ': ' + record[labelKey] + '\n';
+			};
+			labels[i] = label
+		};
+		return labels;
+	}
+
 });
 
 
@@ -50,7 +83,7 @@ var Scatter3dCloud = Backbone.View.extend({
 	defaults: {
 		texture: null, // the THREE.Texture instance
 		data: null, // expect data to be an array of objects
-		labelKey: 'sig_id',
+		labelKey: ['sig_id'],
 		pointSize: 0.01,
 		sizeAttenuation: true, // true for 3d, false for 2d
 	},
@@ -69,7 +102,7 @@ var Scatter3dCloud = Backbone.View.extend({
 		this.geometry = new THREE.BufferGeometry();
 		this.geometry.setIndex( new THREE.BufferAttribute( model.indices, 1 ) );
 		this.geometry.addAttribute( 'position', new THREE.BufferAttribute( model.positions, 3 ) );		
-		this.geometry.addAttribute( 'label', new THREE.BufferAttribute( model.getAttr(this.labelKey), 1 ) );
+		this.geometry.addAttribute( 'label', new THREE.BufferAttribute( model.getLabels(this.labelKey), 1 ) );
 
 	    this.geometry.computeBoundingSphere();
 
@@ -115,7 +148,6 @@ var Scatter3dCloud = Backbone.View.extend({
 	},
 
 });
-
 
 var ScatterData = Backbone.Model.extend({
 	// model for the data (positions) and metadata. 
@@ -183,7 +215,7 @@ var Scatter3dView = Backbone.View.extend({
 		HEIGHT: window.innerHeight,
 		DPR: window.devicePixelRatio,
 		container: document.body,
-		labelKey: 'sig_id', // which metaKey to use as labels
+		labelKey: ['sig_id'], // which metaKey to use as labels
 		colorKey: 'dose', // which metaKey to use as colors
 		shapeKey: 'cell',
 		clouds: [], // to store Scatter3dCloud objects
@@ -280,7 +312,7 @@ var Scatter3dView = Backbone.View.extend({
 		if (this.is3d){
 			this.raycaster.params.Points.threshold = this.pointSize/5;	
 		} else {
-			this.raycaster.params.Points.threshold = this.pointSize/1000;	
+			this.raycaster.params.Points.threshold = this.pointSize/500;	
 		}
 		// this.raycaster.params.Points.threshold = 0.5;
 		this.mouse = new THREE.Vector2();
@@ -347,6 +379,7 @@ var Scatter3dView = Backbone.View.extend({
 				texture: textures.getTexture(symbolTypeScale(key)), 
 				pointSize: this.pointSize,
 				sizeAttenuation: this.is3d,
+				labelKey: this.labelKey,
 			});
 
 			this.clouds.push(cloud)
@@ -429,6 +462,8 @@ var Scatter3dView = Backbone.View.extend({
 			parameters["fontsize"] : 18; 
 		var textColor = parameters.hasOwnProperty("textColor") ? 
 			parameters["textColor"] : { r:0, g:0, b:255, a:1.0 }; 
+		var lineHeight = parameters.hasOwnProperty("lineHeight") ?
+			parameters["lineHeight"] : 20;
 
 		var canvas = document.createElement('canvas'); 
 		var context = canvas.getContext('2d'); 
@@ -454,8 +489,11 @@ var Scatter3dView = Backbone.View.extend({
 			x: ((pv.x + 1) / 2 * this.WIDTH), // * this.DPR, 
 			y: -((pv.y - 1) / 2 * this.HEIGHT), // * this.DPR
 		};
-		// draw the text
-		context.fillText(message, coords.x, coords.y)
+		// draw the text (in multiple lines)
+		var lines = message.split('\n');
+		for (var i = 0; i < lines.length; i++) {
+			context.fillText(lines[i], coords.x, coords.y + (i*lineHeight))
+		};
 
 		// styles of canvas element
 		canvas.style.left = 0;
@@ -480,11 +518,15 @@ var Scatter3dView = Backbone.View.extend({
 		this.colorKey = metaKey;
 
 		var metas = this.model.getAttr(metaKey);
-		var uniqueCats = new Set(metas);
-		var nUniqueCats = uniqueCats.size;
 
 		var meta = _.findWhere(this.model.metas, {name: metaKey});
 		var dtype = meta.type;
+		
+		// if (dtype !== 'number'){
+		// 	metas = encodeRareCategories(metas, 19);
+		// }
+		var uniqueCats = new Set(metas);
+		var nUniqueCats = uniqueCats.size;
 
 		// make colorScale
 		if (nUniqueCats < 11){
