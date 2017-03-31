@@ -9,7 +9,7 @@ from flask import Flask, request, redirect, render_template, jsonify, send_from_
 
 
 
-ENTER_POINT = '/embed'
+ENTER_POINT = os.environ['ENTER_POINT']
 app = Flask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
 app.debug = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
@@ -96,9 +96,11 @@ def load_pca_coords():
 @app.route(ENTER_POINT + '/graph', methods=['GET'])
 def load_graph_layout_coords():
 	if request.method == 'GET':
+		cyjs_filename = os.environ['CYJS']
 		# json_data = json.load(open('notebooks/Signature_Graph_12761nodes_99.9_SC.cyjs', 'rb'))
 		# json_data = json.load(open('notebooks/Signature_Graph_12761nodes_99.9_ERSC.cyjs', 'rb'))
-		json_data = json.load(open('notebooks/Signature_Graph_17041nodes_0.56_ERSC.cyjs', 'rb'))
+		# json_data = json.load(open('notebooks/Signature_Graph_17041nodes_0.56_ERSC.cyjs', 'rb'))
+		json_data = json.load(open('notebooks/%s' % cyjs_filename, 'rb'))
 		json_data = json_data['elements']['nodes']
 
 		scl = MinMaxScaler((-10, 10))
@@ -128,6 +130,6 @@ def load_graph_layout_coords():
 
 
 if __name__ == '__main__':
-	app.run(host='127.0.0.1', port=5000)
+	app.run(host='0.0.0.0', port=5000)
 
 
