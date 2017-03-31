@@ -7,7 +7,7 @@ var Texture = Backbone.Model.extend({
 		},
 
 	url: function(){
-		return '../lib/textures/d3-symbols/' +this.symbolType + '.png';
+		return 'lib/textures/d3-symbols/' +this.symbolType + '.png';
 	},
 
 	initialize: function(options){
