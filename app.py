@@ -119,7 +119,6 @@ def load_graph_layout_coords():
 		df = df.merge(meta_df, how='left', left_index=True, right_index=True)
 		
 		df['neglogp'] = -np.log10(df['pvalue']+1e-4)
-		df['z'] = 0
 
 		# df = encode_rare_categories(df, 'cell')
 		# df = encode_rare_categories(df, 'perturbation')

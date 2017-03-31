@@ -45,7 +45,7 @@ var _ScatterDataSubset = Backbone.Model.extend({
 		this.indices = new Uint32Array( this.n );
 		this.positions = new Float32Array( this.n * 3 );
 
-		for (var i = this.data.length - 1; i >= 0; i--) {
+		for (var i = 0; i < this.data.length; i++) {
 			this.indices[i] = i; 
 			this.positions[ i*3 ] = this.data[i].x;
 			this.positions[ i*3+1 ] = this.data[i].y;
@@ -103,6 +103,7 @@ var Scatter3dCloud = Backbone.View.extend({
 		this.geometry.setIndex( new THREE.BufferAttribute( model.indices, 1 ) );
 		this.geometry.addAttribute( 'position', new THREE.BufferAttribute( model.positions, 3 ) );		
 		this.geometry.addAttribute( 'label', new THREE.BufferAttribute( model.getLabels(this.labelKey), 1 ) );
+		this.geometry.addAttribute( 'pert_id', new THREE.BufferAttribute( model.getAttr('pert_id'), 1 ) );
 
 	    this.geometry.computeBoundingSphere();
 
@@ -344,6 +345,12 @@ var Scatter3dView = Backbone.View.extend({
 			self.renderScatter();
 
 		});
+
+		// mouseclici event
+		$(document).click(function(event){
+			self.mouseClick();
+		})
+
 		// window resize event
 		$(window).on( 'resize', function(event){
 			self.WIDTH = $(self.container).width(); 
@@ -463,6 +470,26 @@ var Scatter3dView = Backbone.View.extend({
 
 		if (this.showStats){
 			this.stats.update();	
+		}
+	},
+
+	mouseClick: function(){
+		// find points and redirect to new location
+
+		// update the picking ray with the camera and mouse position
+		this.raycaster.setFromCamera( this.mouse, this.camera );
+
+		// calculate objects intersecting the picking ray
+		var allPoints = _.map(this.clouds, function(obj){ return obj.points; });
+		var intersects = this.raycaster.intersectObjects( allPoints );
+
+		if ( intersects.length > 0 ) {
+			var intersect = intersects[0];
+			var idx = intersect.index;
+			var geometry = intersect.object.geometry;
+			var pert_id = geometry.attributes.pert_id.array[idx];
+			var url = 'http://amp.pharm.mssm.edu/dmoa/report/' + pert_id;
+			window.open(url);
 		}
 	},
 
