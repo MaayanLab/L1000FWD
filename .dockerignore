@@ -5,3 +5,4 @@ notebooks/*.ipynb
 notebooks/.ipynb_checkpoints
 notebooks/*.gml
 notebooks/*.gexf
+.DS_Store

@@ -33,7 +33,7 @@ pert_ids = [node['id'].split(':')[1] for node in graph['nodes']]
 
 d_pertid_drugclass = dict(zip(pert_ids, drug_classes))
 
-meta_df['drug_class'] = meta_df['pert_id'].map(lambda x: d_pertid_drugclass.get(x, None))
+meta_df['drug_class'] = meta_df['pert_id'].map(lambda x: d_pertid_drugclass.get(x, 'unannotated'))
 
 print meta_df.head()
 print meta_df['drug_class'].value_counts()
