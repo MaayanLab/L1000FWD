@@ -34,7 +34,7 @@ def load_globals():
 	global meta_df, N_SIGS
 	# meta_df = pd.read_csv('data/metadata.tsv', sep='\t')
 	# meta_df = pd.read_csv('data/metadata-sig-only.tsv', sep='\t')
-	meta_df = pd.read_csv('data/metadata-full.tsv', sep='\t')
+	meta_df = pd.read_csv('data/metadata-full-anno.tsv', sep='\t')
 	meta_df = meta_df.set_index('sig_id')
 	print meta_df.shape
 	N_SIGS = meta_df.shape[0]
