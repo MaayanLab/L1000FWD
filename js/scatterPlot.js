@@ -116,7 +116,7 @@ var Scatter3dCloud = Backbone.View.extend({
 				map: texture, 
 				alphaTest: 0.5, 
 				transparent: true,
-				opacity: 0.6
+				opacity: 0.8
 				});
 	    } else{
 			var material = new THREE.PointsMaterial({
@@ -124,7 +124,7 @@ var Scatter3dCloud = Backbone.View.extend({
 				size: 0.1,
 				sizeAttenuation: this.sizeAttenuation, 
 				alphaTest: 0.5, 
-				opacity: 0.6,
+				opacity: 0.8,
 				transparent: true,
 			});
 	    }
@@ -573,7 +573,11 @@ var Scatter3dView = Backbone.View.extend({
 		if (nUniqueCats < 11){
 			var colorScale = d3.scale.category10().domain(uniqueCats);
 		} else if (nUniqueCats > 10 && dtype !== 'number') {
-			var colorScale = d3.scale.category20().domain(uniqueCats);
+			// var colorScale = d3.scale.category20().domain(uniqueCats);
+			var colores_g = ["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"];
+			var colorScale = d3.scale.ordinal()
+				.domain(uniqueCats)
+				.range(colores_g)
 		} else {
 			var colorExtent = d3.extent(metas);
 			var min_score = colorExtent[0],
