@@ -136,7 +136,12 @@ var Scatter3dCloud = Backbone.View.extend({
 		var metas = this.model.getAttr(metaKey)
 		// construct colors BufferAttribute
 		var colors = new Float32Array( this.model.n * 3);
-		var frequentCategories = colorScale.domain().slice();
+		if (colorScale.hasOwnProperty('domain')){
+			var frequentCategories = colorScale.domain().slice();	
+		}else{
+			var frequentCategories = {length: 2};
+		}
+		
 		if (frequentCategories.length > 3){
 			for (var i = metas.length - 1; i >= 0; i--) {
 				if (frequentCategories.indexOf(metas[i]) === -1){
@@ -155,10 +160,8 @@ var Scatter3dCloud = Backbone.View.extend({
 			};			
 		}
 
-		// this.colors = colors;
-
 		this.geometry.addAttribute( 'color', new THREE.BufferAttribute( colors.slice(), 3 ) );
-		this.geometry.attributes.color.needsUpdate = true;
+		// this.geometry.attributes.color.needsUpdate = true;
 	},
 
 });
@@ -590,7 +593,16 @@ var Scatter3dView = Backbone.View.extend({
 		// 	cloud.setColors(colorScale, metaKey)
 		// };
 		this.trigger('colorChanged');
-		// this.renderScatter();
+		this.renderScatter();
+	},
+
+	highlightQuery: function(query, metaKey){
+		// To highlight a query result, red for matched nodes and grey for unmatched nodes
+		this.colorKey = metaKey;
+		this.colorScale = function(x) {
+			return x === query ? "#cc0000" : "#cccccc";
+		};
+		this.renderScatter();
 	},
 
 	// sizeBy: function(metaKey){
