@@ -37,4 +37,6 @@ var legend = new Legend({scatterPlot: sdv})
 
 var controler = new Controler({scatterPlot: sdv})
 
+var search = new SearchSelectize({scatterPlot: sdv, container: "#controls"})
+
 var overlay = new Overlay({scatterPlot: sdv})

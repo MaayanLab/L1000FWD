@@ -180,6 +180,66 @@ var Controler = Backbone.View.extend({
 
 });
 
+var SearchSelectize = Backbone.View.extend({
+	// selectize to search for drugs by name
+	defaults: {
+		container: document.body,
+		scatterPlot: Scatter3dView,
+	},
+
+	initialize: function(options){
+		if (options === undefined) {options = {}}
+		_.defaults(options, this.defaults)
+		_.defaults(this, options)
+
+		this.model = this.scatterPlot.model;
+
+		this.listenTo(this.model, 'sync', this.render);
+
+		var scatterPlot = this.scatterPlot;
+		// scatterPlot highlightQuery once selectize is searched
+		scatterPlot.listenTo(this, 'searched', function(query){
+			scatterPlot.highlightQuery(query, 'perturbation');
+		});
+
+	},
+
+	render: function(){
+		// get autocomplete list
+		var autocompleteList = _.unique(this.model.getAttr('perturbation'));
+		var options = [];
+		for (var i = 0; i < autocompleteList.length; i++) {
+			var name = autocompleteList[i];
+			options.push({value: name, title: name});
+		};
+
+		// set up the DOMs
+		// wrapper for SearchSelectize
+		var searchControl = $('<div class="form-group" id="search-control"></div>')
+		searchControl.append($('<label class="control-label">Search for drugs:</label>'))
+
+		this.$el = $('<select id="search" class="form-control"></select>');
+		searchControl.append(this.$el)
+		$(this.container).append(searchControl)
+
+		this.$el.selectize({
+			valueField: 'value',
+			labelField: 'title',
+			searchField: 'title',
+			sortField: 'text',
+			options: options,
+			create:false
+			});
+
+		// on change, trigger('searched', query)
+		var self = this;
+		this.$el[0].selectize.on('change', function(value){
+			self.trigger('searched', value)
+		});
+	},
+
+});
+
 var Overlay = Backbone.View.extend({
 	// An overlay to display current status.
 	tagName: 'div',
