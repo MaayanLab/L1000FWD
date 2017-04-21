@@ -103,7 +103,8 @@ var Scatter3dCloud = Backbone.View.extend({
 		this.geometry.setIndex( new THREE.BufferAttribute( model.indices, 1 ) );
 		this.geometry.addAttribute( 'position', new THREE.BufferAttribute( model.positions, 3 ) );		
 		this.geometry.addAttribute( 'label', new THREE.BufferAttribute( model.getLabels(this.labelKey), 1 ) );
-		this.geometry.addAttribute( 'pert_id', new THREE.BufferAttribute( model.getAttr('pert_id'), 1 ) );
+		// this.geometry.addAttribute( 'pert_id', new THREE.BufferAttribute( model.getAttr('pert_id'), 1 ) );
+		this.geometry.addAttribute( 'sig_id', new THREE.BufferAttribute( model.getAttr('sig_id'), 1 ) )
 
 	    this.geometry.computeBoundingSphere();
 
@@ -490,8 +491,11 @@ var Scatter3dView = Backbone.View.extend({
 			var intersect = intersects[0];
 			var idx = intersect.index;
 			var geometry = intersect.object.geometry;
-			var pert_id = geometry.attributes.pert_id.array[idx];
-			var url = 'http://amp.pharm.mssm.edu/dmoa/report/' + pert_id;
+			// var pert_id = geometry.attributes.pert_id.array[idx];
+			// var url = 'http://amp.pharm.mssm.edu/dmoa/report/' + pert_id;
+			var sig_id = geometry.attributes.sig_id.array[idx];
+			var url = 'http://amp.pharm.mssm.edu/dmoa/redirect/L1000CDS2/' + sig_id;
+			// var url = 'http://127.0.0.1:8084/dmoa/redirect/L1000CDS2/' + sig_id;
 			window.open(url);
 		}
 	},
