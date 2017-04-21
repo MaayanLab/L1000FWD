@@ -1,4 +1,3 @@
-lib/textures/
 *.pyc
 data/*
 !data/.gitignore
