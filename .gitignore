@@ -1,5 +1,6 @@
 lib/textures/
 *.pyc
-data/
+data/*
+!data/.gitignore
 log/
 .DS_Store
