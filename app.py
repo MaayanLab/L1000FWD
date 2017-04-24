@@ -128,6 +128,14 @@ def load_graph_layout_coords():
 		print df.shape
 		return df.reset_index().to_json(orient='records')
 
+@app.route(ENTER_POINT + '/sig_ids', methods=['GET'])
+def get_all_sig_ids():
+	if request.method == 'GET':
+		cyjs_filename = os.environ['CYJS']
+		json_data = json.load(open('notebooks/%s' % cyjs_filename, 'rb'))
+		json_data = json_data['elements']['nodes']
+		sig_ids = [rec['data']['name'] for rec in json_data]
+		return json.dumps({'sig_ids': sig_ids, 'n_sig_ids': len(sig_ids)})
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=5000)
