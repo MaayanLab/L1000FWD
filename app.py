@@ -2,10 +2,12 @@ import os, sys
 import json
 import numpy as np
 np.random.seed(10)
+import requests
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-from flask import Flask, request, redirect, render_template, jsonify, send_from_directory
+from flask import Flask, request, redirect, render_template, \
+	jsonify, send_from_directory, abort
 
 
 
@@ -13,6 +15,8 @@ ENTER_POINT = os.environ['ENTER_POINT']
 app = Flask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
 app.debug = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
+
+RURL = 'http://192.168.99.100:23239/custom/SigineDMOA'
 
 
 def encode_rare_categories(df, colname, max=19):
@@ -136,6 +140,28 @@ def get_all_sig_ids():
 		json_data = json_data['elements']['nodes']
 		sig_ids = [rec['data']['name'] for rec in json_data]
 		return json.dumps({'sig_ids': sig_ids, 'n_sig_ids': len(sig_ids)})
+
+@app.route(ENTER_POINT + '/search', methods=['POST'])
+def post_to_sigine():
+	'''Endpoint handling signature similarity search, POST the up/down genes 
+	to the RURL and return the result.'''
+	if request.method == 'POST':
+		config = {"direction":"mimic", "combination":False, "method":"geneSet"}
+		headers = {'content-type':'application/json'}
+		# parse POST data
+		data = request.get_json()
+		up_genes = data.get('up_genes', [])
+		down_genes = data.get('down_genes', [])
+		payload = {'upGenes': up_genes, 'dnGenes': down_genes}
+		payload = dict(payload.items() + config.items())
+		# POST to RULR
+		response = requests.post(RURL, data=json.dumps(payload), headers=headers)
+		if response.status_code == 200:
+			result = response.json()
+			return json.dumps(result)
+		else:
+			abort(404)
+
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=5000)
