@@ -129,6 +129,7 @@ def load_graph_layout_coords():
 		# df = encode_rare_categories(df, 'cell')
 		# df = encode_rare_categories(df, 'perturbation')
 
+		df = df.sort_index()
 		print df.shape
 		return df.reset_index().to_json(orient='records')
 
@@ -157,8 +158,10 @@ def post_to_sigine():
 		# POST to RULR
 		response = requests.post(RURL, data=json.dumps(payload), headers=headers)
 		if response.status_code == 200:
-			result = response.json()
-			return json.dumps(result)
+			result = pd.DataFrame(response.json())
+			# Sort scores by sig_ids to ensure consistency with the graph
+			result.sort_values(by='sig_ids', inplace=True)
+			return jsonify({'scores': result['scores'].tolist()})
 		else:
 			abort(404)
 

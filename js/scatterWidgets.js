@@ -240,6 +240,79 @@ var SearchSelectize = Backbone.View.extend({
 
 });
 
+var SigSimSearch = Backbone.View.extend({
+	// The frontend for signature similarity search
+	defaults: {
+		container: document.body,
+		scatterPlot: Scatter3dView,
+		exampleGenes: {
+			up: ["ZNF238","ACACA","ACAT2","ACLY","ACSL3","C10ORF10","C14ORF1","CCL2","CCNG2","CD46","CDKN1A","CETN2","CLIC4","CYB5A","CYP1B1","CYP51A1","DBI","DDIT4","DHCR24","DHCR7","DSC3","DSG3","EBP","EFNA1","ELOVL5","ELOVL6","FABP7","FADS1","FADS2","FDFT1","FDPS","FGFBP1","FN1","GLUL","HMGCR","HMGCS1","HOPX","HS3ST2","HSD17B7","IDI1","IL32","INSIG1","IRS2","KHDRBS3","KRT14","KRT15","KRT6B","LDLR","LPIN1","LSS","MAP7","ME1","MSMO1","MTSS1","NFKBIA","NOV","NPC1","NSDHL","PANK3","PGD","PLA2G2A","PNRC1","PPL","PRKCH","PSAP","RDH11","SC5DL","SCD","SCEL","SDPR","SEPP1","SLC2A6","SLC31A2","SLC39A6","SMPDL3A","SNCA","SPRR1B","SQLE","SREBF1","SREBF2","STXBP1","TM7SF2","TNFAIP3","VGLL4","ZFAND5","ZNF185"],
+			down:["ARMCX2","BST2","CA2","F12","GDF15","GPX7","IFI6","IGFBP7","KCNJ16","KRT7","MDK","NID2","NOP56","NR2F6","PDGFRA","PROM1","RRP8","SAMSN1","SCG5","SERPINE2","SLC4A4","TRIP6"]
+		}, 
+	},
+
+	initialize: function(options){
+		if (options === undefined) {options = {}}
+		_.defaults(options, this.defaults)
+		_.defaults(this, options)
+
+		this.model = this.scatterPlot.model;
+
+		this.listenTo(this.model, 'sync', this.render);
+
+		var scatterPlot = this.scatterPlot;
+		// scatterPlot colorByScores once the similarity search result is returned
+		scatterPlot.listenTo(this, 'searchResultGot', function(scores){
+			scatterPlot.colorByScores(scores);
+		});
+	},
+
+	render: function(){
+		// set up DOMs
+		var container = $(this.container);
+		container.append($('<h4>Signature Similarity Search:</h4>'))
+		var upGeneDiv = $('<div class="form-group">')
+		upGeneDiv.append($('<label for="upGenes" class="control-label">Up genes</label>'));
+		upGeneDiv.append($('<textarea name="upGenes" rows="5" class="form-control" required></textarea>'));
+
+		var dnGeneDiv = $('<div class="form-group">')
+		dnGeneDiv.append($('<label for="dnGenes" class="control-label">Down genes</label>'));
+		dnGeneDiv.append($('<textarea name="dnGenes" rows="5" class="form-control" required></textarea>'));
+
+		var self = this;
+		var exampleBtn = $('<button class="btn pull-left">Example</button>').click(function(e){
+			$('[name="dnGenes"]').val(self.exampleGenes.down.join('\n'));
+			$('[name="upGenes"]').val(self.exampleGenes.up.join('\n'));
+		});
+
+		var submitBtn = $('<button class="btn pull-right">Search</button>').click(function(e){
+			self.doRequest();
+		})
+
+		// append everything to container
+		container.append(upGeneDiv)
+		container.append(dnGeneDiv)
+		container.append(exampleBtn)
+		container.append(submitBtn)
+
+	},
+
+	doRequest: function(){
+		var self = this;
+		var upGenes = $('[name="upGenes"]').val().split('\n');
+		var dnGenes = $('[name="dnGenes"]').val().split('\n');
+		// POST json to /search endpoint
+		$.ajax('search', {
+			data: JSON.stringify({up_genes: upGenes, down_genes: dnGenes}),
+			contentType: 'application/json',
+			type: 'POST',
+			success: function(data){
+				self.trigger('searchResultGot', data);
+			}
+		});		
+	},
+});
+
 var Overlay = Backbone.View.extend({
 	// An overlay to display current status.
 	tagName: 'div',

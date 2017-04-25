@@ -32,11 +32,12 @@ var sdv = new Scatter3dView({
 	labelKey: ['sig_id', 'perturbation'],
 })
 
-var legend = new Legend({scatterPlot: sdv})
-// legend.listenTo(sdv, 'colorChanged', legend.render)
+var legend = new Legend({scatterPlot: sdv, h: window.innerHeight})
 
-var controler = new Controler({scatterPlot: sdv})
+var controler = new Controler({scatterPlot: sdv, h: window.innerHeight, w: 200})
 
 var search = new SearchSelectize({scatterPlot: sdv, container: "#controls"})
+
+var sigSimSearch = new SigSimSearch({scatterPlot: sdv, container: "#controls"})
 
 var overlay = new Overlay({scatterPlot: sdv})

@@ -221,6 +221,19 @@ var ScatterData = Backbone.Model.extend({
 		return _.map(this.data, function(record){ return record[metaKey]; });
 	},
 
+	setAttr: function(key, values){
+		for (var i = 0; i < this.data.length; i++) {
+			var rec = this.data[i];
+			rec[key] = values[i];
+			this.data[i] = rec;
+		};
+		// add meta data of this new attr
+		this.metas.push({
+			name: key,
+			nUnique: _.unique(values).length,
+			type: typeof values[0]
+		});
+	},
 });
 
 
@@ -350,7 +363,7 @@ var Scatter3dView = Backbone.View.extend({
 
 		});
 
-		// mouseclici event
+		// mouseclick event
 		$(document).click(function(event){
 			self.mouseClick();
 		})
@@ -581,6 +594,11 @@ var Scatter3dView = Backbone.View.extend({
 			var colorScale = d3.scale.category10().domain(uniqueCats);
 		} else if (nUniqueCats > 10 && dtype !== 'number') {
 			var colorScale = d3.scale.category20().domain(uniqueCats);
+		} else if (meta.name === 'scores') { // similarity scores should center at 0
+			var colorExtent = d3.extent(metas);
+			var colorScale = d3.scale.pow()
+				.domain([colorExtent[0], 0, colorExtent[1]])
+				.range(["#1f77b4", "#ddd", "#d62728"]);
 		} else {
 			var colorExtent = d3.extent(metas);
 			var min_score = colorExtent[0],
@@ -592,12 +610,18 @@ var Scatter3dView = Backbone.View.extend({
 
 		this.colorScale = colorScale; // the d3 scale used for coloring nodes
 
-		// for (var i = this.clouds.length - 1; i >= 0; i--) {
-		// 	var cloud = this.clouds[i];
-		// 	cloud.setColors(colorScale, metaKey)
-		// };
 		this.trigger('colorChanged');
 		this.renderScatter();
+	},
+
+	colorByScores: function(searchResult){
+		// To color nodes by similarity scores. 
+		// The input is the response from the /search endpoint.
+		this.colorKey = 'scores';
+		// store the scores in the model
+		this.model.setAttr('scores', searchResult.scores);
+		// update the clouds by calling shapeBy
+		this.shapeBy(this.shapeKey);
 	},
 
 	highlightQuery: function(query, metaKey){
