@@ -16,7 +16,7 @@ app = Flask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
 app.debug = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 
-RURL = 'http://192.168.99.100:23239/custom/SigineDMOA'
+RURL = os.environ['RURL']
 
 
 def encode_rare_categories(df, colname, max=19):
@@ -167,6 +167,6 @@ def post_to_sigine():
 
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=5000)
+	app.run(host='0.0.0.0', port=5000, threaded=True)
 
 
