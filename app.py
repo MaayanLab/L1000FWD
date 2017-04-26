@@ -15,7 +15,6 @@ app = Flask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
 app.debug = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 
-RURL = os.environ['RURL']
 
 @app.before_first_request
 def load_globals():
@@ -34,7 +33,10 @@ def load_globals():
 
 @app.route(ENTER_POINT + '/')
 def index_page():
-	return render_template('index.html', script='main')
+	return render_template('index.html', 
+		script='main',
+		ENTER_POINT=ENTER_POINT,
+		result_id='hello')
 
 @app.route('/<path:filename>')
 def send_file(filename):
@@ -105,34 +107,44 @@ def post_to_sigine():
 	to the RURL and redirect to the result page.'''
 	if request.method == 'POST':
 		# retrieve data from the form 
-		up_genes = request.form['upGenes'].split()
-		dn_genes = request.form['dnGenes'].split()
+		up_genes = request.form.get('upGenes', '').split()
+		down_genes = request.form.get('dnGenes', '').split()
 		# init GeneSets instance
 		gene_sets = GeneSets(up_genes, down_genes)
 		# perform similarity search
 		result = gene_sets.enrich()
 		# save gene_sets and results to MongoDB
 		rid = gene_sets.save()
+		print rid
 		return redirect(ENTER_POINT + '/result/' + rid, code=302)
 
 
-@app.route(ENTER_POINT + '/result_api/<string:result_id>', methods=['GET'])
+@app.route(ENTER_POINT + '/result/graph/<string:result_id>', methods=['GET'])
 def result(result_id):
-    """
-    Retrieve a simiarity search result using id and combine it
-    with graph layout.
-    """
-    # retrieve enrichment results from db
-    result_obj = EnrichmentResult(result_id)
-    # bind enrichment result to the network layout
-    graph_df_res = result_obj.bind_to_graph(graph_df)
+	"""
+	Retrieve a simiarity search result using id and combine it
+	with graph layout.
+	"""
+	# retrieve enrichment results from db
+	result_obj = EnrichmentResult(result_id)
+	# bind enrichment result to the network layout
+	graph_df_res = result_obj.bind_to_graph(graph_df)
 
-    return graph_df_res.reset_index().to_json(orient='records')
+	return graph_df_res.reset_index().to_json(orient='records')
+
+
+@app.route(ENTER_POINT + '/result/genes/<string:result_id>', methods=['GET'])
+def result_genes(result_id):
+	# retrieve enrichment results from db
+	result_obj = EnrichmentResult(result_id)
+	return jsonify(result_obj.data)
+
 
 @app.route(ENTER_POINT + '/result/<string:result_id>', methods=['GET'])
 def result_page(result_id):
 	return render_template('index.html', 
 		script='result', 
+		ENTER_POINT=ENTER_POINT,
 		result_id=result_id)
 
 

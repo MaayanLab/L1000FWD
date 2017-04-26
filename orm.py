@@ -62,7 +62,7 @@ def load_graph(cyjs_filename, meta_df):
 
 class EnrichmentResult(object):
 	"""EnrichmentResult: object for documents in the userResults collection"""
-	projection = {'_id':0, 'data':0, 'timestamp':0}
+	projection = {'_id':0}
 	default_score = 0.
 
 	def __init__(self, rid):
