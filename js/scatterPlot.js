@@ -353,6 +353,21 @@ var Scatter3dView = Backbone.View.extend({
 			this.container.appendChild( this.stats.dom );
 		}
 
+		this.addMouseEvents();
+
+		// window resize event
+		$(window).on( 'resize', function(event){
+			self.WIDTH = $(self.container).width(); 
+			self.HEIGHT = $(self.container).height(); 
+			self.camera.aspect = self.WIDTH / self.HEIGHT;
+			self.camera.updateProjectionMatrix();
+			self.renderer.setSize(self.WIDTH, self.HEIGHT)
+		});
+		
+	},
+
+	addMouseEvents: function(){
+		var self = this;
 		// mousemove event
 		$(document).on( 'mousemove', function(event){
 			// update mouse position
@@ -366,17 +381,13 @@ var Scatter3dView = Backbone.View.extend({
 		// mouseclick event
 		$(document).click(function(event){
 			self.mouseClick();
-		})
-
-		// window resize event
-		$(window).on( 'resize', function(event){
-			self.WIDTH = $(self.container).width(); 
-			self.HEIGHT = $(self.container).height(); 
-			self.camera.aspect = self.WIDTH / self.HEIGHT;
-			self.camera.updateProjectionMatrix();
-			self.renderer.setSize(self.WIDTH, self.HEIGHT)
 		});
-		
+
+	},
+
+	removeMouseEvents: function(){
+		$(document).off('mousemove');
+		$(document).off('click');
 	},
 
 	clearScene: function(){

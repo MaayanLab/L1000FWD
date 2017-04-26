@@ -410,17 +410,50 @@ var ResultModalBtn = Backbone.View.extend({
 
 	render: function(){
 		// set up the button
-		this.button = $('<a class="modal-btn" data-toggle="modal" data-target="#result-modal">Show result</a>');
+		this.button = $('<a class="btn btn-info">Show detailed result</a>');
 		var modal_url = 'result/modal/' + this.result_id;
+
 		this.button.click(function(e){
 			e.preventDefault();
+			$('#result-modal').modal('show')
 			$(".modal-body").load(modal_url, function(){
 				// fill the share link input
 				$("#share-link input").val(window.location.href);
-				$(".modal-body table").dataTable();				
+				$(".modal-body table").dataTable({
+					"order": [], // no sorting 
+				});
 			});
 		});
 		$(this.container).append(this.button);
+	},
+
+});
+
+var ResultModal = Backbone.View.extend({
+	// Used for toggling the mouseEvents of the scatterPlot.
+	defaults: {
+		scatterPlot: Scatter3dView,
+	},
+
+	initialize: function(options){
+		if (options === undefined) {options = {}}
+		_.defaults(options, this.defaults)
+		_.defaults(this, options)
+
+		this.model = this.scatterPlot.model;
+		this.listenTo(this.model, 'sync', this.toggleScatterPlotMouseEvents);
+
+	},
+
+	toggleScatterPlotMouseEvents: function(){
+		this.$el = $('#result-modal');
+		var scatterPlot = this.scatterPlot;
+		this.$el.on('show.bs.modal', function(e){
+			scatterPlot.removeMouseEvents()
+		});
+		this.$el.on('hide.bs.modal', function(e){
+			scatterPlot.addMouseEvents()
+		});
 	},
 
 });
