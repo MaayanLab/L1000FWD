@@ -34,7 +34,7 @@ def load_globals():
 
 @app.route(ENTER_POINT + '/')
 def index_page():
-	return app.send_static_file('index.html')
+	return render_template('index.html', script='main')
 
 @app.route('/<path:filename>')
 def send_file(filename):
