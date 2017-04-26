@@ -6,3 +6,4 @@ networkx==1.11
 scipy==0.15.1
 scikit-learn==0.17
 SQLAlchemy==0.9.9
+pymongo==3.2.2
