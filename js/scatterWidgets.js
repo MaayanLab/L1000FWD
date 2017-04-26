@@ -26,13 +26,9 @@ var Legend = Backbone.View.extend({
 		// set up DOMs for the legends
 		this.el = d3.select(this.container)
 			.append('svg')
+			.attr('id', 'legend')
 			.attr('width', this.w)
-			.attr('height', this.h)
-			.style('z-index', 10)
-			.style('position', 'absolute')
-			.style('left', '0px')
-			.style('top', '0px')
-			;
+			.attr('height', this.h);
 
 		this.g = this.el.append('g')
 			.attr('class', 'legend')
@@ -113,11 +109,7 @@ var Controler = Backbone.View.extend({
 			.append('div')
 			.attr('id', 'controls')
 			.style('width', this.w)
-			.style('height', this.h)
-			.style('z-index', 10)
-			.style('position', 'absolute')
-			.style('right', '0px')
-			.style('top', '0px');
+			.style('height', this.h);
 
 		var model = this.model;
 		// filter out metas used as index
@@ -410,7 +402,7 @@ var ResultModalBtn = Backbone.View.extend({
 
 	render: function(){
 		// set up the button
-		this.button = $('<a class="btn btn-info">Show detailed result</a>');
+		this.button = $('<a id="modal-btn" class="btn btn-info">Show detailed result</a>');
 		var modal_url = 'result/modal/' + this.result_id;
 
 		this.button.click(function(e){

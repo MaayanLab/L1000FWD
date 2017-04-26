@@ -1,7 +1,32 @@
+html { height: 100% }
+body { height: 100%; margin: 0; padding: 0; position: relative; }
+canvas { width: 100%; height: 100% }
+
 #controls{
 	overflow-y: scroll;
 }
 
 #share-link input{
 	width: 100%;
+}
+
+#legend{
+	z-index: 10;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+
+#controls{
+	z-index: 10;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+#modal-btn{
+	z-index: 10;
+	position: absolute;
+	right: 200px;
+	top: 0px;
 }
