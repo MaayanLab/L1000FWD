@@ -1,12 +1,13 @@
 import os, sys
 import json
+import StringIO
 import numpy as np
 np.random.seed(10)
 import requests
 import pandas as pd
 
 from flask import Flask, request, redirect, render_template, \
-	jsonify, send_from_directory, abort
+	jsonify, send_from_directory, abort, Response
 
 from orm import *
 
@@ -135,13 +136,54 @@ def result(result_id):
 
 @app.route(ENTER_POINT + '/result/genes/<string:result_id>', methods=['GET'])
 def result_genes(result_id):
+	'''Retrieve user input genes.
+	'''
 	# retrieve enrichment results from db
 	result_obj = EnrichmentResult(result_id)
 	return jsonify(result_obj.data)
 
 
+@app.route(ENTER_POINT + '/result/topn/<string:result_id>', methods=['GET'])
+def result_topn(result_id):
+	'''Retrieve topn signatures to visualize in a table.
+	'''
+	result_obj = EnrichmentResult(result_id)
+	return json.dumps(result_obj.result['topn'])
+
+
+@app.route(ENTER_POINT + '/result/modal/<string:result_id>', methods=['GET'])
+def result_modal(result_id):
+	'''Template for the signature similarity search result modal.
+	'''
+	result_obj = EnrichmentResult(result_id)
+	return render_template('result-modal.html', 
+		result_obj=result_obj,
+		result_id=result_id)
+
+
+@app.route(ENTER_POINT + '/result/download/<string:result_id>', methods=['GET'])
+def result_download(result_id):
+	'''To download the results to a csv file.
+	'''
+	result_obj = EnrichmentResult(result_id)
+	# Prepare a DataFrame for the result
+	scores = result_obj.result['scores']
+	result_df = pd.DataFrame({'similarity_scores': scores}, index=graph_df.index)\
+		.sort_values('similarity_scores', ascending=False)
+	# Write into memory
+	s = StringIO.StringIO()
+	result_df.to_csv(s)
+	# Prepare response
+	resp = Response(s.getvalue(), mimetype='text/csv')
+	resp.headers['Content-Disposition'] = 'attachment; filename=similarity_search_result-%s.csv' \
+		% result_id
+	return resp
+
+
 @app.route(ENTER_POINT + '/result/<string:result_id>', methods=['GET'])
 def result_page(result_id):
+	'''The result page.
+	'''
 	return render_template('index.html', 
 		script='result', 
 		ENTER_POINT=ENTER_POINT,

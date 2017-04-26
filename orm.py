@@ -99,7 +99,7 @@ class UserInput(object):
 		# Get the top N as list of records:
 		topn = result.iloc[:50].to_dict(orient='records')
 		# Sort scores by sig_ids to ensure consistency with the graph
-		result.sort_values(by='sig_ids', inplace=True)
+		result.sort_values(by='sig_ids', inplace=True, ascending=True)
 		self.result = {
 			'scores': result['scores'].tolist(), 
 			'topn': topn

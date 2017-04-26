@@ -280,12 +280,12 @@ var SigSimSearch = Backbone.View.extend({
 		dnGeneDiv.append($('<textarea name="dnGenes" rows="5" class="form-control" required></textarea>'));
 
 		var self = this;
-		var exampleBtn = $('<button class="btn pull-left">Example</button>').click(function(e){
+		var exampleBtn = $('<button class="btn btn pull-left">Example</button>').click(function(e){
 			$('[name="dnGenes"]').val(self.exampleGenes.down.join('\n'));
 			$('[name="upGenes"]').val(self.exampleGenes.up.join('\n'));
 		});
 
-		var submitBtn = $('<button class="btn pull-right">Search</button>').click(function(e){
+		var submitBtn = $('<button class="btn btn pull-right">Search</button>').click(function(e){
 			self.doRequest();
 		})
 
@@ -354,12 +354,12 @@ var SigSimSearchForm = Backbone.View.extend({
 		dnGeneDiv.append(this.dnGeneTa);
 
 		var self = this;
-		var exampleBtn = $('<button class="btn pull-left">Example</button>').click(function(e){
+		var exampleBtn = $('<button class="btn btn-xs pull-left">Example</button>').click(function(e){
 			e.preventDefault();
 			self.populateGenes(self.exampleGenes.up, self.exampleGenes.down);
 		});
 
-		var submitBtn = $('<input type="submit" class="btn pull-right" value="Search"></input>');
+		var submitBtn = $('<input type="submit" class="btn btn-xs pull-right" value="Search"></input>');
 
 		// append everything to form
 		form.append(upGeneDiv)
@@ -368,7 +368,7 @@ var SigSimSearchForm = Backbone.View.extend({
 		form.append(submitBtn)
 		// append form the container
 		$(this.container).append(form)
-		// 
+		// populate input genes if result_id is defined
 		if (this.result_id){
 			this.populateInputGenes();
 		}
@@ -389,6 +389,41 @@ var SigSimSearchForm = Backbone.View.extend({
 	},
 });
 
+var ResultModalBtn = Backbone.View.extend({
+	// The button to toggle the modal of similarity search result
+	defaults: {
+		container: document.body,
+		scatterPlot: Scatter3dView,
+		result_id: undefined
+	},
+	
+	initialize: function(options){
+		if (options === undefined) {options = {}}
+		_.defaults(options, this.defaults)
+		_.defaults(this, options)
+
+		this.model = this.scatterPlot.model;
+
+		this.listenTo(this.model, 'sync', this.render);
+
+	},
+
+	render: function(){
+		// set up the button
+		this.button = $('<a class="modal-btn" data-toggle="modal" data-target="#result-modal">Show result</a>');
+		var modal_url = 'result/modal/' + this.result_id;
+		this.button.click(function(e){
+			e.preventDefault();
+			$(".modal-body").load(modal_url, function(){
+				// fill the share link input
+				$("#share-link input").val(window.location.href);
+				$(".modal-body table").dataTable();				
+			});
+		});
+		$(this.container).append(this.button);
+	},
+
+});
 
 var Overlay = Backbone.View.extend({
 	// An overlay to display current status.

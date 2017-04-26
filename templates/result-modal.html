@@ -1,0 +1,26 @@
+<!-- DOMs to be loaded into .modal-body for the simialrity search result -->
+<table class="table table-hover table-striped">
+	<thead>
+		<tr>
+			<th>sig_id</th>
+			<th>simialrity score</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in result_obj.result['topn'] %}
+		<tr>
+			<td>
+				<a href="http://amp.pharm.mssm.edu/dmoa/redirect/L1000CDS2/{{ row['sig_ids'] }}" target="_blank">{{ row['sig_ids'] }}</a>
+			</td>
+			<td>{{ row['scores'] }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<div id="share-link">
+	<p>Use Ctrl+C or Option+C to copy the link below to share.</p>
+	<input type="text">
+</div>
+
+<a class="btn btn-info" href="result/download/{{ result_id }}">Download result</a>

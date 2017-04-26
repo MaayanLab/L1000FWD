@@ -24,4 +24,6 @@ var search = new SearchSelectize({scatterPlot: sdv, container: "#controls"})
 
 var sigSimSearch = new SigSimSearchForm({scatterPlot: sdv, container: "#controls", result_id: result_id})
 
+var resultModalBtn = new ResultModalBtn({scatterPlot: sdv, container: "#controls", result_id: result_id})
+
 var overlay = new Overlay({scatterPlot: sdv})

@@ -1,3 +1,7 @@
 #controls{
 	overflow-y: scroll;
 }
+
+#share-link input{
+	width: 100%;
+}
