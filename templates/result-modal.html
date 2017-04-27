@@ -3,14 +3,18 @@
 	<thead>
 		<tr>
 			<th>sig_id</th>
+			<th>drug</th>
 			<th>simialrity score</th>
 		</tr>
 	</thead>
 	<tbody>
-		{% for row in result_obj.result['topn'] %}
+		{% for row in topn %}
 		<tr>
 			<td>
 				<a href="http://amp.pharm.mssm.edu/dmoa/redirect/L1000CDS2/{{ row['sig_ids'] }}" target="_blank">{{ row['sig_ids'] }}</a>
+			</td>
+			<td>
+				<a href="http://amp.pharm.mssm.edu/dmoa/report/{{ row['pert_id'] }}" target="_blank">{{ row['perturbation'] }}</a>
 			</td>
 			<td>{{ row['scores'] }}</td>
 		</tr>

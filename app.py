@@ -156,8 +156,17 @@ def result_modal(result_id):
 	'''Template for the signature similarity search result modal.
 	'''
 	result_obj = EnrichmentResult(result_id)
+	# add pert_id and perturbation to topn for the modal to render
+	topn = [None]*len(result_obj.result['topn']) 
+	for i in range(len(topn)):
+		rec = result_obj.result['topn'][i]
+		sig_id = rec['sig_ids']
+		rec['pert_id'] = graph_df.ix[sig_id]['pert_id']
+		rec['perturbation'] = graph_df.ix[sig_id]['perturbation']
+		topn[i] = rec
+
 	return render_template('result-modal.html', 
-		result_obj=result_obj,
+		topn=topn,
 		result_id=result_id)
 
 
@@ -168,7 +177,10 @@ def result_download(result_id):
 	result_obj = EnrichmentResult(result_id)
 	# Prepare a DataFrame for the result
 	scores = result_obj.result['scores']
-	result_df = pd.DataFrame({'similarity_scores': scores}, index=graph_df.index)\
+	result_df = pd.DataFrame({'similarity_scores': scores, 
+		'drug': graph_df['perturbation'],
+		'pert_id': graph_df['pert_id'],
+		}, index=graph_df.index)\
 		.sort_values('similarity_scores', ascending=False)
 	# Write into memory
 	s = StringIO.StringIO()
