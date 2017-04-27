@@ -33,5 +33,4 @@ WORKDIR /my_application
 
 # Set the default command to execute    
 # when creating a new container
-# Test the RURL first then start app
-CMD python test_rurl.py && python app.py
+CMD python app.py
