@@ -38,6 +38,6 @@ var controler = new Controler({scatterPlot: sdv, h: window.innerHeight, w: 200})
 
 var search = new SearchSelectize({scatterPlot: sdv, container: "#controls"})
 
-var sigSimSearch = new SigSimSearch({scatterPlot: sdv, container: "#controls"})
+var sigSimSearch = new SigSimSearchForm({scatterPlot: sdv, container: "#controls"})
 
 var overlay = new Overlay({scatterPlot: sdv})
