@@ -351,12 +351,18 @@ var SigSimSearchForm = Backbone.View.extend({
 			self.populateGenes(self.exampleGenes.up, self.exampleGenes.down);
 		});
 
+		var clearBtn = $('<button class="btn btn-xs">Clear</button>').click(function(e){
+			e.preventDefault();
+			self.populateGenes([], []);
+		});
+
 		var submitBtn = $('<input type="submit" class="btn btn-xs pull-right" value="Search"></input>');
 
 		// append everything to form
 		form.append(upGeneDiv)
 		form.append(dnGeneDiv)
 		form.append(exampleBtn)
+		form.append(clearBtn)
 		form.append(submitBtn)
 		// append form the container
 		$(this.container).append(form)
