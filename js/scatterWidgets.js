@@ -402,7 +402,7 @@ var ResultModalBtn = Backbone.View.extend({
 
 	render: function(){
 		// set up the button
-		this.button = $('<a id="modal-btn" class="btn btn-info">Show detailed result</a>');
+		this.button = $('<a id="modal-btn" class="btn btn-info">Show detailed results</a>');
 		var modal_url = 'result/modal/' + this.result_id;
 
 		this.button.click(function(e){
