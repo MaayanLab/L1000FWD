@@ -157,13 +157,20 @@ def result_modal(result_id):
 	'''
 	result_obj = EnrichmentResult(result_id)
 	# add pert_id and perturbation to topn for the modal to render
-	topn = [None]*len(result_obj.result['topn']) 
-	for i in range(len(topn)):
-		rec = result_obj.result['topn'][i]
+	n = len(result_obj.result['topn']['similar'])
+	topn = {'similar': [None]*n, 'opposite': [None]*n}
+	for i in range(n):
+		rec = result_obj.result['topn']['similar'][i]
 		sig_id = rec['sig_ids']
 		rec['pert_id'] = graph_df.ix[sig_id]['pert_id']
 		rec['perturbation'] = graph_df.ix[sig_id]['perturbation']
-		topn[i] = rec
+		topn['similar'][i] = rec
+		
+		rec = result_obj.result['topn']['opposite'][i]
+		sig_id = rec['sig_ids']
+		rec['pert_id'] = graph_df.ix[sig_id]['pert_id']
+		rec['perturbation'] = graph_df.ix[sig_id]['perturbation']
+		topn['opposite'][i] = rec
 
 	return render_template('result-modal.html', 
 		topn=topn,

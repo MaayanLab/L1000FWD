@@ -408,13 +408,7 @@ var ResultModalBtn = Backbone.View.extend({
 		this.button.click(function(e){
 			e.preventDefault();
 			$('#result-modal').modal('show')
-			$(".modal-body").load(modal_url, function(){
-				// fill the share link input
-				$("#share-link input").val(window.location.href);
-				$(".modal-body table").dataTable({
-					"order": [], // no sorting 
-				});
-			});
+			$(".modal-body").load(modal_url);
 		});
 		$(this.container).append(this.button);
 	},

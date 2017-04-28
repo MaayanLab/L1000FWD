@@ -97,7 +97,10 @@ class UserInput(object):
 		response = requests.post(RURL, data=json.dumps(payload),headers=self.headers)
 		result = pd.DataFrame(response.json())
 		# Get the top N as list of records:
-		topn = result.iloc[:50].to_dict(orient='records')
+		topn = {
+			'similar': result.iloc[:50].to_dict(orient='records'),
+			'opposite': result.iloc[-50:][::-1].to_dict(orient='records'),
+			}
 		# Sort scores by sig_ids to ensure consistency with the graph
 		result.sort_values(by='sig_ids', inplace=True, ascending=True)
 		self.result = {
