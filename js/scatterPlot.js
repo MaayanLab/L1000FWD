@@ -293,7 +293,7 @@ var Scatter3dView = Backbone.View.extend({
 			this.camera = new THREE.PerspectiveCamera( 70, this.aspectRatio, 0.01, 1000000 );
 			this.camera.position.z = this.pointSize * 120;
 		} else { // 2d
-			ORTHO_CAMERA_FRUSTUM_HALF_EXTENT = 10;
+			ORTHO_CAMERA_FRUSTUM_HALF_EXTENT = 10.5;
 			var left = -ORTHO_CAMERA_FRUSTUM_HALF_EXTENT;
 			var right = ORTHO_CAMERA_FRUSTUM_HALF_EXTENT;
 			var bottom = -ORTHO_CAMERA_FRUSTUM_HALF_EXTENT;
