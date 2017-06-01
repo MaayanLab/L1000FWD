@@ -6,13 +6,27 @@ np.random.seed(10)
 import requests
 import pandas as pd
 
+import re
+from werkzeug.routing import Rule, RequestRedirect
+
+class CIRule(Rule):
+	def compile(self):
+		Rule.compile(self)
+		self._regex = re.compile(self._regex.pattern, 
+			re.UNICODE | re.IGNORECASE)
+
+
 from flask import Flask, request, redirect, render_template, \
 	jsonify, send_from_directory, abort, Response
+
+class CIFlask(Flask):
+    url_rule_class = CIRule
+
 
 from orm import *
 
 ENTER_POINT = os.environ['ENTER_POINT']
-app = Flask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
+app = CIFlask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
 app.debug = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 
