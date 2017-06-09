@@ -5,14 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Zichen Wang (zichen.wang@mssm.edu)">    
-    <title>DMOA Signature Visualization</title>
+    <title>L1000 Fireworks Display</title>
+    <link rel="icon" href="images/favicon.png" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="lib/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="lib/selectize.bootstrap3.css">
     <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
   </head>
   <body>
-    <canvas id="text-label"></canvas>
+    {% include 'partial/header.html' %}
+    <div id="body" class="container-full">
+      <canvas id="text-label"></canvas>
+    </div>
+    {% include 'partial/footer.html' %}
 
     <script src="lib/jquery.min.js"></script>
     <script src="lib/underscore-min.js"></script>

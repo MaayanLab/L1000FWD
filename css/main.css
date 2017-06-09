@@ -1,6 +1,21 @@
 html { height: 100% }
-body { height: 100%; margin: 0; padding: 0; position: relative; }
+body { 
+	height: 100%; 
+	margin: 0; 
+	padding: 0; 
+	position: relative; 
+	font-family: arial, sans-serif;
+	font-size: 13px;
+}
 canvas { width: 100%; height: 100% }
+
+#body { 
+	height: 100%; 
+	margin: 0; 
+	padding: 0; 
+	position: relative; 
+}
+
 
 #controls{
 	overflow-y: scroll;
@@ -33,4 +48,106 @@ canvas { width: 100%; height: 100% }
 
 text.legendTitle{
 	font-size: 24px;
+}
+
+#footer {
+  position: absolute;
+  left: 0;
+  top: 120%;
+  bottom: 0;
+  height: 210px;
+  width: 100%;
+}
+#header {
+  background-color: #0089A7;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  color: white;
+  padding: 10px 0;
+  /* Make logout form look like normal nav button */
+}
+#header a {
+  border: none;
+  color: white;
+  font-family: 'Roboto', arial, sans-serif;
+  font-weight: 200;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+#header a:hover {
+  cursor: pointer;
+  color: #f9f9f9;
+}
+#header .nav.navbar-nav.navbar-right a {
+  font-size: 13px;
+}
+#header .nav.navbar-nav.navbar-right a:hover,
+#header .nav.navbar-nav.navbar-right a:focus {
+  opacity: .8;
+  background-color: #0089A7;
+}
+#header .nav.navbar-nav.navbar-right a.highlight {
+  color: #90caf9;
+}
+#header ul.nav {
+  position: relative;
+  top: 4px;
+}
+#header ul.nav li a {
+  line-height: inherit;
+  padding-top: 10px;
+  padding-bottom: 0;
+}
+#header ul.nav li a:hover {
+  transition: background-color 0.25s ease-in-out;
+  -moz-transition: background-color 0.25s ease-in-out;
+  -webkit-transition: background-color 0.25s ease-in-out;
+}
+#header img {
+  width: 23px;
+  vertical-align: text-bottom;
+}
+#header h1 {
+  display: inline;
+  margin-left: 10px;
+}
+#header h1 a {
+  font-size: 30px;
+}
+#header form {
+  padding-top: 8px;
+}
+#header form button {
+  border: none;
+  background-color: transparent;
+  font-family: 'Roboto', arial, sans-serif;
+  font-weight: 200;
+  text-transform: uppercase;
+}
+#header form button:hover {
+  opacity: .8;
+}
+#footer {
+  background-color: #0089A7;
+  border-top: 10px solid #00708F;
+}
+#footer a,
+#footer li,
+#footer p {
+  color: white;
+  font-family: 'Roboto', arial, sans-serif;
+  font-size: 14px;
+  font-weight: 100;
+}
+#footer h3 {
+  color: white;
+}
+#footer a {
+  color: #90caf9;
+  text-decoration: none;
+}
+#footer a:hover {
+  text-decoration: underline;
+}
+#footer .container {
+  margin-top: 15px;
 }

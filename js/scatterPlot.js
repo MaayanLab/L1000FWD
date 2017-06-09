@@ -369,25 +369,25 @@ var Scatter3dView = Backbone.View.extend({
 	addMouseEvents: function(){
 		var self = this;
 		// mousemove event
-		$(document).on( 'mousemove', function(event){
+		$(this.container).on( 'mousemove', function(event){
 			// update mouse position
-			self.mouse.x = ( event.clientX / self.WIDTH ) * 2 - 1;
-			self.mouse.y = - ( event.clientY / self.HEIGHT ) * 2 + 1;
+			self.mouse.x = ( event.offsetX / self.WIDTH ) * 2 - 1;
+			self.mouse.y = - ( event.offsetY / self.HEIGHT ) * 2 + 1;
 
 			self.renderScatter();
 
 		});
 
 		// mouseclick event
-		$(document).click(function(event){
+		$(this.container).click(function(event){
 			self.mouseClick();
 		});
 
 	},
 
 	removeMouseEvents: function(){
-		$(document).off('mousemove');
-		$(document).off('click');
+		$(this.container).off('mousemove');
+		$(this.container).off('click');
 	},
 
 	clearScene: function(){
