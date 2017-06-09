@@ -104,7 +104,7 @@ text.legendTitle{
 }
 #header img {
   width: 23px;
-  vertical-align: text-bottom;
+  vertical-align: middle;
 }
 #header h1 {
   display: inline;
@@ -126,6 +126,11 @@ text.legendTitle{
 #header form button:hover {
   opacity: .8;
 }
+#header .navbar-brand {
+	text-transform: none;
+	font-size: x-large;
+}
+
 #footer {
   background-color: #0089A7;
   border-top: 10px solid #00708F;
