@@ -491,7 +491,7 @@ var Overlay = Backbone.View.extend({
 			.style('position', 'absolute')
 			.style('right', '0px')
 			.style('top', '0px')
-			.style('background-color', 'rgba(50, 50, 50, 0.5)')
+			.style('background-color', 'rgba(50, 50, 50, 0.2)')
 			.style('cursor', 'wait');
 
 		this.msgDiv = this.el.append('div')
