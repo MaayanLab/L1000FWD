@@ -40,7 +40,7 @@ var Legend = Backbone.View.extend({
 		this.g.append('g')
 			.attr('id', 'legendColor')
 			.attr("class", "legendPanel")
-			.attr("transform", "translate(100, 0)");
+			.attr("transform", "translate(140, 0)");
 
 	},
 
@@ -52,6 +52,9 @@ var Legend = Backbone.View.extend({
 			.scale(scatterPlot.shapeScale)
 			.orient("vertical")
 			.title(scatterPlot.shapeKey);
+		if (scatterPlot.shapeLabels){
+			legendShape.labels(scatterPlot.shapeLabels)
+		}
 		this.g.select("#legendShape")
 			.call(legendShape);
 
@@ -115,7 +118,8 @@ var Controler = Backbone.View.extend({
 		// filter out metas used as index
 		var metas = _.filter(model.metas, function(meta){ return meta.nUnique < model.n; });
 		var self = this;
-
+		// filter out metas not suitable for shapes
+		var metasShape = _.filter(metas, function(meta){ return meta.nUnique < 6 || meta.type !=='string'});
 
 		// Shapes: 
 		var shapeControl = this.el.append('div')
@@ -134,7 +138,7 @@ var Controler = Backbone.View.extend({
 
 		var shapeOptions = shapeSelect
 			.selectAll('option')
-			.data(_.pluck(metas, 'name')).enter()
+			.data(_.pluck(metasShape, 'name')).enter()
 			.append('option')
 			.text(function(d){return d;})
 			.attr('value', function(d){return d;});
@@ -277,7 +281,7 @@ var SigSimSearch = Backbone.View.extend({
 			$('[name="upGenes"]').val(self.exampleGenes.up.join('\n'));
 		});
 
-		var submitBtn = $('<button class="btn btn pull-right">Search</button>').click(function(e){
+		var submitBtn = $('<button class="btn btn pull-right">Submit</button>').click(function(e){
 			self.doRequest();
 		})
 
@@ -351,7 +355,7 @@ var SigSimSearchForm = Backbone.View.extend({
 			self.populateGenes(self.exampleGenes.up, self.exampleGenes.down);
 		});
 
-		var clearBtn = $('<button class="btn btn-xs">Clear</button>').click(function(e){
+		var clearBtn = $('<button id="clear-btn" class="btn btn-xs">Clear</button>').click(function(e){
 			e.preventDefault();
 			self.populateGenes([], []);
 		});
@@ -464,7 +468,7 @@ var Overlay = Backbone.View.extend({
 		_.defaults(this, options)
 		
 		this.render();
-		this.changeMessage('Retrieving data from the server...');
+		this.changeMessage('Retrieving data from the server... please wait');
 
 		// finished retrieving data
 		var self = this;

@@ -408,13 +408,38 @@ var Scatter3dView = Backbone.View.extend({
 		// get grouped datasets, each group is going to be a cloud
 		var scatterDataSubsets = this.model.groupBy(metaKey);
 		var textures = this.textures;
+		var symbols = _.map(d3.svg.symbolTypes, function(t){
+			return d3.svg.symbol().type(t)();});
 
 		// make shapeScale for d3.legend
-		this.shapeScale = d3.scale.ordinal()
-			.domain(Object.keys(scatterDataSubsets))
-			.range(_.map(d3.svg.symbolTypes, function(t){
-				return d3.svg.symbol().type(t)();
-			}));
+		var meta = _.findWhere(this.model.metas, {name: metaKey});
+		if (meta.type === 'number' && meta.nUnique > 6) {
+			// Make a threshold scale
+			var uniqueValues = Object.keys(scatterDataSubsets).map(parseFloat);
+			var extent = d3.extent(uniqueValues);
+			var min = extent[0];
+			var max = extent[1];
+			var interval = (max - min)/6;
+			var domain = _.range(1, 6).map(function(i){ return i*interval+min;});
+			var labels = [min.toFixed(2)+ ' to '+domain[0].toFixed(2)];
+			for (var i = 0; i < 5; i++) {
+				if (i === 4){
+					var label = domain[i].toFixed(2) + ' to ' + max.toFixed(2);
+				} else{
+					var label = domain[i].toFixed(2) + ' to ' + domain[i+1].toFixed(2);
+				}
+				labels.push(label);
+			};
+			this.shapeScale = d3.scale.threshold()
+				.domain(domain)
+				.range(symbols);
+			this.shapeLabels = labels;
+		} else{
+			this.shapeScale = d3.scale.ordinal()
+				.domain(Object.keys(scatterDataSubsets))
+				.range(symbols);			
+		};
+
 		
 		// symbolTypeScale is used for retrieving a texture instance from textures collection
 		var symbolTypeScale = d3.scale.ordinal()

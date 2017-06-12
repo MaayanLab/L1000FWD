@@ -34,8 +34,8 @@ var sdv = new Scatter3dView({
 	// pointSize: 0.1, 
 	pointSize: 12,
 	is3d: false,
-	colorKey: 'cell',
-	shapeKey: 'time',
+	colorKey: 'Cell',
+	shapeKey: 'Time',
 	labelKey: ['sig_id', 'perturbation'],
 })
 

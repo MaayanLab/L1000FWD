@@ -43,6 +43,13 @@ def load_globals():
 
 	cyjs_filename = os.environ['CYJS']
 	graph_df = load_graph(cyjs_filename, meta_df)
+	graph_df.rename(
+		index=str, 
+		columns={
+			'pvalue': 'p-value', 'cell': 'Cell', 'time': 'Time', 
+			'drug_class': 'Drug class', 'dose': 'Dose',
+			'perturbation': 'Perturbation'},
+		inplace=True)
 	return
 
 
@@ -177,13 +184,13 @@ def result_modal(result_id):
 		rec = result_obj.result['topn']['similar'][i]
 		sig_id = rec['sig_ids']
 		rec['pert_id'] = graph_df.ix[sig_id]['pert_id']
-		rec['perturbation'] = graph_df.ix[sig_id]['perturbation']
+		rec['Perturbation'] = graph_df.ix[sig_id]['Perturbation']
 		topn['similar'][i] = rec
 		
 		rec = result_obj.result['topn']['opposite'][i]
 		sig_id = rec['sig_ids']
 		rec['pert_id'] = graph_df.ix[sig_id]['pert_id']
-		rec['perturbation'] = graph_df.ix[sig_id]['perturbation']
+		rec['Perturbation'] = graph_df.ix[sig_id]['Perturbation']
 		topn['opposite'][i] = rec
 
 	return render_template('result-modal.html', 
@@ -199,7 +206,7 @@ def result_download(result_id):
 	# Prepare a DataFrame for the result
 	scores = result_obj.result['scores']
 	result_df = pd.DataFrame({'similarity_scores': scores, 
-		'drug': graph_df['perturbation'],
+		'drug': graph_df['Perturbation'],
 		'pert_id': graph_df['pert_id'],
 		}, index=graph_df.index)\
 		.sort_values('similarity_scores', ascending=False)
