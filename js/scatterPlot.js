@@ -624,6 +624,14 @@ var Scatter3dView = Backbone.View.extend({
 		var uniqueCats = new Set(metas);
 		var nUniqueCats = uniqueCats.size;
 		uniqueCats = Array.from(uniqueCats);
+		console.log(uniqueCats)
+		// Make unannotated to be gray 
+		if (uniqueCats.indexOf('unannotated') !== -1) {
+			var idx = uniqueCats.indexOf('unannotated');
+			var elem = uniqueCats[15];
+			uniqueCats[15] = 'unannotated';
+			uniqueCats[idx] = elem;
+		};
 
 		// make colorScale
 		if (nUniqueCats < 11){
