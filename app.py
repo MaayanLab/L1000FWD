@@ -43,6 +43,7 @@ def load_globals():
 
 	cyjs_filename = os.environ['CYJS']
 	graph_df = load_graph(cyjs_filename, meta_df)
+	graph_df['Batch'] = graph_df.index.map(lambda x:x.split('_')[0])
 	graph_df.rename(
 		index=str, 
 		columns={

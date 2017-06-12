@@ -511,7 +511,7 @@ var Scatter3dView = Backbone.View.extend({
 			// add text canvas
 			var textCanvas = this.makeTextCanvas( geometry.attributes.label.array[idx], 
 			    pointPosition.x, pointPosition.y, pointPosition.z,
-			    { fontsize: 24, fontface: "Ariel", textColor: {r:0, g:0, b:255, a:1.0} }); 
+			    { fontsize: 24, fontface: "arial, sans-serif", textColor: {r:0, g:0, b:0, a:0.8} }); 
 
 			textCanvas.id = "text-label"
 			this.container.appendChild(textCanvas);
@@ -553,11 +553,11 @@ var Scatter3dView = Backbone.View.extend({
 
 		if ( parameters === undefined ) parameters = {}; 
 		var fontface = parameters.hasOwnProperty("fontface") ?  
-			parameters["fontface"] : "Arial";      
+			parameters["fontface"] : "arial, sans-serif";      
 		var fontsize = parameters.hasOwnProperty("fontsize") ?  
 			parameters["fontsize"] : 18; 
 		var textColor = parameters.hasOwnProperty("textColor") ? 
-			parameters["textColor"] : { r:0, g:0, b:255, a:1.0 }; 
+			parameters["textColor"] : { r:0, g:0, b:255, a:0.8 }; 
 		var lineHeight = parameters.hasOwnProperty("lineHeight") ?
 			parameters["lineHeight"] : 20;
 
@@ -624,7 +624,6 @@ var Scatter3dView = Backbone.View.extend({
 		var uniqueCats = new Set(metas);
 		var nUniqueCats = uniqueCats.size;
 		uniqueCats = Array.from(uniqueCats);
-		console.log(uniqueCats)
 		// Make unannotated to be gray 
 		if (uniqueCats.indexOf('unannotated') !== -1) {
 			var idx = uniqueCats.indexOf('unannotated');
