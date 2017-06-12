@@ -195,14 +195,14 @@ var SearchSelectize = Backbone.View.extend({
 		var scatterPlot = this.scatterPlot;
 		// scatterPlot highlightQuery once selectize is searched
 		scatterPlot.listenTo(this, 'searched', function(query){
-			scatterPlot.highlightQuery(query, 'perturbation');
+			scatterPlot.highlightQuery(query, 'Perturbation');
 		});
 
 	},
 
 	render: function(){
 		// get autocomplete list
-		var autocompleteList = _.unique(this.model.getAttr('perturbation'));
+		var autocompleteList = _.unique(this.model.getAttr('Perturbation'));
 		var options = [];
 		for (var i = 0; i < autocompleteList.length; i++) {
 			var name = autocompleteList[i];
@@ -212,7 +212,7 @@ var SearchSelectize = Backbone.View.extend({
 		// set up the DOMs
 		// wrapper for SearchSelectize
 		var searchControl = $('<div class="form-group" id="search-control"></div>')
-		searchControl.append($('<label class="control-label">Search for drugs:</label>'))
+		searchControl.append($('<label class="control-label">Search compounds:</label>'))
 
 		this.$el = $('<select id="search" class="form-control"></select>');
 		searchControl.append(this.$el)
@@ -360,7 +360,7 @@ var SigSimSearchForm = Backbone.View.extend({
 			self.populateGenes([], []);
 		});
 
-		var submitBtn = $('<input type="submit" class="btn btn-xs pull-right" value="Search"></input>');
+		var submitBtn = $('<input type="submit" class="btn btn-xs pull-right" value="Submit"></input>');
 
 		// append everything to form
 		form.append(upGeneDiv)

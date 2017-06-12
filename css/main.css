@@ -45,11 +45,20 @@ canvas { width: 100%; height: 100% }
   margin-left: 5px;
 }
 
+input.pull-right {
+  color: beige;
+  background-color: black;
+}
+input.pull-right:hover{
+  color: beige;
+  background-color: #5bc0de;
+}
+
 #modal-btn{
 	z-index: 10;
 	position: absolute;
-	right: 205px;
-	top: 0px;
+	right: 225px;
+	top: 50px;
 }
 
 text.legendTitle{
