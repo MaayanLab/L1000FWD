@@ -413,12 +413,12 @@ var Scatter3dView = Backbone.View.extend({
 
 		// make shapeScale for d3.legend
 		var meta = _.findWhere(this.model.metas, {name: metaKey});
+
 		if (meta.type === 'number' && meta.nUnique > 6) {
 			// Make a threshold scale
-			var uniqueValues = Object.keys(scatterDataSubsets).map(parseFloat);
-			var extent = d3.extent(uniqueValues);
-			var min = extent[0];
-			var max = extent[1];
+			var extent = d3.extent(Object.keys(scatterDataSubsets));
+			var min = parseFloat(extent[0]);
+			var max = parseFloat(extent[1]);
 			var interval = (max - min)/6;
 			var domain = _.range(1, 6).map(function(i){ return i*interval+min;});
 			var labels = [min.toFixed(2)+ ' to '+domain[0].toFixed(2)];
@@ -435,6 +435,7 @@ var Scatter3dView = Backbone.View.extend({
 				.range(symbols);
 			this.shapeLabels = labels;
 		} else{
+			this.shapeLabels = undefined;
 			this.shapeScale = d3.scale.ordinal()
 				.domain(Object.keys(scatterDataSubsets))
 				.range(symbols);			
