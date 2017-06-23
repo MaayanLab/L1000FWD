@@ -184,14 +184,14 @@ def result_modal(result_id):
 	for i in range(n):
 		rec = result_obj.result['topn']['similar'][i]
 		sig_id = rec['sig_ids']
-		rec['pert_id'] = graph_df.ix[sig_id]['pert_id']
-		rec['Perturbation'] = graph_df.ix[sig_id]['Perturbation']
+		rec['pert_id'] = sig_id.split(':')[1]
+		rec['perturbation'] = graph_df.ix[sig_id]['Perturbation']
 		topn['similar'][i] = rec
 		
 		rec = result_obj.result['topn']['opposite'][i]
 		sig_id = rec['sig_ids']
-		rec['pert_id'] = graph_df.ix[sig_id]['pert_id']
-		rec['Perturbation'] = graph_df.ix[sig_id]['Perturbation']
+		rec['pert_id'] = sig_id.split(':')[1]
+		rec['perturbation'] = graph_df.ix[sig_id]['Perturbation']
 		topn['opposite'][i] = rec
 
 	return render_template('result-modal.html', 
