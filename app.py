@@ -208,7 +208,7 @@ def result_download(result_id):
 	scores = result_obj.result['scores']
 	result_df = pd.DataFrame({'similarity_scores': scores, 
 		'drug': graph_df['Perturbation'],
-		'pert_id': graph_df['pert_id'],
+		'pert_id': graph_df.index.map(lambda x:x.split(':')[1]),
 		}, index=graph_df.index)\
 		.sort_values('similarity_scores', ascending=False)
 	# Write into memory
