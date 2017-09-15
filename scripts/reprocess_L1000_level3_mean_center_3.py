@@ -3,6 +3,11 @@ To compute CD signatures for LINCS L1000 level3 data using
 all profiles in the same batch as controls
 and add results to mongodb.
 ''' 
+N_JOBS = 2
+HELEN = False
+reverse = False
+
+
 import os, sys, json
 import h5py
 from pymongo import MongoClient
@@ -24,15 +29,14 @@ def file2list(fn, idx, sep='\t', header=False):
 import numpy as np
 import pandas as pd
 
-# GCTX_FILE = '../../q2norm_n1328098x22268.gctx'
-# PROBES = json.load(open('../data/rid.json', 'rb'))
-# PROBES_LM1000 = file2list('../data/rid_lm1000.txt', 0)
-GCTX_FILE = '/Users/zichen/Documents/Zichen_Projects/L1000_DR/data/q2norm_n1328098x22268.gctx'
-PROBES = json.load(open('/Users/zichen/Documents/bitbucket/lincs_l1000_limma/rid.json', 'rb'))
-PROBES_LM1000 = file2list('/Users/zichen/Documents/bitbucket/lincs_l1000_limma/rid_lm1000.txt', 0)
+if HELEN:
+	GCTX_FILE = '../../q2norm_n1328098x22268.gctx'
+	PROBES_LM1000 = file2list('../data/rid_lm1000.txt', 0)
+else:
+	GCTX_FILE = '/Users/zichen/Documents/Zichen_Projects/L1000_DR/data/q2norm_n1328098x22268.gctx'
+	PROBES_LM1000 = file2list('/Users/zichen/Documents/bitbucket/lincs_l1000_limma/rid_lm1000.txt', 0)
 
-print len(PROBES), len(PROBES_LM1000)
-print PROBES[:5]
+
 print PROBES_LM1000[:5]
 
 gctx = h5py.File(GCTX_FILE, 'r')
@@ -301,8 +305,10 @@ sig_meta_df_left = sig_meta_df.ix[sig_ids_left]
 all_batches = sig_meta_df_left['batch'].unique()
 n_batches = len(all_batches)
 print sig_meta_df_left.shape
+if reverse:
+	all_batches = all_batches[::-1]
 
-for c, batch in enumerate(all_batches[::-1]):
+for c, batch in enumerate(all_batches):
     sig_meta_df_sub = sig_meta_df_left.query('batch == "%s"' % batch)
     
     # all the treatment samples in this batch
@@ -319,7 +325,7 @@ for c, batch in enumerate(all_batches[::-1]):
     mat_centered = mean_center(mat, distil_ids_sub_df['det_plate'])
     
 
-    docs = Parallel(n_jobs=2, backend='multiprocessing', verbose=10)(\
+    docs = Parallel(n_jobs=N_JOBS, backend='multiprocessing', verbose=10)(\
                                   delayed(compute_sig3_wrapper)(sig_id, row, distil_ids_sub_df, mat, mat_centered, PROBES_LM1000)\
                                   for sig_id, row in sig_meta_df_sub.iterrows())
     docs = filter(None, docs)
