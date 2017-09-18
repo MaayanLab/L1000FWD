@@ -302,7 +302,7 @@ def compute_signatures32(sig_id, row, distil_ids_sub_df, mat, PROBES_LM1000):
     batches = distil_ids_sub_df['det_plate']
 
     # Apply CD on the original mat 
-    cd = chdir_avg(mat, sample_class, batches, PROBES_LM1000)
+    cd = chdir_avg(mat.T, sample_class, batches, PROBES_LM1000)
     if cd is not None:
         doc = {
             'sig_id': sig_id,
