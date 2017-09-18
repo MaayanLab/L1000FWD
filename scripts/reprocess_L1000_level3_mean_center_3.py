@@ -3,7 +3,7 @@ To compute CD signatures for LINCS L1000 level3 data using
 all profiles in the same batch as controls
 and add results to mongodb.
 ''' 
-N_JOBS = 2
+N_JOBS = 7
 HELEN = False
 reverse = False
 
@@ -251,7 +251,7 @@ def chdir_avg2(mat1, mat2, sample_class, batches, PROBES_LM1000):
         return None
     else:
 #         return np.array(cd1_all).mean(axis=0), np.array(cd2_all).mean(axis=0)
-        return cd1_all[mask_batch_with_sigs].mean(axis=0), cd1_all[mask_batch_with_sigs].mean(axis=0)
+        return cd1_all[mask_batch_with_sigs].mean(axis=0), cd2_all[mask_batch_with_sigs].mean(axis=0)
     
 
 def compute_signatures3(sig_id, row, distil_ids_sub_df, mat, mat_centered, PROBES_LM1000):
@@ -291,10 +291,41 @@ def compute_sig3_wrapper(sig_id, row, distil_ids_sub_df,mat, mat_centered, PROBE
         pass
     return doc
     
+def compute_signatures32(sig_id, row, distil_ids_sub_df, mat, PROBES_LM1000):
+    distil_ids_pert = row['distil_id']
+    # Make the sample_class
+#     distil_ids_sub = distil_ids_sub_df.index.tolist()
+    
+    mask_pert = np.in1d(distil_ids_sub_df.index, distil_ids_pert)
+    sample_class = mask_pert.astype(int) + 1
+    
+    batches = distil_ids_sub_df['det_plate']
+
+    # Apply CD on the original mat 
+    cd = chdir_avg(mat, sample_class, batches, PROBES_LM1000)
+    if cd is not None:
+        doc = {
+            'sig_id': sig_id,
+            'CDavg_nocenter_LM_det': cd.tolist(),
+        }
+    else:
+        doc = None
+    return doc
+
+def compute_sig32_wrapper(sig_id, row, distil_ids_sub_df, mat, PROBES_LM1000):
+    try:
+        doc = compute_signatures32(sig_id, row, distil_ids_sub_df, mat, PROBES_LM1000)
+    except ValueError as e:
+        doc = None
+        print e
+        pass
+    return doc    
+
 
 # Get all inserted document sig_ids
-key = 'CDavg_nocenter_LM_det'
-inserted_sig_ids = set(coll.find({key: {'$exists': True}}).distinct('sig_id'))
+key = 'CDavg_center_LM_det'
+# inserted_sig_ids = set(coll.find({key: {'$exists': True}}).distinct('sig_id'))
+inserted_sig_ids = set([])
 print '#' * 20
 print 'Number of sig_ids inserted: %d' % len(inserted_sig_ids)
 
@@ -322,11 +353,14 @@ for c, batch in enumerate(all_batches):
     mat = slice_matrix(gctx, distil_ids_sub, PROBES_LM1000)
     print '\t', mat.shape
     # Mean center the probes by det_plate
-    mat_centered = mean_center(mat, distil_ids_sub_df['det_plate'])
+    # mat_centered = mean_center(mat, distil_ids_sub_df['det_plate'])
     
 
+    # docs = Parallel(n_jobs=N_JOBS, backend='multiprocessing', verbose=10)(\
+    #                               delayed(compute_sig3_wrapper)(sig_id, row, distil_ids_sub_df, mat, mat_centered, PROBES_LM1000)\
+    #                               for sig_id, row in sig_meta_df_sub.iterrows())
     docs = Parallel(n_jobs=N_JOBS, backend='multiprocessing', verbose=10)(\
-                                  delayed(compute_sig3_wrapper)(sig_id, row, distil_ids_sub_df, mat, mat_centered, PROBES_LM1000)\
+                                  delayed(compute_sig32_wrapper)(sig_id, row, distil_ids_sub_df, mat, PROBES_LM1000)\
                                   for sig_id, row in sig_meta_df_sub.iterrows())
     docs = filter(None, docs)
 
@@ -334,7 +368,7 @@ for c, batch in enumerate(all_batches):
     for doc in docs:
         bulk.find({'sig_id': doc['sig_id']}).\
             update_one({'$set': {
-                'CDavg_center_LM_det': doc['CDavg_center_LM_det'],
+                # 'CDavg_center_LM_det': doc['CDavg_center_LM_det'],
                 'CDavg_nocenter_LM_det': doc['CDavg_nocenter_LM_det'],
             }})
     bulk.execute()    
