@@ -10,8 +10,9 @@ np.random.seed(10)
 
 from joblib import delayed, Parallel
 
-KEY = 'CD_center_LM_det'
-N_JOBS = 8
+# KEY = 'avg_center_LM_det'
+KEY = 'CDavg_nocenter_LM_det'
+N_JOBS = 6
 
 def _gesa_enrichment_score(ranks_s):
     '''Calculate enrichment score from a rank ordered boolean array.
@@ -213,6 +214,6 @@ def compute_pscores(meta_df, coll, key, n_jobs=1):
 
 res_scores5 = compute_pscores(meta_df_fwd_sample, coll_fwd, KEY, n_jobs=N_JOBS)
 print res_scores5.shape
-res_scores5.to_csv('data/signature_connectivities_sample5000_L1000FWD.%s.csv' % KEY)
+res_scores5.to_csv('../notebooks/data/signature_connectivities_sample5000_L1000FWD.%s.csv' % KEY)
 
 
