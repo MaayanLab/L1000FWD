@@ -325,7 +325,7 @@ for c, batch in enumerate(all_batches):
     
 
     docs = Parallel(n_jobs=N_JOBS, backend='multiprocessing', verbose=10)(\
-                                  delayed(compute_signature_mean_cosine_dist)(sig_id, row, distil_ids_sub_df, mat_centered, plates, mean_cosine_dist_nulls)\
+                                  delayed(compute_signature_mean_cosine_dist)(sig_id, row, distil_ids_sub, mat_centered, plates, mean_cosine_dist_nulls)\
                                   for sig_id, row in sig_meta_df_sub.iterrows())
     docs = filter(None, docs)
 
