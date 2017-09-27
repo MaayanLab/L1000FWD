@@ -38,6 +38,8 @@ def load_globals():
 	# meta_df = pd.read_csv('data/metadata-sig-only.tsv', sep='\t')
 	meta_df = pd.read_csv('data/metadata-full-anno-with-EMR.tsv', sep='\t')
 	meta_df = meta_df.set_index('sig_id')
+	meta_df.fillna('unknown', inplace=True)
+	meta_df.replace('unannotated', 'unknown', inplace=True)
 	print meta_df.shape
 	N_SIGS = meta_df.shape[0]
 

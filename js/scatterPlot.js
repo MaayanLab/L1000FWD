@@ -625,11 +625,15 @@ var Scatter3dView = Backbone.View.extend({
 		var uniqueCats = new Set(metas);
 		var nUniqueCats = uniqueCats.size;
 		uniqueCats = Array.from(uniqueCats);
-		// Make unannotated to be gray 
-		if (uniqueCats.indexOf('unannotated') !== -1) {
-			var idx = uniqueCats.indexOf('unannotated');
-			var elem = uniqueCats[15];
-			uniqueCats[15] = 'unannotated';
+		// Make unknown to be gray 
+		if (uniqueCats.indexOf('unknown') !== -1) {
+			var idx = uniqueCats.indexOf('unknown');
+			greyIdx = 7;
+			if (uniqueCats.length == 20){
+				var greyIdx = 15;
+			}
+			var elem = uniqueCats[greyIdx];
+			uniqueCats[greyIdx] = 'unknown';
 			uniqueCats[idx] = elem;
 		};
 
