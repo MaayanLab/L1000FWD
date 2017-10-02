@@ -35,10 +35,11 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 def load_globals():
 	global meta_df, N_SIGS, graph_df
 	meta_df = pd.read_csv('data/metadata-full.tsv', sep='\t')
-	meta_df = meta_df.set_index('sig_id')
+	meta_df = meta_df.set_index('sig_id').drop('perturbation', axis=1)
 
 	drug_meta_df = pd.read_sql_query('''
-		SELECT drug_repurposedb.pert_id, most_frequent_dx_rx.most_frequent_rx, most_frequent_dx_rx.most_frequent_dx, 
+		SELECT drug_repurposedb.pert_id, drug_repurposedb.pert_iname AS perturbation,
+		most_frequent_dx_rx.most_frequent_rx, most_frequent_dx_rx.most_frequent_dx, 
 		drug_repurposedb.Phase, drug_repurposedb.MOA
 		FROM most_frequent_dx_rx
 		RIGHT JOIN drug_repurposedb

@@ -36,7 +36,7 @@ var sdv = new Scatter3dView({
 	is3d: false,
 	colorKey: 'Cell',
 	shapeKey: 'Time',
-	labelKey: ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time'],
+	labelKey: ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
 })
 
 var legend = new Legend({scatterPlot: sdv, h: window.innerHeight, container: container})
