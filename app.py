@@ -34,12 +34,26 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 @app.before_first_request
 def load_globals():
 	global meta_df, N_SIGS, graph_df
-	# meta_df = pd.read_csv('data/metadata.tsv', sep='\t')
-	# meta_df = pd.read_csv('data/metadata-sig-only.tsv', sep='\t')
-	meta_df = pd.read_csv('data/metadata-full-anno-with-EMR.tsv', sep='\t')
+	meta_df = pd.read_csv('data/metadata-full.tsv', sep='\t')
 	meta_df = meta_df.set_index('sig_id')
+
+	drug_meta_df = pd.read_sql_query('''
+		SELECT drug_repurposedb.pert_id, most_frequent_dx_rx.most_frequent_rx, most_frequent_dx_rx.most_frequent_dx, 
+		drug_repurposedb.Phase, drug_repurposedb.MOA
+		FROM most_frequent_dx_rx
+		RIGHT JOIN drug_repurposedb
+		ON drug_repurposedb.pert_id=most_frequent_dx_rx.pert_id
+		''', engine, 
+		index_col='pert_id')
+	print drug_meta_df.shape
+	
+	meta_df = meta_df.merge(drug_meta_df, 
+		left_on='pert_id', 
+		right_index=True,
+		how='left'
+		)
 	meta_df.fillna('unknown', inplace=True)
-	meta_df.replace('unannotated', 'unknown', inplace=True)
+	meta_df.replace(['unannotated', '-666'], 'unknown', inplace=True)
 	print meta_df.shape
 	N_SIGS = meta_df.shape[0]
 

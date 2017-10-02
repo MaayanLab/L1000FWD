@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
+from sqlalchemy import create_engine
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 
@@ -12,7 +13,8 @@ MONGOURI = os.environ['MONGOURI']
 client = MongoClient(MONGOURI)
 DB = client['DMOA']
 COLL_RES = DB['userResults']
-
+MYSQLURI = os.environ['MYSQLURI']
+engine = create_engine(MYSQLURI)
 
 def encode_rare_categories(df, colname, max=19):
 	'''
