@@ -195,19 +195,19 @@ var SearchSelectize = Backbone.View.extend({
 		var scatterPlot = this.scatterPlot;
 		// scatterPlot highlightQuery once selectize is searched
 		scatterPlot.listenTo(this, 'searched', function(query){
-			scatterPlot.highlightQuery(query, 'Perturbation');
+			scatterPlot.highlightQuery(query, 'pert_id');
 		});
 
 	},
 
 	render: function(){
 		// get autocomplete list
-		var autocompleteList = _.unique(this.model.getAttr('Perturbation'));
-		var options = [];
-		for (var i = 0; i < autocompleteList.length; i++) {
-			var name = autocompleteList[i];
-			options.push({value: name, title: name});
-		};
+		// var autocompleteList = _.unique(this.model.getAttr('Perturbation'));
+		// var options = [];
+		// for (var i = 0; i < autocompleteList.length; i++) {
+		// 	var name = autocompleteList[i];
+		// 	options.push({value: name, title: name});
+		// };
 
 		// set up the DOMs
 		// wrapper for SearchSelectize
@@ -218,13 +218,46 @@ var SearchSelectize = Backbone.View.extend({
 		searchControl.append(this.$el)
 		$(this.container).append(searchControl)
 
+		var callback = function(data){
+			return data;
+		}
+
+
 		this.$el.selectize({
-			valueField: 'value',
-			labelField: 'title',
-			searchField: 'title',
-			sortField: 'text',
-			options: options,
-			create:false
+			valueField: 'pert_id',
+			labelField: 'Name',
+			searchField: 'Name',
+			sortField: 'Name',
+			options: [],
+			create:false,
+			render: {
+				option: function(item, escape){
+					return '<ul>' + 
+						'<li>' + escape(item.Name) + '</li>' +
+						'<li>pert_id:' + escape(item.pert_id) + '</li>' +
+						'</ul>';
+				}
+			},
+			// score: function(search){
+			// 	var score = this.getScoreFunction(search);
+			// 	return function(item) {
+			// 		return score(item);
+			// 	}
+			// },
+			load: function(query, callback){
+				if (!query.length) return callback();
+				$.ajax({
+					url: 'synonyms/' + encodeURIComponent(query),
+					type: 'GET',
+					dataType: 'json',
+					error: function(){
+						callback();
+					},
+					success: function(res){
+						return callback(res);
+					}
+				})
+			}
 			});
 
 		// on change, trigger('searched', query)

@@ -33,7 +33,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 
 @app.before_first_request
 def load_globals():
-	global meta_df, N_SIGS, graph_df
+	global meta_df, N_SIGS, graph_df, drug_synonyms
 	meta_df = pd.read_csv('data/metadata-full.tsv', sep='\t')
 	meta_df = meta_df.set_index('sig_id').drop('perturbation', axis=1)
 
@@ -61,6 +61,7 @@ def load_globals():
 	cyjs_filename = os.environ['CYJS']
 	graph_df = load_graph(cyjs_filename, meta_df)
 	graph_df['Batch'] = graph_df.index.map(lambda x:x.split('_')[0])
+	graph_df['pert_id'] = graph_df.index.map(lambda x:x.split(':')[1])
 	graph_df.rename(
 		index=str, 
 		columns={
@@ -68,6 +69,22 @@ def load_globals():
 			'drug_class': 'Drug class', 'dose': 'Dose',
 			'perturbation': 'Perturbation'},
 		inplace=True)
+
+	# Load synonyms for drugs
+	drug_synonyms = pd.read_sql_table('drug_synonyms', engine, columns=['pert_id', 'Name'])
+	print drug_synonyms.shape
+	# Keep only the pert_id that are in the graph
+	pert_ids_in_graph = meta_df.loc[graph_df.index]['pert_id'].unique()
+	print 'Number of unique pert_id in graph:', len(pert_ids_in_graph)
+	drug_synonyms = drug_synonyms.loc[drug_synonyms['pert_id'].isin(pert_ids_in_graph)]
+	print drug_synonyms.shape
+	# Add pert_id itself as name
+	drug_synonyms = drug_synonyms.append(
+		pd.DataFrame({'pert_id': pert_ids_in_graph, 'Name': pert_ids_in_graph})
+		)
+	drug_synonyms.drop_duplicates(inplace=True)
+	print drug_synonyms.shape
+
 	return
 
 
@@ -157,6 +174,15 @@ def post_to_sigine():
 		rid = gene_sets.save()
 		print rid
 		return redirect(ENTER_POINT + '/result/' + rid, code=302)
+
+
+@app.route(ENTER_POINT + '/synonyms/<string:query_string>', methods=['GET'])
+def search_drug_by_synonyms(query_string):
+	'''Endpoint handling synonym search for drugs in the graph.
+	'''
+	if request.method == 'GET':
+		mask = drug_synonyms['Name'].str.contains(query_string, case=False)
+		return drug_synonyms.loc[mask].to_json(orient='records') 
 
 
 @app.route(ENTER_POINT + '/result/graph/<string:result_id>', methods=['GET'])
