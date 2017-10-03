@@ -86,6 +86,7 @@ var Scatter3dCloud = Backbone.View.extend({
 		labelKey: ['sig_id'],
 		pointSize: 0.01,
 		sizeAttenuation: true, // true for 3d, false for 2d
+		opacity: 0.6, // opacity of the points
 	},
 
 	initialize: function(options){
@@ -115,17 +116,17 @@ var Scatter3dCloud = Backbone.View.extend({
 				size: this.pointSize, 
 				sizeAttenuation: this.sizeAttenuation, 
 				map: texture, 
-				alphaTest: 0.5, 
+				alphaTest: 0.2, 
 				transparent: true,
-				opacity: 0.6
+				opacity: this.opacity
 				});
 	    } else{
 			var material = new THREE.PointsMaterial({
 				vertexColors: THREE.VertexColors,
 				size: 0.1,
 				sizeAttenuation: this.sizeAttenuation, 
-				alphaTest: 0.5, 
-				opacity: 0.6,
+				alphaTest: 0.2, 
+				opacity: this.opacity,
 				transparent: true,
 			});
 	    }
@@ -163,6 +164,16 @@ var Scatter3dCloud = Backbone.View.extend({
 
 		this.geometry.addAttribute( 'color', new THREE.BufferAttribute( colors.slice(), 3 ) );
 		// this.geometry.attributes.color.needsUpdate = true;
+	},
+
+	setSingleColor: function(color){
+		var color = new THREE.Color(color);
+		var colors = new Float32Array( this.model.n * 3 );
+
+		for (var i = this.model.n; i >= 0; i--) {
+			color.toArray(colors, i*3);
+		};
+		this.geometry.addAttribute( 'color', new THREE.BufferAttribute( colors.slice(), 3 ));
 	},
 
 });
@@ -680,6 +691,30 @@ var Scatter3dView = Backbone.View.extend({
 		};
 		this.renderScatter();
 	},
+
+	highlightQuery2: function(query, metaKey){
+		// To highlight a query result by adding a new Scatter3dCloud instance
+		var scatterDataSubsets = this.model.groupBy(metaKey);
+		this.highlightCould = new Scatter3dCloud({
+			model: scatterDataSubsets[query],
+			texture: this.textures.getTexture('circle'), 
+			pointSize: this.pointSize * 5,
+			sizeAttenuation: this.is3d,
+			opacity: 0.4
+		})
+		this.highlightCould.setSingleColor('red');
+		this.highlightCould.points.name = 'highlight';
+		this.scene.add(this.highlightCould.points)
+		this.renderScatter();
+
+	},
+
+	removeHighlightedPoints: function(){
+		var scene = this.scene;
+		scene.remove(scene.getObjectByName('highlight'));
+		this.highlightCould = undefined;
+		this.renderScatter();
+	}
 
 	// sizeBy: function(metaKey){
 	// 	// Size points by a certain metaKey

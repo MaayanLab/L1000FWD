@@ -195,7 +195,7 @@ var SearchSelectize = Backbone.View.extend({
 		var scatterPlot = this.scatterPlot;
 		// scatterPlot highlightQuery once selectize is searched
 		scatterPlot.listenTo(this, 'searched', function(query){
-			scatterPlot.highlightQuery(query, 'pert_id');
+			scatterPlot.highlightQuery2(query, 'pert_id');
 		});
 
 	},
@@ -238,12 +238,6 @@ var SearchSelectize = Backbone.View.extend({
 						'</ul>';
 				}
 			},
-			// score: function(search){
-			// 	var score = this.getScoreFunction(search);
-			// 	return function(item) {
-			// 		return score(item);
-			// 	}
-			// },
 			load: function(query, callback){
 				if (!query.length) return callback();
 				$.ajax({
@@ -256,17 +250,36 @@ var SearchSelectize = Backbone.View.extend({
 					success: function(res){
 						return callback(res);
 					}
-				})
+				});
 			}
 			});
 
-		// on change, trigger('searched', query)
+		
 		var self = this;
+		// The button to clear highlighted points
+		this.btn = $('<button class="btn btn-xs">Clear highlighted points</button>').click(function(e){
+			self.scatterPlot.removeHighlightedPoints();
+			self.hideButton();
+		});
+		$(this.container).append(this.btn);
+		this.hideButton();
+
+		// on change, trigger('searched', query)
 		this.$el[0].selectize.on('change', function(value){
-			self.trigger('searched', value)
+			if (value !== ''){
+				self.trigger('searched', value);
+				self.showButton();
+			}
 		});
 	},
 
+	showButton: function(){
+		this.btn.show();
+	},
+
+	hideButton: function(){
+		this.btn.hide();
+	},
 });
 
 var SigSimSearch = Backbone.View.extend({
