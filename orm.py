@@ -52,7 +52,7 @@ def load_graph(cyjs_filename, meta_df):
 	df['z'] = 0
 
 	df = df.merge(meta_df, how='left', left_index=True, right_index=True)
-	df.drop('pert_id', axis=1, inplace=True)
+	# df.drop('pert_id', axis=1, inplace=True)
 	# df['neglogp'] = -np.log10(df['pvalue']+1e-4)
 
 	# df = encode_rare_categories(df, 'cell')

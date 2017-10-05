@@ -34,8 +34,10 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 @app.before_first_request
 def load_globals():
 	global meta_df, N_SIGS, graph_df, drug_synonyms
-	meta_df = pd.read_csv('data/metadata-full.tsv', sep='\t')
-	meta_df = meta_df.set_index('sig_id').drop('perturbation', axis=1)
+	# meta_df = pd.read_csv('data/metadata-full.tsv', sep='\t')
+	# meta_df = meta_df.set_index('sig_id').drop('perturbation', axis=1)
+	meta_df = pd.read_csv('data/metadata-L1000FWD.tsv', sep='\t').set_index('sig_id')\
+		.rename(index=str, columns={'cell_id':'cell','pert_dose':'dose'})
 
 	drug_meta_df = pd.read_sql_query('''
 		SELECT drug_repurposedb.pert_id, drug_repurposedb.pert_iname AS perturbation,
@@ -61,7 +63,7 @@ def load_globals():
 	cyjs_filename = os.environ['CYJS']
 	graph_df = load_graph(cyjs_filename, meta_df)
 	graph_df['Batch'] = graph_df.index.map(lambda x:x.split('_')[0])
-	graph_df['pert_id'] = graph_df.index.map(lambda x:x.split(':')[1])
+	# graph_df['pert_id'] = graph_df.index.map(lambda x:x.split(':')[1])
 	graph_df.rename(
 		index=str, 
 		columns={
