@@ -11,8 +11,11 @@ np.random.seed(10)
 from joblib import delayed, Parallel
 
 # KEY = 'avg_center_LM_det'
-KEY = 'CDavg_nocenter_LM_det'
+# KEY = 'CDavg_nocenter_LM_det'
+KEY = 'CD_center_LM'
 N_JOBS = 6
+# Whether to only include significant signatures (SCS < 0.05)
+sig_only = True
 
 def _gesa_enrichment_score(ranks_s):
     '''Calculate enrichment score from a rank ordered boolean array.
@@ -129,12 +132,17 @@ def retrieve_signature_meta_df(coll, query):
 # CD signatures produced by Qiaonan 
 client = MongoClient('mongodb://146.203.54.131:27017/')
 coll = client['L1000CDS2']['cpcd-gse70138']
+if sig_only:
+    coll = client['L1000CDS2']['cpcd-gse70138-without-insignificant']
 
 meta_df = retrieve_signature_meta_df(coll, {'pert_type': 'trt_cp'})
 print meta_df.shape
 
 coll_fwd = client['L1000FWD']['sigs']
-meta_df_fwd = retrieve_signature_meta_df(coll_fwd, {})
+query = {}
+if sig_only:
+    query = {'SCS_centered_by_batch': {'$lt': 0.05}}
+meta_df_fwd = retrieve_signature_meta_df(coll_fwd, query)
 print meta_df_fwd.shape
 
 print meta_df['batch_prefix'].nunique(), meta_df_fwd['batch_prefix'].nunique()
@@ -214,6 +222,6 @@ def compute_pscores(meta_df, coll, key, n_jobs=1):
 
 res_scores5 = compute_pscores(meta_df_fwd_sample, coll_fwd, KEY, n_jobs=N_JOBS)
 print res_scores5.shape
-res_scores5.to_csv('../notebooks/data/signature_connectivities_sample5000_L1000FWD.%s.csv' % KEY)
+res_scores5.to_csv('../notebooks/data/signature_connectivities_sample5000_L1000FWD.sig_only.%s.csv' % KEY)
 
 
