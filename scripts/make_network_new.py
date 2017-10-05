@@ -1,6 +1,6 @@
 KEY = 'CD_center_LM'
 percentile_cutoff = 99.9
-
+n_jobs = 6
 
 import os, sys, json
 from collections import Counter
@@ -27,14 +27,23 @@ print sig_meta_df.shape
 sig_meta_df.head()
 
 
-# Get the top 50 significant signatures for each pert_id
-grouped_sorted = sig_meta_df.groupby('pert_id')['SCS_centered_by_batch'].apply(lambda x:x.sort_values(ascending=True).head(50))
+def pick_top_sigs(x):
+    x = x.sort_values(ascending=True)
+    n_significants = (x < 0.05).sum()
+    if n_significants == 0:
+        return x.head(2)
+    else:
+        return x.head(n_significants)
+
+
+# Get the top significant signatures for each pert_id
+grouped_sorted = sig_meta_df.groupby('pert_id')['SCS_centered_by_batch'].apply(pick_top_sigs)
 grouped_sorted.head()
 
-# filter out pert_id with less than 5 signatures
+# filter out pert_id with less than 0 signatures
 pert_id_counts = sig_meta_df.reset_index().groupby('pert_id')['sig_id'].count()
 print pert_id_counts[:10]
-pert_ids_kept = pert_id_counts[pert_id_counts > 5].index.tolist()
+pert_ids_kept = pert_id_counts[pert_id_counts > 0].index.tolist()
 print 'Number of pert_id to keep: %d' % len(pert_ids_kept)
 
 grouped_sorted = grouped_sorted[pert_ids_kept].reset_index()
@@ -61,7 +70,7 @@ print mat.shape
 
 # Compute the pairwise cosine distance and convert to adjacency matrix
 adj_mat = 1 - pairwise_distances(mat, metric='cosine',
-                                n_jobs=2)
+                                n_jobs=n_jobs)
 print adj_mat.shape
 
 del mat
