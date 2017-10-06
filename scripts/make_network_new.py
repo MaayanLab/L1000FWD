@@ -33,7 +33,8 @@ def pick_top_sigs(x):
     if n_significants == 0:
         return x.head(2)
     else:
-        return x.head(n_significants)
+        n = min(n_significants, 50)
+        return x.head(n)
 
 
 # Get the top significant signatures for each pert_id
