@@ -195,6 +195,7 @@ var SearchSelectize = Backbone.View.extend({
 		var scatterPlot = this.scatterPlot;
 		// scatterPlot highlightQuery once selectize is searched
 		scatterPlot.listenTo(this, 'searched', function(query){
+			scatterPlot.removeHighlightedPoints();
 			scatterPlot.highlightQuery2(query, 'pert_id');
 		});
 
