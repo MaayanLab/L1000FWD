@@ -46,7 +46,25 @@ function binValues(arr, nbins){
 		}
 		labels.push(label);
 	};
-	return {labels: labels, domain: domain, min: min, max: max, interval:interval}
+	return {labels: labels, domain: domain, min: min, max: max, interval:interval};
+}
+
+function binValues2(arr, domain){
+	// Binning continues array of values by a given binEdges (domain)
+	// domain: [0.001, 0.01, 0.05, 0.1, 1] 
+	// domain should include the largest (rightest) value
+	var extent = d3.extent(arr);
+	var min = parseFloat(extent[0]);
+	var max = parseFloat(extent[1]);
+
+	var labels = ['0 to ' + domain[0]];
+	var nbins = domain.length;
+	
+	for (var i = 0; i < nbins-1; i++) {
+		var label = domain[i] + ' to ' + domain[i+1];
+		labels.push(label);
+	};
+	return {labels: labels, domain: domain.slice(0,-1), min: min, max: max};
 }
 
 function binBy(list, key, nbins){
@@ -65,6 +83,19 @@ function binBy(list, key, nbins){
 		if (i === nbins) { // the max value
 			i = nbins - 1;
 		}
+		return labels[i];
+	});
+	return grouped;
+}
+
+function binBy2(list, key, domain){
+	// wrapper for `binValuesBy`
+	var values = _.pluck(list, key);
+	var binnedValues = binValues2(values, domain);
+	var labels = binnedValues.labels;
+
+	var grouped = _.groupBy(list, function(obj){
+		var i = _.filter(domain, function(edge){ return edge < obj[key];}).length;
 		return labels[i];
 	});
 	return grouped;
@@ -277,6 +308,14 @@ var ScatterData = Backbone.Model.extend({
 		return scatterDataSubsets;
 	},
 
+	binBy2: function(metaKey, domain){
+		var dataSubsets = binBy2(this.data, metaKey, domain);
+		var scatterDataSubsets = _.mapObject(dataSubsets, function(records, key){
+			return new _ScatterDataSubset({data: records});
+		});
+		return scatterDataSubsets;
+	},
+
 	getAttr: function(metaKey){
 		// return an array of attributes 
 		return _.map(this.data, function(record){ return record[metaKey]; });
@@ -475,16 +514,27 @@ var Scatter3dView = Backbone.View.extend({
 		var meta = _.findWhere(this.model.metas, {name: metaKey});
 
 		if (meta.type === 'number' && meta.nUnique > 6) {
-			// get grouped datasets, each group is going to be a cloud
-			var scatterDataSubsets = this.model.binBy(metaKey, 6);
-			// Make a threshold scale
-			var binnedValues = binValues(_.pluck(this.model.data, metaKey), 6);
+			if (meta.name === 'p-value'){
+				// get grouped datasets, each group is going to be a cloud
+				var pValueDomain = [0.001, 0.01, 0.05, 0.1, 1];
+				var scatterDataSubsets = this.model.binBy2(metaKey, pValueDomain);
+				// Make a threshold scale
+				var binnedValues = binValues2(_.pluck(this.model.data, metaKey), pValueDomain);
+				// overwrite the symbols map to make it having the same length with pValueDomain
+				var symbols = _.map(d3.svg.symbolTypes.slice(0, pValueDomain.length), function(t){
+					return d3.svg.symbol().type(t)();});
+			} else{
+				// get grouped datasets, each group is going to be a cloud
+				var scatterDataSubsets = this.model.binBy(metaKey, 6);
+				// Make a threshold scale
+				var binnedValues = binValues(_.pluck(this.model.data, metaKey), 6);				
+			}
 
 			this.shapeScale = d3.scale.threshold()
 				.domain(binnedValues.domain)
 				.range(symbols);
 			this.shapeLabels = binnedValues.labels;
-		} else{
+		} else{ // categorical data
 			// get grouped datasets, each group is going to be a cloud
 			var scatterDataSubsets = this.model.groupBy(metaKey);
 			this.shapeLabels = undefined;
@@ -596,7 +646,7 @@ var Scatter3dView = Backbone.View.extend({
 			// var pert_id = geometry.attributes.pert_id.array[idx];
 			// var url = 'http://amp.pharm.mssm.edu/dmoa/report/' + pert_id;
 			var sig_id = geometry.attributes.sig_id.array[idx];
-			var url = 'http://amp.pharm.mssm.edu/dmoa/sig/L1000CDS2/' + sig_id;
+			var url = 'http://amp.pharm.mssm.edu/dmoa/sig/' + sig_id;
 			window.open(url);
 		}
 	},
