@@ -28,6 +28,48 @@ function encodeRareCategories(arr, k){
 	return arr;
 }
 
+function binValues(arr, nbins){
+	// Binning continues array of values in to nbins
+	var extent = d3.extent(arr);
+	var min = parseFloat(extent[0]);
+	var max = parseFloat(extent[1]);
+	var interval = (max - min)/nbins; // bin width
+
+	var domain = _.range(1, nbins).map(function(i){ return i*interval+min;}); // bin edges
+	var labels = [min.toFixed(2)+ ' to '+domain[0].toFixed(2)];
+
+	for (var i = 0; i < nbins-1; i++) {
+		if (i === nbins-2){ // the last bin
+			var label = domain[i].toFixed(2) + ' to ' + max.toFixed(2);
+		} else{
+			var label = domain[i].toFixed(2) + ' to ' + domain[i+1].toFixed(2);
+		}
+		labels.push(label);
+	};
+	return {labels: labels, domain: domain, min: min, max: max, interval:interval}
+}
+
+function binBy(list, key, nbins){
+	// similar to _.groupBy but applying to continues values using `binValues`
+	// list: an array of objects
+	// key: name of the continues variable
+	// nbins: number of bins
+	var values = _.pluck(list, key);
+	var binnedValues = binValues(values, nbins);
+	var labels = binnedValues.labels;
+	var min = binnedValues.min;
+	var interval = binnedValues.interval;
+
+	var grouped = _.groupBy(list, function(obj){
+		var i = Math.floor((obj[key] - min)/interval);
+		if (i === nbins) { // the max value
+			i = nbins - 1;
+		}
+		return labels[i];
+	});
+	return grouped;
+}
+
 
 var _ScatterDataSubset = Backbone.Model.extend({
 	defaults: {
@@ -227,6 +269,14 @@ var ScatterData = Backbone.Model.extend({
 		return scatterDataSubsets;
 	},
 
+	binBy: function(metaKey, nbins){
+		var dataSubsets = binBy(this.data, metaKey, nbins);
+		var scatterDataSubsets = _.mapObject(dataSubsets, function(records, key){
+			return new _ScatterDataSubset({data: records});
+		});
+		return scatterDataSubsets;
+	},
+
 	getAttr: function(metaKey){
 		// return an array of attributes 
 		return _.map(this.data, function(record){ return record[metaKey]; });
@@ -416,8 +466,7 @@ var Scatter3dView = Backbone.View.extend({
 		// clear this.clouds
 		this.clouds = [];
 		this.clearScene();
-		// get grouped datasets, each group is going to be a cloud
-		var scatterDataSubsets = this.model.groupBy(metaKey);
+		
 		var textures = this.textures;
 		var symbols = _.map(d3.svg.symbolTypes, function(t){
 			return d3.svg.symbol().type(t)();});
@@ -426,26 +475,18 @@ var Scatter3dView = Backbone.View.extend({
 		var meta = _.findWhere(this.model.metas, {name: metaKey});
 
 		if (meta.type === 'number' && meta.nUnique > 6) {
+			// get grouped datasets, each group is going to be a cloud
+			var scatterDataSubsets = this.model.binBy(metaKey, 6);
 			// Make a threshold scale
-			var extent = d3.extent(Object.keys(scatterDataSubsets));
-			var min = parseFloat(extent[0]);
-			var max = parseFloat(extent[1]);
-			var interval = (max - min)/6;
-			var domain = _.range(1, 6).map(function(i){ return i*interval+min;});
-			var labels = [min.toFixed(2)+ ' to '+domain[0].toFixed(2)];
-			for (var i = 0; i < 5; i++) {
-				if (i === 4){
-					var label = domain[i].toFixed(2) + ' to ' + max.toFixed(2);
-				} else{
-					var label = domain[i].toFixed(2) + ' to ' + domain[i+1].toFixed(2);
-				}
-				labels.push(label);
-			};
+			var binnedValues = binValues(_.pluck(this.model.data, metaKey), 6);
+
 			this.shapeScale = d3.scale.threshold()
-				.domain(domain)
+				.domain(binnedValues.domain)
 				.range(symbols);
-			this.shapeLabels = labels;
+			this.shapeLabels = binnedValues.labels;
 		} else{
+			// get grouped datasets, each group is going to be a cloud
+			var scatterDataSubsets = this.model.groupBy(metaKey);
 			this.shapeLabels = undefined;
 			this.shapeScale = d3.scale.ordinal()
 				.domain(Object.keys(scatterDataSubsets))
@@ -555,8 +596,7 @@ var Scatter3dView = Backbone.View.extend({
 			// var pert_id = geometry.attributes.pert_id.array[idx];
 			// var url = 'http://amp.pharm.mssm.edu/dmoa/report/' + pert_id;
 			var sig_id = geometry.attributes.sig_id.array[idx];
-			var url = 'http://amp.pharm.mssm.edu/dmoa/redirect/L1000CDS2/' + sig_id;
-			// var url = 'http://127.0.0.1:8084/dmoa/redirect/L1000CDS2/' + sig_id;
+			var url = 'http://amp.pharm.mssm.edu/dmoa/sig/L1000CDS2/' + sig_id;
 			window.open(url);
 		}
 	},
