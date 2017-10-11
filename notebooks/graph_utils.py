@@ -33,7 +33,7 @@ def plot_degree_distribution(G):
     ax.set_ylabel('Count', fontsize=12)    
     ax.set_xscale('log')
     ax.set_yscale('log')
-    return ax
+    return fig
 
 def compute_adjcency_mat(X, metric='cosine'):
     adj_mat = dist.squareform(pairwise_distances(X, metric=metric))
