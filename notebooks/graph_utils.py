@@ -15,6 +15,7 @@ from scipy.sparse import linalg, csr_matrix
 
 import matplotlib.pyplot as plt
 
+import requests
 # modules to interact with CyREST, the API of Cytoscape
 from py2cytoscape.data.cyrest_client import CyRestClient
 import py2cytoscape.cytoscapejs as renderer
@@ -128,6 +129,6 @@ def network_layout(G):
     xs = [n['position']['x'] for n in nodes]
     ys = [n['position']['y'] for n in nodes]
     coords = np.array([xs, ys]).T
-    return coords[ids_original], G_cy
+    return coords, ids_original
     
 
