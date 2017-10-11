@@ -25,68 +25,44 @@ class CIFlask(Flask):
 
 from orm import *
 
+
 ENTER_POINT = os.environ['ENTER_POINT']
 app = CIFlask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
 app.debug = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
+app.config['MONGO_URI'] = MONGOURI
 
+mongo.init_app(app)
 
 @app.before_first_request
 def load_globals():
 	global meta_df, N_SIGS, graph_df, drug_synonyms
-	# meta_df = pd.read_csv('data/metadata-full.tsv', sep='\t')
-	# meta_df = meta_df.set_index('sig_id').drop('perturbation', axis=1)
-	meta_df = pd.read_csv('data/metadata-L1000FWD.tsv', sep='\t').set_index('sig_id')\
-		.rename(index=str, columns={'cell_id':'cell','pert_dose':'dose'})
 
-	drug_meta_df = pd.read_sql_query('''
-		SELECT drug_repurposedb.pert_id, drug_repurposedb.pert_iname AS perturbation,
-		most_frequent_dx_rx.most_frequent_rx, most_frequent_dx_rx.most_frequent_dx, 
-		drug_repurposedb.Phase, drug_repurposedb.MOA
-		FROM most_frequent_dx_rx
-		RIGHT JOIN drug_repurposedb
-		ON drug_repurposedb.pert_id=most_frequent_dx_rx.pert_id
-		''', engine, 
-		index_col='pert_id')
-	print drug_meta_df.shape
+	drug_meta_df = load_drug_meta_from_db()
+
+	# meta_df = pd.read_csv('data/metadata-L1000FWD.tsv', sep='\t').set_index('sig_id')\
+	# 	.rename(index=str, columns={'cell_id':'cell','pert_dose':'dose'})
 	
-	meta_df = meta_df.merge(drug_meta_df, 
-		left_on='pert_id', 
-		right_index=True,
-		how='left'
-		)
-	meta_df.fillna('unknown', inplace=True)
-	meta_df.replace(['unannotated', '-666'], 'unknown', inplace=True)
+	cyjs_filename = os.environ['CYJS']
+	# graph_df = load_graph(cyjs_filename, meta_df)
+	graph_df, meta_df = load_graph_from_db('Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs',
+		drug_meta_df=drug_meta_df)
 	print meta_df.shape
 	N_SIGS = meta_df.shape[0]
 
-	cyjs_filename = os.environ['CYJS']
-	graph_df = load_graph(cyjs_filename, meta_df)
 	graph_df['Batch'] = graph_df.index.map(lambda x:x.split('_')[0])
 	# graph_df['pert_id'] = graph_df.index.map(lambda x:x.split(':')[1])
+
 	graph_df.rename(
 		index=str, 
 		columns={
-			'pvalue': 'p-value', 'cell': 'Cell', 'time': 'Time', 
-			'drug_class': 'Drug class', 'dose': 'Dose',
-			'perturbation': 'Perturbation'},
+			'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
+			'drug_class': 'Drug class', 'pert_dose': 'Dose',
+			'pert_desc': 'Perturbation'},
 		inplace=True)
+	print graph_df.head()
 
-	# Load synonyms for drugs
-	drug_synonyms = pd.read_sql_table('drug_synonyms', engine, columns=['pert_id', 'Name'])
-	print drug_synonyms.shape
-	# Keep only the pert_id that are in the graph
-	pert_ids_in_graph = meta_df.loc[graph_df.index]['pert_id'].unique()
-	print 'Number of unique pert_id in graph:', len(pert_ids_in_graph)
-	drug_synonyms = drug_synonyms.loc[drug_synonyms['pert_id'].isin(pert_ids_in_graph)]
-	print drug_synonyms.shape
-	# Add pert_id itself as name
-	drug_synonyms = drug_synonyms.append(
-		pd.DataFrame({'pert_id': pert_ids_in_graph, 'Name': pert_ids_in_graph})
-		)
-	drug_synonyms.drop_duplicates(inplace=True)
-	print drug_synonyms.shape
-
+	drug_synonyms = load_drug_synonyms_from_db(meta_df, graph_df)
 	return
 
 
@@ -116,40 +92,16 @@ def toy_data():
 		return df.to_json(orient='records')
 		# return jsonify(df.to_dict(orient='list'))
 
-'''
-@app.route(ENTER_POINT + '/pca', methods=['GET'])
-def load_pca_coords():
-	if request.method == 'GET':
-		# coords = np.load('data/pca_coords.npy')
-		# coords = np.load('data/zscored_pca_coords.npy')
-		coords = np.load('data/pca_coords-sig-only.npy')
-		scl = MinMaxScaler((-10, 10))
-		# scl.fit(coords[:, 0].reshape(-1, 1))
-		# for j in range(coords.shape[1]):
-		# 	coords[:, j] = scl.transform(coords[:,j].reshape(-1, 1))[:,0]
-		coords = scl.fit_transform(coords)
 
-		print 'coords shape:', coords.shape
-		print 'meta_df.shape', meta_df.shape
-		df = meta_df.assign(x=coords[:,0], y=coords[:,1], z=coords[:,2])
-		df['neglogp'] = -np.log10(df['pvalue'])
-		df['z'] = 0
-		frequent_cells = set(df['cell'].value_counts()[:19].index)
-		def encode_rare_cell(cell):
-			if cell in frequent_cells:
-				return cell
-			else:
-				return 'rare_cell'
-		df['cell'] = df['cell'].apply(encode_rare_cell)
-		print 'df.shape: ', df.shape
-	return df.to_json(orient='records')
-'''
-
-@app.route(ENTER_POINT + '/graph', methods=['GET'])
-def load_graph_layout_coords():
+@app.route(ENTER_POINT + '/graph/<string:graph_name>', methods=['GET'])
+def load_graph_layout_coords(graph_name):
 	if request.method == 'GET':
-		print graph_df.shape
-		return graph_df.reset_index().to_json(orient='records')
+		if not graph_name:
+			print graph_df.shape
+			return graph_df.reset_index().to_json(orient='records')
+		else:
+			this_graph_df = load_graph_from_db(graph_name, drug_meta_df)
+			
 
 @app.route(ENTER_POINT + '/sig_ids', methods=['GET'])
 def get_all_sig_ids():

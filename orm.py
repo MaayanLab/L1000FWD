@@ -6,13 +6,17 @@ from sklearn.preprocessing import MinMaxScaler
 
 from sqlalchemy import create_engine
 from bson.objectid import ObjectId
-from pymongo import MongoClient
+# from pymongo import MongoClient
+from flask_pymongo import PyMongo
+
+mongo = PyMongo()
 
 RURL = os.environ['RURL']
 MONGOURI = os.environ['MONGOURI']
-client = MongoClient(MONGOURI)
-DB = client['DMOA']
-COLL_RES = DB['userResults']
+# client = MongoClient(MONGOURI)
+# DB = client['DMOA']
+# COLL_RES = DB['userResults']
+
 MYSQLURI = os.environ['MYSQLURI']
 engine = create_engine(MYSQLURI)
 
@@ -62,6 +66,97 @@ def load_graph(cyjs_filename, meta_df):
 	return df
 
 
+def load_drug_meta_from_db():
+	drug_meta_df = pd.read_sql_query('''
+		SELECT drug_repurposedb.pert_id, drug_repurposedb.pert_iname AS perturbation,
+		most_frequent_dx_rx.most_frequent_rx, most_frequent_dx_rx.most_frequent_dx, 
+		drug_repurposedb.Phase, drug_repurposedb.MOA
+		FROM most_frequent_dx_rx
+		RIGHT JOIN drug_repurposedb
+		ON drug_repurposedb.pert_id=most_frequent_dx_rx.pert_id
+		''', engine, 
+		index_col='pert_id')
+	print drug_meta_df.shape
+	return drug_meta_df
+
+def load_drug_synonyms_from_db(meta_df, graph_df):
+	# Load synonyms for drugs
+	drug_synonyms = pd.read_sql_table('drug_synonyms', engine, columns=['pert_id', 'Name'])
+	print drug_synonyms.shape
+	# Keep only the pert_id that are in the graph
+	pert_ids_in_graph = meta_df.loc[graph_df.index]['pert_id'].unique()
+	print 'Number of unique pert_id in graph:', len(pert_ids_in_graph)
+	drug_synonyms = drug_synonyms.loc[drug_synonyms['pert_id'].isin(pert_ids_in_graph)]
+	# Add pert_id itself as name
+	drug_synonyms = drug_synonyms.append(
+		pd.DataFrame({'pert_id': pert_ids_in_graph, 'Name': pert_ids_in_graph})
+		)
+	drug_synonyms.drop_duplicates(inplace=True)
+	print drug_synonyms.shape
+	return drug_synonyms
+
+
+def load_signature_meta_from_db(collection_name, query={}, drug_meta_df=None):
+	projection = {
+		'_id': False,
+		'avg_center_LM': False,
+		'CD_nocenter_LM': False,
+		'CD_center_LM': False,
+		'avg_center_LM_det': False,
+		'CDavg_center_LM_det': False,
+		'CDavg_nocenter_LM_det': False,
+		'CD_center_LM_det': False,
+		'distil_id':False,
+		}
+	coll = mongo.db[collection_name]
+	cur = coll.find(query, projection)
+	print cur.count()
+	meta_df = pd.DataFrame.from_records([doc for doc in cur]).set_index('sig_id')
+	meta_df = meta_df.rename(index=str, columns={'cell_id':'cell','pert_dose':'dose'})
+	if drug_meta_df is not None:
+		meta_df = meta_df.merge(drug_meta_df, 
+			left_on='pert_id', 
+			right_index=True,
+			how='left'
+			)
+	meta_df.fillna('unknown', inplace=True)
+	meta_df.replace(['unannotated', '-666'], 'unknown', inplace=True)
+	print meta_df.shape
+	return meta_df
+
+
+def _minmax_scaling(arr):
+	scl = MinMaxScaler((-10, 10))
+	arr = scl.fit_transform(arr.reshape(-1, 1))
+	return arr[:, 0]
+
+def load_graph_from_db(graph_name, drug_meta_df=None):
+	# Find the graph by name
+	graph_doc = mongo.db.graphs.find_one({'name': graph_name}, {'_id':False})
+	graph_df = pd.DataFrame({
+		'sig_ids': graph_doc['sig_ids'],
+		'x': graph_doc['x'],
+		'y': graph_doc['y'],
+		}).set_index('sig_ids')
+	graph_df.index.name = 'sig_id'
+	# Scale the x, y 
+	graph_df['x'] = _minmax_scaling(graph_df['x'].values)
+	graph_df['y'] = _minmax_scaling(graph_df['y'].values)
+	graph_df['z'] = 0
+
+	# Load the corresponding meta_df
+	meta_df = load_signature_meta_from_db(graph_doc['coll'], 
+		query={'sig_id': {'$in': graph_df.index.tolist()}},
+		drug_meta_df=drug_meta_df
+		)
+
+	graph_df = graph_df.merge(meta_df, how='left', left_index=True, right_index=True)
+	return graph_df, meta_df
+
+
+
+
+### ORMs for user imput
 class EnrichmentResult(object):
 	"""EnrichmentResult: object for documents in the userResults collection"""
 	projection = {'_id':0}
