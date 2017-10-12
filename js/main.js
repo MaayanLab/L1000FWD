@@ -14,11 +14,14 @@ var textures = new Textures()
 
 // })
 
-
+console.log(url)
 var sd = new ScatterData({
 	// n: 10000,
 	// url: 'pca'
-	url: 'graph'
+	// url: 'graph/full'
+	// url: 'graph/A375-tSNE_layout.csv'
+	// url: 'graph/A375_kNN_5'
+	url : url // need to get this variable from server
 })
 
 var container = document.getElementById("body")

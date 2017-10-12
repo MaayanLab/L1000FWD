@@ -36,7 +36,9 @@ mongo.init_app(app)
 
 @app.before_first_request
 def load_globals():
-	global meta_df, N_SIGS, graph_df, drug_synonyms
+	global meta_df, N_SIGS, graph_df, drug_synonyms, drug_meta_df
+	global graph_names
+	graph_names = mongo.db.graphs.distinct('name')
 
 	drug_meta_df = load_drug_meta_from_db()
 
@@ -50,16 +52,6 @@ def load_globals():
 	print meta_df.shape
 	N_SIGS = meta_df.shape[0]
 
-	graph_df['Batch'] = graph_df.index.map(lambda x:x.split('_')[0])
-	# graph_df['pert_id'] = graph_df.index.map(lambda x:x.split(':')[1])
-
-	graph_df.rename(
-		index=str, 
-		columns={
-			'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
-			'drug_class': 'Drug class', 'pert_dose': 'Dose',
-			'pert_desc': 'Perturbation'},
-		inplace=True)
 	print graph_df.head()
 
 	drug_synonyms = load_drug_synonyms_from_db(meta_df, graph_df)
@@ -71,7 +63,21 @@ def index_page():
 	return render_template('index.html', 
 		script='main',
 		ENTER_POINT=ENTER_POINT,
-		result_id='hello')
+		result_id='hello',
+		graph_names=graph_names,
+		graph_name='full'
+		)
+
+@app.route(ENTER_POINT + '/graph_page/<string:graph_name>')
+def graph_page(graph_name):
+	return render_template('index.html', 
+		script='main',
+		ENTER_POINT=ENTER_POINT,
+		result_id='hello',
+		graph_names=graph_names,
+		graph_name=graph_name
+		)
+
 
 @app.route('/<path:filename>')
 def send_file(filename):
@@ -96,12 +102,14 @@ def toy_data():
 @app.route(ENTER_POINT + '/graph/<string:graph_name>', methods=['GET'])
 def load_graph_layout_coords(graph_name):
 	if request.method == 'GET':
-		if not graph_name:
+		if graph_name == 'full':
 			print graph_df.shape
 			return graph_df.reset_index().to_json(orient='records')
 		else:
-			this_graph_df = load_graph_from_db(graph_name, drug_meta_df)
-			
+			graph_df_, meta_df_ = load_graph_from_db(graph_name, drug_meta_df)
+			print graph_df_.head()
+			return graph_df_.reset_index().to_json(orient='records')
+
 
 @app.route(ENTER_POINT + '/sig_ids', methods=['GET'])
 def get_all_sig_ids():
@@ -138,6 +146,8 @@ def search_drug_by_synonyms(query_string):
 		mask = drug_synonyms['Name'].str.contains(query_string, case=False)
 		return drug_synonyms.loc[mask].to_json(orient='records') 
 
+
+## /result/ endpoints
 
 @app.route(ENTER_POINT + '/result/graph/<string:result_id>', methods=['GET'])
 def result(result_id):

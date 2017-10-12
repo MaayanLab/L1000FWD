@@ -151,6 +151,17 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 		)
 
 	graph_df = graph_df.merge(meta_df, how='left', left_index=True, right_index=True)
+	graph_df['Batch'] = graph_df.index.map(lambda x:x.split('_')[0])
+	# graph_df['pert_id'] = graph_df.index.map(lambda x:x.split(':')[1])
+
+	graph_df.rename(
+		index=str, 
+		columns={
+			'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
+			'drug_class': 'Drug class', 'pert_dose': 'Dose',
+			'pert_desc': 'Perturbation'},
+		inplace=True)
+	
 	return graph_df, meta_df
 
 
