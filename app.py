@@ -42,8 +42,6 @@ def load_globals():
 
 	drug_meta_df = load_drug_meta_from_db()
 	
-	cyjs_filename = os.environ['CYJS']
-	# graph_df = load_graph(cyjs_filename, meta_df)
 	graph_df, meta_df = load_graph_from_db('Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs',
 		drug_meta_df=drug_meta_df)
 	print meta_df.shape

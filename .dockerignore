@@ -1,8 +1,4 @@
 log/
-data/*.h5
-data/*.npy
-notebooks/*.ipynb
-notebooks/.ipynb_checkpoints
-notebooks/*.gml
-notebooks/*.gexf
+data/
+notebooks/
 .DS_Store
