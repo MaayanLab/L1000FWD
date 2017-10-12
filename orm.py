@@ -128,6 +128,7 @@ def load_signature_meta_from_db(collection_name, query={}, drug_meta_df=None):
 	projection = {
 		'_id': False,
 		'batch': False,
+		'pert_desc': False,
 		'avg_center_LM': False,
 		'CD_nocenter_LM': False,
 		'CD_center_LM': False,
