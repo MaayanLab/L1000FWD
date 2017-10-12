@@ -17,19 +17,29 @@
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-          <li id="browse" class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown">Graphs<span class="caret"></span></a>
+
+          <li id="aggregated-graphs" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown">Aggregated Graphs<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               
-              {% for graph_name in graph_names %}
-                <li><a href="graph_page/{{ graph_name }}">{{ graph_name }}</a></li>
+              {% for graph in graphs['agg'] %}
+                <li><a href="graph_page/{{ graph.name }}">{{ graph.display_name }}</a></li>
+              {% endfor %}
+
+            </ul>
+          </li>
+
+          <li id="graphs-by-cells" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown">Graphs by cell lines<span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              
+              {% for graph in graphs['cells'] %}
+                <li><a href="graph_page/{{ graph.name }}">{{ graph.display_name }}</a></li>
               {% endfor %}
 
             </ul>
           </li>
           <li id="downloads"><a href="#downloads">Download</a></li>
-          <li id="help"><a href="#help">API</a></li>
-          <li id="contribute"><a href="#contribute">Contribute</a></li>
         </ul>
 
       </div><!-- /.navbar-collapse -->

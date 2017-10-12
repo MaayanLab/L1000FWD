@@ -37,8 +37,8 @@ mongo.init_app(app)
 @app.before_first_request
 def load_globals():
 	global meta_df, N_SIGS, graph_df, drug_synonyms, drug_meta_df
-	global graph_names
-	graph_names = mongo.db.graphs.distinct('name')
+	global graphs
+	graphs = load_graphs_meta()
 
 	drug_meta_df = load_drug_meta_from_db()
 	
@@ -70,7 +70,7 @@ def index_page():
 		script='main',
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
-		graph_names=graph_names,
+		graphs=graphs,
 		url=url,
 		sdvConfig=json.dumps(sdvConfig),
 		)
@@ -100,7 +100,7 @@ def graph_page(graph_name):
 		script='main',
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
-		graph_names=graph_names,
+		graphs=graphs,
 		url=url,
 		sdvConfig=json.dumps(sdvConfig),
 		)

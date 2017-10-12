@@ -64,8 +64,35 @@ def load_graphs_meta():
 	'''Load and preprocess the meta for graphs in the `graphs` collection.
 	'''
 	graph_names = mongo.db.graphs.distinct('name')
+	graphs = {
+		'cells':[
+			{'name': 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs', 'display_name': 'All cell lines'}
+		],
+		'agg': [
+			{'name': 'graph_pert_cell_12894nodes_99.9.gml.cyjs', 'display_name': 'Aggregated by drugs and cells'},
+			{'name': 'kNN_5_layout', 'display_name': 'Aggregated by drugs (kNN)'},
+			{'name': 'threshold_99.5', 'display_name': 'Aggregated by drugs (thresholding)'},
+		],
+	}
 
-	return graph_names
+	# process graphs for individual cells
+	for graph_name in graph_names:
+		if graph_name.endswith('-tSNE_layout.csv'):
+			cell = graph_name.split('-')[0]
+			rec = {
+				'name': graph_name, 
+				'display_name': '%s (tSNE)' % cell
+				}
+			graphs['cells'].append(rec)
+
+		elif graph_name.endswith('kNN_5'):
+			cell = graph_name.split('_')[0]
+			rec = {
+				'name': graph_name,
+				'display_name': '%s (kNN)' % cell
+			}
+			graphs['cells'].append(rec)
+	return graphs
 
 def load_drug_meta_from_db():
 	drug_meta_df = pd.read_sql_query('''
