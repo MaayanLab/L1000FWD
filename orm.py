@@ -56,19 +56,20 @@ def load_graph(cyjs_filename, meta_df):
 	df['z'] = 0
 
 	df = df.merge(meta_df, how='left', left_index=True, right_index=True)
-	# df.drop('pert_id', axis=1, inplace=True)
-	# df['neglogp'] = -np.log10(df['pvalue']+1e-4)
-
-	# df = encode_rare_categories(df, 'cell')
-	# df = encode_rare_categories(df, 'perturbation')
-
 	df = df.sort_index()
 	return df
 
 
+def load_graphs_meta():
+	'''Load and preprocess the meta for graphs in the `graphs` collection.
+	'''
+	graph_names = mongo.db.graphs.distinct('name')
+
+	return graph_names
+
 def load_drug_meta_from_db():
 	drug_meta_df = pd.read_sql_query('''
-		SELECT drug_repurposedb.pert_id, drug_repurposedb.pert_iname AS perturbation,
+		SELECT drug_repurposedb.pert_id, drug_repurposedb.pert_iname AS pert_desc,
 		most_frequent_dx_rx.most_frequent_rx, most_frequent_dx_rx.most_frequent_dx, 
 		drug_repurposedb.Phase, drug_repurposedb.MOA
 		FROM most_frequent_dx_rx
@@ -99,6 +100,7 @@ def load_drug_synonyms_from_db(meta_df, graph_df):
 def load_signature_meta_from_db(collection_name, query={}, drug_meta_df=None):
 	projection = {
 		'_id': False,
+		'batch': False,
 		'avg_center_LM': False,
 		'CD_nocenter_LM': False,
 		'CD_center_LM': False,
@@ -112,6 +114,9 @@ def load_signature_meta_from_db(collection_name, query={}, drug_meta_df=None):
 	cur = coll.find(query, projection)
 	print cur.count()
 	meta_df = pd.DataFrame.from_records([doc for doc in cur]).set_index('sig_id')
+	if collection_name == 'sigs_pert':
+		meta_df['pert_id'] = meta_df.index
+
 	meta_df = meta_df.rename(index=str, columns={'cell_id':'cell','pert_dose':'dose'})
 	if drug_meta_df is not None:
 		meta_df = meta_df.merge(drug_meta_df, 
@@ -151,7 +156,9 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 		)
 
 	graph_df = graph_df.merge(meta_df, how='left', left_index=True, right_index=True)
-	graph_df['Batch'] = graph_df.index.map(lambda x:x.split('_')[0])
+	# Check form of sig_id
+	if len(graph_df.index[0].split(':')) == 3:
+		graph_df['Batch'] = graph_df.index.map(lambda x:x.split('_')[0])
 	# graph_df['pert_id'] = graph_df.index.map(lambda x:x.split(':')[1])
 
 	graph_df.rename(
@@ -161,7 +168,7 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 			'drug_class': 'Drug class', 'pert_dose': 'Dose',
 			'pert_desc': 'Perturbation'},
 		inplace=True)
-	
+
 	return graph_df, meta_df
 
 

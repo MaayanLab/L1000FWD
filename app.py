@@ -41,9 +41,6 @@ def load_globals():
 	graph_names = mongo.db.graphs.distinct('name')
 
 	drug_meta_df = load_drug_meta_from_db()
-
-	# meta_df = pd.read_csv('data/metadata-L1000FWD.tsv', sep='\t').set_index('sig_id')\
-	# 	.rename(index=str, columns={'cell_id':'cell','pert_dose':'dose'})
 	
 	cyjs_filename = os.environ['CYJS']
 	# graph_df = load_graph(cyjs_filename, meta_df)
@@ -60,22 +57,52 @@ def load_globals():
 
 @app.route(ENTER_POINT + '/')
 def index_page():
+	# The default main page
+	url = 'graph/full'
+	sdvConfig = {
+		'colorKey': 'Cell',
+		'shapeKey': 'Time',
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
+	}
+
+
 	return render_template('index.html', 
 		script='main',
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
 		graph_names=graph_names,
-		graph_name='full'
+		url=url,
+		sdvConfig=json.dumps(sdvConfig),
 		)
 
 @app.route(ENTER_POINT + '/graph_page/<string:graph_name>')
 def graph_page(graph_name):
+	url = 'graph/%s' % graph_name
+	# defaults
+	sdvConfig = {
+		'colorKey': 'MOA',
+		'shapeKey': 'Time',
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
+	}
+
+	if graph_name == 'graph_pert_cell_12894nodes_99.9.gml.cyjs': 
+		# Signatures aggregated for pert_id x cell_id
+		sdvConfig['colorKey'] = 'Cell'
+		sdvConfig['shapeKey'] = 'avg_time'
+		sdvConfig['labelKey'] = ['Perturbation', 'Cell', 'avg_dose', 'avg_time', 
+			'Phase', 'MOA', 'n_signatures_aggregated']
+	elif graph_name in ('kNN_5_layout', 'threshold_99.5'):
+		# Signatures aggregated for pert_id
+		sdvConfig['shapeKey'] = 'avg_pvalue'
+		sdvConfig['labelKey'] = ['Perturbation', 'avg_dose', 'avg_time', 'avg_pvalue', 
+					'Phase', 'MOA', 'n_signatures_aggregated']
 	return render_template('index.html', 
 		script='main',
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
 		graph_names=graph_names,
-		graph_name=graph_name
+		url=url,
+		sdvConfig=json.dumps(sdvConfig),
 		)
 
 

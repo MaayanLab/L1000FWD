@@ -42,7 +42,8 @@
     <script src="js/scatterWidgets.js"></script>
     <script>
         var result_id = "{{ result_id }}";
-        var url = 'graph/' + "{{ graph_name }}";
+        var url = "{{ url }}";
+        var sdvConfig = {{ sdvConfig|safe }};
     </script>
     <script src="js/{{ script }}.js"></script>
 

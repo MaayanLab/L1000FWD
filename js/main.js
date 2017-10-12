@@ -1,20 +1,6 @@
 var textures = new Textures()
 
-// textures.listenTo(textures, 'allLoaded', function(){
-// 	// load the textures collection first
-// 	var sd = new ScatterData()
 
-// 	var sdv = new Scatter3dView({
-// 		model: sd,
-// 		// WIDTH: $('#canvas-container').width(),
-// 		// HEIGHT: window.innerHeight,
-// 		// container: document.getElementById('canvas-container'),	
-// 		textures: textures,
-// 	})
-
-// })
-
-console.log(url)
 var sd = new ScatterData({
 	// n: 10000,
 	// url: 'pca'
@@ -28,7 +14,7 @@ var container = document.getElementById("body")
 var width = container.clientWidth;
 var height = container.clientHeight;
 
-var sdv = new Scatter3dView({
+var sdvDefaultConfig = {
 	container: container,
 	WIDTH: width,
 	HEIGHT: height,	
@@ -37,10 +23,11 @@ var sdv = new Scatter3dView({
 	// pointSize: 0.1, 
 	pointSize: 12,
 	is3d: false,
-	colorKey: 'Cell',
-	shapeKey: 'Time',
-	labelKey: ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
-})
+}
+
+sdvConfig = $.extend(sdvDefaultConfig, sdvConfig)
+
+var sdv = new Scatter3dView(sdvConfig)
 
 var legend = new Legend({scatterPlot: sdv, h: window.innerHeight, container: container})
 
