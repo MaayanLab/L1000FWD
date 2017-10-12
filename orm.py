@@ -105,6 +105,13 @@ def load_drug_meta_from_db():
 		''', engine, 
 		index_col='pert_id')
 	print drug_meta_df.shape
+
+	# Borrow the info from pert_ids with the same pert_desc
+	for col in ['most_frequent_rx','most_frequent_dx','Phase', 'MOA']:
+		d = drug_meta_df[['pert_desc', col]].dropna(axis=0)
+		d = dict(zip(d['pert_desc'], d[col]))
+		drug_meta_df[col] = [d.get(name, None) for name in drug_meta_df['pert_desc']]
+
 	return drug_meta_df
 
 def load_drug_synonyms_from_db(meta_df, graph_df):
