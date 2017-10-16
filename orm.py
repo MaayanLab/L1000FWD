@@ -144,6 +144,11 @@ def load_signature_meta_from_db(collection_name, query={}, drug_meta_df=None):
 		'CDavg_nocenter_LM_det': False,
 		'CD_center_LM_det': False,
 		'distil_id':False,
+		'CD_center_Full': False,
+		'pvalues_Full':False,
+		'sigIdx': False,
+		'upGenes':False,
+		'dnGenes':False,
 		}
 	coll = mongo.db[collection_name]
 	cur = coll.find(query, projection)
