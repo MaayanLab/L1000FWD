@@ -720,7 +720,7 @@ var Scatter3dView = Backbone.View.extend({
 		var meta = _.findWhere(this.model.metas, {name: metaKey});
 		var dtype = meta.type;
 		
-		if (dtype !== 'number'){
+		if (dtype !== 'number' && meta.nUnique > 20){
 			metas = encodeRareCategories(metas, 19);
 		}
 		var uniqueCats = new Set(metas);
@@ -739,7 +739,9 @@ var Scatter3dView = Backbone.View.extend({
 		};
 
 		// make colorScale
-		if (nUniqueCats < 11){
+		if (dtype === 'boolean'){
+			var colorScale = d3.scale.ordinal().domain([true, false]).range(['#cc0000', '#cccccc']);
+		} else if (nUniqueCats < 11){
 			var colorScale = d3.scale.category10().domain(uniqueCats);
 		} else if (nUniqueCats > 10 && dtype !== 'number') {
 			var colorScale = d3.scale.category20().domain(uniqueCats);
