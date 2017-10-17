@@ -122,7 +122,7 @@ var _ScatterDataSubset = Backbone.Model.extend({
 			this.indices[i] = i; 
 			this.positions[ i*3 ] = this.data[i].x;
 			this.positions[ i*3+1 ] = this.data[i].y;
-			this.positions[ i*3+2 ] = this.data[i].z;
+			this.positions[ i*3+2 ] = this.data[i].z || 0;
 		};
 	},
 

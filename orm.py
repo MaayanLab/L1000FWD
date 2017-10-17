@@ -185,7 +185,6 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 	# Scale the x, y 
 	graph_df['x'] = _minmax_scaling(graph_df['x'].values)
 	graph_df['y'] = _minmax_scaling(graph_df['y'].values)
-	graph_df['z'] = 0
 
 	# Load the corresponding meta_df
 	meta_df = load_signature_meta_from_db(graph_doc['coll'], 
