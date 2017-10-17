@@ -63,6 +63,7 @@ var Legend = Backbone.View.extend({
 			.title(scatterPlot.colorKey)
 			.shapeWidth(20)
 			.cells(5)
+			.labelFormat(d3.format(".2f"))
 			.scale(scatterPlot.colorScale);
 
 		this.g.select("#legendColor")

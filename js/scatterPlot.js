@@ -10,7 +10,7 @@ function getCanvasColor(color){
 	return "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")"; 
 }
 
-RARE = 'rare'
+RARE = 'other'
 
 function encodeRareCategories(arr, k){
 	// Count occurences of each unique categories in arr, 

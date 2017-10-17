@@ -34,31 +34,6 @@ def encode_rare_categories(df, colname, max=19):
 	df[colname] = df[colname].apply(_encode_rare)
 	return df
 
-def load_graph(cyjs_filename, meta_df):
-	'''Load graph node coordinates and other metadata from a cyjs file,
-	then return a df indexed by sig_id'''
-	json_data = json.load(open('notebooks/%s' % cyjs_filename, 'rb'))
-	json_data = json_data['elements']['nodes']
-
-	scl = MinMaxScaler((-10, 10))
-
-	coords = np.array([
-		[rec['position']['x'] for rec in json_data], 
-		[rec['position']['y'] for rec in json_data]
-		]).T
-	coords = scl.fit_transform(coords)
-
-	df = pd.DataFrame({
-		'sig_id': [rec['data']['name'] for rec in json_data],
-		'x': coords[:, 0],
-		'y': coords[:, 1],
-		}).set_index('sig_id')
-	df['z'] = 0
-
-	df = df.merge(meta_df, how='left', left_index=True, right_index=True)
-	df = df.sort_index()
-	return df
-
 
 def load_graphs_meta():
 	'''Load and preprocess the meta for graphs in the `graphs` collection.
@@ -220,7 +195,7 @@ class EnrichmentResult(object):
 	def __init__(self, rid):
 		'''To retrieve a result using _id'''
 		self.rid = ObjectId(rid)
-		doc = COLL_RES.find_one({'_id': self.rid}, self.projection)
+		doc = mongo.db.userResults.find_one({'_id': self.rid}, self.projection)
 		self.data = doc['data']
 		self.result = doc['result']
 		self.type = doc['type']
@@ -263,7 +238,7 @@ class UserInput(object):
 
 	def save(self):
 		'''Save the UserInput as well as the EnrichmentResult to a document'''
-		res = COLL_RES.insert_one({
+		res = mongo.db.userResults.insert_one({
 			'result': self.result, 
 			'data': self.data, 
 			'type': self.type,
