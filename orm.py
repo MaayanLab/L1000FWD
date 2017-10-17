@@ -134,21 +134,19 @@ def load_drug_synonyms_from_db(meta_df, graph_df):
 def load_signature_meta_from_db(collection_name, query={}, drug_meta_df=None):
 	projection = {
 		'_id': False,
-		'batch': False,
-		'pert_desc': False,
-		'avg_center_LM': False,
-		'CD_nocenter_LM': False,
-		'CD_center_LM': False,
-		'avg_center_LM_det': False,
-		'CDavg_center_LM_det': False,
-		'CDavg_nocenter_LM_det': False,
-		'CD_center_LM_det': False,
-		'distil_id':False,
-		'CD_center_Full': False,
-		'pvalues_Full':False,
-		'sigIdx': False,
-		'upGenes':False,
-		'dnGenes':False,
+		'sig_id': True,
+		'pert_id': True,
+		'cell_id': True,
+		'pert_dose': True,
+		'pert_time': True,
+		'SCS_centered_by_batch':True,
+		# sigs_pert_cell and sigs_pert
+		'avg_pvalue': True,
+		'n_signatures_aggregated': True,
+		'avg_time': True,
+		'avg_dose': True,
+		'mean_cosine_dist': True,
+		'n_cells': True,
 		}
 	coll = mongo.db[collection_name]
 	cur = coll.find(query, projection)
