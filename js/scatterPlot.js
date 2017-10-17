@@ -794,7 +794,7 @@ var Scatter3dView = Backbone.View.extend({
 			sizeAttenuation: this.is3d,
 			opacity: 0.4
 		})
-		this.highlightCould.setSingleColor('red');
+		this.highlightCould.setSingleColor('yellow');
 		this.highlightCould.points.name = 'highlight';
 		this.scene.add(this.highlightCould.points)
 		this.renderScatter();
