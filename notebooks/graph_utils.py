@@ -10,6 +10,7 @@ import networkx as nx
 from sklearn import preprocessing, manifold, decomposition, neighbors
 from sklearn.metrics.pairwise import pairwise_distances
 from scipy.spatial import distance as dist
+from scipy.cluster import hierarchy
 import scipy as sp
 from scipy.sparse import linalg, csr_matrix
 
@@ -131,4 +132,49 @@ def network_layout(G):
     coords = np.array([xs, ys]).T
     return coords, ids_original
     
+
+
+def compute_HC_tree(mat, linkage='average', metric='cosine'):
+    d = dist.pdist(mat, metric)
+    Z = hierarchy.linkage(d, linkage)
+    tree = hierarchy.to_tree(Z)
+    return tree
+
+def tree_to_graph(tree):
+    '''Convert a scipy.cluster.hierarchy.ClusterNode object to graph'''
+
+    G = nx.DiGraph()
+    n = tree.count
+
+    curNode = [None] * (2 * n)
+    lvisited = set()
+    rvisited = set()
+    curNode[0] = tree
+    k = 0
+    preorder = []
+    while k >= 0:
+        nd = curNode[k]
+        ndid = nd.id
+        if nd.is_leaf():
+            k = k - 1
+        else:
+            if ndid not in lvisited:
+                # move left
+                G.add_edge(ndid, nd.left.id)
+                
+                curNode[k + 1] = nd.left
+                lvisited.add(ndid)
+                k = k + 1
+            elif ndid not in rvisited:
+                # move right
+                G.add_edge(ndid, nd.right.id)
+                curNode[k + 1] = nd.right
+                rvisited.add(ndid)
+                k = k + 1
+            # If we've visited the left and right of this non-leaf
+            # node already, go up in the tree.
+            else:
+                k = k - 1
+
+    return G    
 
