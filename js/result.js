@@ -1,6 +1,5 @@
 var textures = new Textures()
 
-
 var sd = new ScatterData({
 	url: 'result/graph/' + result_id
 })
@@ -29,7 +28,12 @@ var controler = new Controler({scatterPlot: sdv, h: window.innerHeight, w: 200, 
 
 var search = new SearchSelectize({scatterPlot: sdv, container: "#controls"})
 
-var sigSimSearch = new SigSimSearchForm({scatterPlot: sdv, container: "#controls", result_id: result_id})
+var sigSimSearch = new SigSimSearchForm({
+	scatterPlot: sdv, 
+	container: "#controls", 
+	result_id: result_id,
+
+})
 
 var resultModalBtn = new ResultModalBtn({scatterPlot: sdv, container: document.body, result_id: result_id, container: container})
 

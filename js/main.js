@@ -7,7 +7,7 @@ var sd = new ScatterData({
 	// url: 'graph/full'
 	// url: 'graph/A375-tSNE_layout.csv'
 	// url: 'graph/A375_kNN_5'
-	url : url // need to get this variable from server
+	url : 'graph/' + graph_name // need to get this variable from server
 })
 
 var container = document.getElementById("body")
@@ -35,6 +35,10 @@ var controler = new Controler({scatterPlot: sdv, h: window.innerHeight, w: 200, 
 
 var search = new SearchSelectize({scatterPlot: sdv, container: "#controls"})
 
-var sigSimSearch = new SigSimSearchForm({scatterPlot: sdv, container: "#controls"})
+var sigSimSearch = new SigSimSearchForm({
+	scatterPlot: sdv, 
+	container: "#controls",
+	action: 'search/' + graph_name
+})
 
 var overlay = new Overlay({scatterPlot: sdv})

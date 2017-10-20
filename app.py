@@ -36,23 +36,34 @@ mongo.init_app(app)
 
 @app.before_first_request
 def load_globals():
-	global meta_df, N_SIGS, graph_df, drug_synonyms, drug_meta_df
-	global graphs
+	global meta_df, graph_df, drug_synonyms, drug_meta_df
+	global graphs # meta data of the graphs for the header
 	global all_sig_ids
+	global d_all_graphs # preload all graphs
+	global graph_name_full
+	graph_name_full = 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs'
 	graphs = load_graphs_meta()
 
 	drug_meta_df = load_drug_meta_from_db()
 	
-	graph_df, meta_df = load_graph_from_db('Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs',
+	graph_df, meta_df = load_graph_from_db(graph_name_full,
 		drug_meta_df=drug_meta_df)
 	print meta_df.shape
-	N_SIGS = meta_df.shape[0]
+	# N_SIGS = meta_df.shape[0]
 
-	print graph_df.head()
+	# print graph_df.head()
 
 	drug_synonyms = load_drug_synonyms_from_db(meta_df, graph_df)
 
 	all_sig_ids = get_all_sig_ids_from_graphs()
+
+	# Load all the graphs
+	d_all_graphs = {}
+	for graph_rec in graphs['cells']:
+		graph_name = graph_rec['name']
+		graph_df_, _ = load_graph_from_db(graph_name, drug_meta_df=drug_meta_df)
+		d_all_graphs[graph_name] = graph_df_
+
 	return
 
 
@@ -72,7 +83,7 @@ def index_page():
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
 		graphs=graphs,
-		url=url,
+		graph_name=graph_name_full,
 		sdvConfig=json.dumps(sdvConfig),
 		)
 
@@ -102,7 +113,7 @@ def graph_page(graph_name):
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
 		graphs=graphs,
-		url=url,
+		graph_name=graph_name,
 		sdvConfig=json.dumps(sdvConfig),
 		)
 
@@ -113,29 +124,31 @@ def send_file(filename):
 	'''
 	return send_from_directory(app.static_folder, filename)
 
-@app.route(ENTER_POINT + '/toy', methods=['GET'])
-def toy_data():
-	if request.method == 'GET':
-		n = int(request.args.get('n', 10))
-		rand_idx = np.random.choice(range(N_SIGS), n, replace=False)
+# @app.route(ENTER_POINT + '/toy', methods=['GET'])
+# def toy_data():
+# 	if request.method == 'GET':
+# 		n = int(request.args.get('n', 10))
+# 		rand_idx = np.random.choice(range(N_SIGS), n, replace=False)
 
-		rand_coords = np.random.randn(n, 3)
-		df = meta_df.iloc[rand_idx]
-		df = df.assign(x=rand_coords[:,0], y=rand_coords[:,1], z=rand_coords[:,2])
+# 		rand_coords = np.random.randn(n, 3)
+# 		df = meta_df.iloc[rand_idx]
+# 		df = df.assign(x=rand_coords[:,0], y=rand_coords[:,1], z=rand_coords[:,2])
 
-		return df.to_json(orient='records')
-		# return jsonify(df.to_dict(orient='list'))
+# 		return df.to_json(orient='records')
+# 		# return jsonify(df.to_dict(orient='list'))
 
 
 @app.route(ENTER_POINT + '/graph/<string:graph_name>', methods=['GET'])
 def load_graph_layout_coords(graph_name):
+	'''API for different graphs'''
 	if request.method == 'GET':
 		if graph_name == 'full':
 			print graph_df.shape
 			return graph_df.reset_index().to_json(orient='records')
 		else:
-			graph_df_, meta_df_ = load_graph_from_db(graph_name, drug_meta_df)
-			print graph_df_.head()
+			# graph_df_, meta_df_ = load_graph_from_db(graph_name, drug_meta_df)
+			# print graph_df_.head()
+			graph_df_ = d_all_graphs[graph_name]
 			return graph_df_.reset_index().to_json(orient='records')
 
 
@@ -147,8 +160,8 @@ def get_all_sig_ids():
 	if request.method == 'GET':
 		return json.dumps({'sig_ids': all_sig_ids, 'n_sig_ids': len(all_sig_ids)})
 
-@app.route(ENTER_POINT + '/search', methods=['POST'])
-def post_to_sigine():
+@app.route(ENTER_POINT + '/search/<string:graph_name>', methods=['POST'])
+def post_to_sigine(graph_name):
 	'''Endpoint handling signature similarity search, POST the up/down genes 
 	to the RURL and redirect to the result page.'''
 	if request.method == 'POST':
@@ -158,7 +171,8 @@ def post_to_sigine():
 		# init GeneSets instance
 		gene_sets = GeneSets(up_genes, down_genes)
 		# perform similarity search
-		result = gene_sets.enrich(graph_df)
+		graph_df_ = d_all_graphs[graph_name]
+		result = gene_sets.enrich(graph_df_, graph_name)
 		# save gene_sets and results to MongoDB
 		rid = gene_sets.save()
 		print rid
@@ -185,7 +199,7 @@ def result(result_id):
 	# retrieve enrichment results from db
 	result_obj = EnrichmentResult(result_id)
 	# bind enrichment result to the network layout
-	graph_df_res = result_obj.bind_to_graph(graph_df, all_sig_ids)
+	graph_df_res = result_obj.bind_to_graph(d_all_graphs[result_obj.graph_name], all_sig_ids)
 
 	return graph_df_res.reset_index().to_json(orient='records')
 
@@ -206,6 +220,10 @@ def result_topn(result_id):
 	result_obj = EnrichmentResult(result_id)
 	return json.dumps(result_obj.result['topn'])
 
+# @app.route(ENTER_POINT + '/result/graph_name/<string:result_id>', methods=['GET'])
+# def get_result_graph_name(result_id):
+# 	result_obj = EnrichmentResult(result_id)
+# 	return json.dumps({'graph_name': result_obj.graph_name})
 
 @app.route(ENTER_POINT + '/result/modal/<string:result_id>', methods=['GET'])
 def result_modal(result_id):
@@ -215,17 +233,18 @@ def result_modal(result_id):
 	# add pert_id and perturbation to topn for the modal to render
 	n = len(result_obj.result['topn']['similar'])
 	topn = {'similar': [None]*n, 'opposite': [None]*n}
+	graph_df_ = d_all_graphs[result_obj.graph_name]
 	for i in range(n):
 		rec = result_obj.result['topn']['similar'][i]
 		sig_id = rec['sig_id']
-		rec['pert_id'] = sig_id.split(':')[1]
-		rec['perturbation'] = graph_df.ix[sig_id]['Perturbation']
+		rec['pert_id'] = graph_df_.ix[sig_id]['pert_id']
+		rec['perturbation'] = graph_df_.ix[sig_id]['Perturbation']
 		topn['similar'][i] = rec
 		
 		rec = result_obj.result['topn']['opposite'][i]
 		sig_id = rec['sig_id']
-		rec['pert_id'] = sig_id.split(':')[1]
-		rec['perturbation'] = graph_df.ix[sig_id]['Perturbation']
+		rec['pert_id'] = graph_df_.ix[sig_id]['pert_id']
+		rec['perturbation'] = graph_df_.ix[sig_id]['Perturbation']
 		topn['opposite'][i] = rec
 
 	return render_template('result-modal.html', 
@@ -240,10 +259,11 @@ def result_download(result_id):
 	result_obj = EnrichmentResult(result_id)
 	# Prepare a DataFrame for the result
 	scores = result_obj.result['scores']
+	graph_df_ = d_all_graphs[result_obj.graph_name]
 	result_df = pd.DataFrame({'similarity_scores': scores, 
-		'drug': graph_df['Perturbation'],
-		'pert_id': graph_df.index.map(lambda x:x.split(':')[1]),
-		}, index=graph_df.index)\
+		'drug': graph_df_['Perturbation'],
+		'pert_id': graph_df_.index.map(lambda x:x.split(':')[1]),
+		}, index=graph_df_.index)\
 		.sort_values('similarity_scores', ascending=False)
 	# Write into memory
 	s = StringIO.StringIO()
@@ -264,12 +284,13 @@ def result_page(result_id):
 		'shapeKey': 'Time',
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
 	}
+	result_obj = EnrichmentResult(result_id)
 	return render_template('index.html', 
 		script='result', 
 		ENTER_POINT=ENTER_POINT,
 		result_id=result_id,
 		graphs=graphs,
-		url='url',
+		graph_name=result_obj.graph_name,
 		sdvConfig=json.dumps(sdvConfig),
 		)
 

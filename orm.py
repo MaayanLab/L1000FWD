@@ -209,6 +209,7 @@ class EnrichmentResult(object):
 		self.data = doc['data']
 		self.result = doc['result']
 		self.type = doc['type']
+		self.graph_name = doc['graph_name']
 
 	def bind_to_graph(self, df, all_sig_ids):
 		'''Bind the enrichment results to the graph df'''
@@ -228,7 +229,7 @@ class UserInput(object):
 		self.type = None
 		self.rid = None
 
-	def enrich(self, df):
+	def enrich(self, df, graph_name):
 		'''POST to Rook API to get enriched LJP signatures.
 		df is the graph_df to subset the scores
 		'''
@@ -248,6 +249,7 @@ class UserInput(object):
 			'scores': result['scores'].tolist(), 
 			'topn': topn
 			}
+		self.graph_name = graph_name
 		return self.result
 
 	def save(self):
@@ -256,6 +258,7 @@ class UserInput(object):
 			'result': self.result, 
 			'data': self.data, 
 			'type': self.type,
+			'graph_name': self.graph_name
 			})
 		self.rid = res.inserted_id # <class 'bson.objectid.ObjectId'>
 		return str(self.rid)
