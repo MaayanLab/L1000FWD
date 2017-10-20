@@ -40,7 +40,7 @@ var Legend = Backbone.View.extend({
 		this.g.append('g')
 			.attr('id', 'legendColor')
 			.attr("class", "legendPanel")
-			.attr("transform", "translate(140, 0)");
+			.attr("transform", "translate(90, 0)");
 
 	},
 
