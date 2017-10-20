@@ -3,3 +3,5 @@ data/*
 !data/.gitignore
 log/
 .DS_Store
+notebooks/data/*
+notebooks/figs/*
