@@ -38,6 +38,7 @@ mongo.init_app(app)
 def load_globals():
 	global meta_df, N_SIGS, graph_df, drug_synonyms, drug_meta_df
 	global graphs
+	global all_sig_ids
 	graphs = load_graphs_meta()
 
 	drug_meta_df = load_drug_meta_from_db()
@@ -50,6 +51,8 @@ def load_globals():
 	print graph_df.head()
 
 	drug_synonyms = load_drug_synonyms_from_db(meta_df, graph_df)
+
+	all_sig_ids = get_all_sig_ids_from_graphs()
 	return
 
 
@@ -138,12 +141,11 @@ def load_graph_layout_coords(graph_name):
 
 @app.route(ENTER_POINT + '/sig_ids', methods=['GET'])
 def get_all_sig_ids():
+	'''Get all sig_ids across the all available graphs. 
+	This endpoint is for sigine to precompute the signature matrix for the search engine.
+	'''
 	if request.method == 'GET':
-		cyjs_filename = os.environ['CYJS']
-		json_data = json.load(open('notebooks/%s' % cyjs_filename, 'rb'))
-		json_data = json_data['elements']['nodes']
-		sig_ids = [rec['data']['name'] for rec in json_data]
-		return json.dumps({'sig_ids': sig_ids, 'n_sig_ids': len(sig_ids)})
+		return json.dumps({'sig_ids': all_sig_ids, 'n_sig_ids': len(all_sig_ids)})
 
 @app.route(ENTER_POINT + '/search', methods=['POST'])
 def post_to_sigine():
@@ -156,7 +158,7 @@ def post_to_sigine():
 		# init GeneSets instance
 		gene_sets = GeneSets(up_genes, down_genes)
 		# perform similarity search
-		result = gene_sets.enrich()
+		result = gene_sets.enrich(graph_df)
 		# save gene_sets and results to MongoDB
 		rid = gene_sets.save()
 		print rid
@@ -183,7 +185,7 @@ def result(result_id):
 	# retrieve enrichment results from db
 	result_obj = EnrichmentResult(result_id)
 	# bind enrichment result to the network layout
-	graph_df_res = result_obj.bind_to_graph(graph_df)
+	graph_df_res = result_obj.bind_to_graph(graph_df, all_sig_ids)
 
 	return graph_df_res.reset_index().to_json(orient='records')
 
@@ -215,13 +217,13 @@ def result_modal(result_id):
 	topn = {'similar': [None]*n, 'opposite': [None]*n}
 	for i in range(n):
 		rec = result_obj.result['topn']['similar'][i]
-		sig_id = rec['sig_ids']
+		sig_id = rec['sig_id']
 		rec['pert_id'] = sig_id.split(':')[1]
 		rec['perturbation'] = graph_df.ix[sig_id]['Perturbation']
 		topn['similar'][i] = rec
 		
 		rec = result_obj.result['topn']['opposite'][i]
-		sig_id = rec['sig_ids']
+		sig_id = rec['sig_id']
 		rec['pert_id'] = sig_id.split(':')[1]
 		rec['perturbation'] = graph_df.ix[sig_id]['Perturbation']
 		topn['opposite'][i] = rec
@@ -257,10 +259,19 @@ def result_download(result_id):
 def result_page(result_id):
 	'''The result page.
 	'''
+	sdvConfig = {
+		'colorKey': 'Cell',
+		'shapeKey': 'Time',
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
+	}
 	return render_template('index.html', 
 		script='result', 
 		ENTER_POINT=ENTER_POINT,
-		result_id=result_id)
+		result_id=result_id,
+		graphs=graphs,
+		url='url',
+		sdvConfig=json.dumps(sdvConfig),
+		)
 
 
 if __name__ == '__main__':

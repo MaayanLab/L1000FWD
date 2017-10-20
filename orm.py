@@ -184,7 +184,17 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 	return graph_df, meta_df
 
 
-
+def get_all_sig_ids_from_graphs():
+	cur = mongo.db.graphs.find(
+		{'$and': [
+			{'coll': 'sigs'}, 
+			{'name': {'$ne': 'Signature_Graph_17041nodes_0.56_ERSC.cyjs'}}
+		]},
+		{'_id':False, 'sig_ids':True})
+	sig_ids = [doc['sig_ids'] for doc in cur]
+	sig_ids = reduce(lambda x, y: x+y, sig_ids)
+	sig_ids = sorted(set(sig_ids))	
+	return sig_ids
 
 ### ORMs for user imput
 class EnrichmentResult(object):
@@ -200,9 +210,10 @@ class EnrichmentResult(object):
 		self.result = doc['result']
 		self.type = doc['type']
 
-	def bind_to_graph(self, df):
+	def bind_to_graph(self, df, all_sig_ids):
 		'''Bind the enrichment results to the graph df'''
-		df['scores'] = self.result['scores']
+		d_sig_id_score = dict(zip(df.index, self.result['scores']))
+		df['scores'] = [d_sig_id_score[sig_id] for sig_id in df.index]
 		return df
 
 class UserInput(object):
@@ -217,19 +228,22 @@ class UserInput(object):
 		self.type = None
 		self.rid = None
 
-	def enrich(self):
-		'''POST to Rook API to get enriched LJP signatures'''
+	def enrich(self, df):
+		'''POST to Rook API to get enriched LJP signatures.
+		df is the graph_df to subset the scores
+		'''
 		self.config['method'] = self.type
 		payload = dict(self.data.items() + self.config.items())
 		response = requests.post(RURL, data=json.dumps(payload),headers=self.headers)
-		result = pd.DataFrame(response.json())
+		result = pd.DataFrame(response.json()).set_index('sig_ids')
+		result = result.loc[df.index].reset_index()
 		# Get the top N as list of records:
 		topn = {
 			'similar': result.iloc[:50].to_dict(orient='records'),
 			'opposite': result.iloc[-50:][::-1].to_dict(orient='records'),
 			}
 		# Sort scores by sig_ids to ensure consistency with the graph
-		result.sort_values(by='sig_ids', inplace=True, ascending=True)
+		result.sort_values(by='sig_id', inplace=True, ascending=True)
 		self.result = {
 			'scores': result['scores'].tolist(), 
 			'topn': topn
@@ -246,10 +260,10 @@ class UserInput(object):
 		self.rid = res.inserted_id # <class 'bson.objectid.ObjectId'>
 		return str(self.rid)
 
-	def bind_enrichment_to_graph(self, net):
-		'''Bind the enrichment results to the graph df'''
-		df['scores'] = self.result['scores']
-		return df
+	# def bind_enrichment_to_graph(self, net):
+	# 	'''Bind the enrichment results to the graph df'''
+	# 	df['scores'] = self.result['scores']
+	# 	return df
 
 
 class GeneSets(UserInput):

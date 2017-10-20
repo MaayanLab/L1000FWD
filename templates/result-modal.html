@@ -18,7 +18,7 @@
 				{% for row in topn['similar'] %}
 				<tr>
 					<td>
-						<a href="http://amp.pharm.mssm.edu/dmoa/redirect/L1000CDS2/{{ row['sig_ids'] }}" target="_blank">{{ row['sig_ids'] }}</a>
+						<a href="http://amp.pharm.mssm.edu/dmoa/sig/{{ row['sig_id'] }}" target="_blank">{{ row['sig_id'] }}</a>
 					</td>
 					<td>
 						<a href="http://amp.pharm.mssm.edu/dmoa/report/{{ row['pert_id'] }}" target="_blank">{{ row['perturbation'] }}</a>
@@ -43,7 +43,7 @@
 				{% for row in topn['opposite'] %}
 				<tr>
 					<td>
-						<a href="http://amp.pharm.mssm.edu/dmoa/redirect/L1000CDS2/{{ row['sig_ids'] }}" target="_blank">{{ row['sig_ids'] }}</a>
+						<a href="http://amp.pharm.mssm.edu/dmoa/sig/{{ row['sig_id'] }}" target="_blank">{{ row['sig_id'] }}</a>
 					</td>
 					<td>
 						<a href="http://amp.pharm.mssm.edu/dmoa/report/{{ row['pert_id'] }}" target="_blank">{{ row['perturbation'] }}</a>
