@@ -59,7 +59,7 @@ def load_globals():
 
 	# Load all the graphs
 	d_all_graphs = {}
-	for graph_rec in graphs['cells']:
+	for graph_rec in graphs['cells'] + graphs['agg']:
 		graph_name = graph_rec['name']
 		graph_df_, _ = load_graph_from_db(graph_name, drug_meta_df=drug_meta_df)
 		d_all_graphs[graph_name] = graph_df_
