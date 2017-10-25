@@ -259,7 +259,7 @@ var SearchSelectize = Backbone.View.extend({
 		
 		var self = this;
 		// The button to clear highlighted points
-		this.btn = $('<button class="btn btn-xs">Clear highlighted points</button>').click(function(e){
+		this.btn = $('<button class="btn btn-default btn-xs">Clear highlighted points</button>').click(function(e){
 			self.scatterPlot.removeHighlightedPoints();
 			self.hideButton();
 		});
@@ -398,17 +398,17 @@ var SigSimSearchForm = Backbone.View.extend({
 		dnGeneDiv.append(this.dnGeneTa);
 
 		var self = this;
-		var exampleBtn = $('<button class="btn btn-xs pull-left">Example</button>').click(function(e){
+		var exampleBtn = $('<button class="btn btn-default btn-xs pull-left">Example</button>').click(function(e){
 			e.preventDefault();
 			self.populateGenes(self.exampleGenes.up, self.exampleGenes.down);
 		});
 
-		var clearBtn = $('<button id="clear-btn" class="btn btn-xs">Clear</button>').click(function(e){
+		var clearBtn = $('<button id="clear-btn" class="btn btn-default btn-xs">Clear</button>').click(function(e){
 			e.preventDefault();
 			self.populateGenes([], []);
 		});
 
-		var submitBtn = $('<input type="submit" class="btn btn-xs pull-right" value="Submit"></input>');
+		var submitBtn = $('<input type="submit" class="btn btn-default btn-xs pull-right" value="Submit"></input>');
 
 		// append everything to form
 		form.append(upGeneDiv)
