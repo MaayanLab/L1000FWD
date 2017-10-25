@@ -74,7 +74,22 @@ var Legend = Backbone.View.extend({
 
 });
 
-
+// This is a map for the tooltips displayed to explain the 
+// colorBy and shapeBy options.
+var tooltipTexts = { 
+	'p-value': 'An empirical p-value measuring the consistency between drug treatment replicates used for calculating the drug-induced signature.',
+	'scores': 'Similarity score measuring the overlap between the input DE genes and the signature DE genes divided by the effective input. The range of the score is [-1, 1]. Positive scores indicate similar signature whereas negative scores indicate opposite signature.',
+	'Cell': 'Cell line for the drug perturbation',
+	'Dose': 'Concentration of the drug',
+	'pert_id': 'ID if the drug/small molecule compound',
+	'Time': 'Duration of drug treatment',
+	'Perturbation': 'Name of drug/small molecule compound',
+	'most_frequent_rx': 'Most frequently associated co-prescribed drug',
+	'most_frequent_dx': 'Most frequently associated diagnosis',
+	'Phase': 'Drug development phase',
+	'MOA': 'Mechanisms of action',
+	'Batch': 'Experimental batch',
+};
 
 var Controler = Backbone.View.extend({
 
@@ -131,7 +146,7 @@ var Controler = Backbone.View.extend({
 
 		var shapeSelect = shapeControl.append('select')
 			.attr('id', 'shape')
-			.attr('class', 'form-control')
+			.attr('class', 'form-control selectpicker')
 			.on('change', function(){
 				var selectedMetaKey = d3.select('#shape').property('value');
 				self.trigger('shapeChanged', selectedMetaKey)
@@ -142,7 +157,15 @@ var Controler = Backbone.View.extend({
 			.data(_.pluck(metasShape, 'name')).enter()
 			.append('option')
 			.text(function(d){return d;})
-			.attr('value', function(d){return d;});
+			.attr('value', function(d){return d;})
+			.attr('data-content', function(d){
+				if (tooltipTexts.hasOwnProperty(d)) {
+					return '<div title="'+tooltipTexts[d]+
+						'" data-toggle="tooltip">'+d+'</div>';
+				} else{
+					return '<div>' + d + '</div>';
+				};
+			});
 
 		// Colors
 		var colorControl = this.el.append('div')
@@ -153,7 +176,7 @@ var Controler = Backbone.View.extend({
 
 		var colorSelect = colorControl.append('select')
 			.attr('id', 'color')
-			.attr('class', 'form-control')
+			.attr('class', 'form-control selectpicker')
 			.on('change', function(){
 				var selectedMetaKey = d3.select('#color').property('value');
 				self.trigger('colorChanged', selectedMetaKey)
@@ -164,7 +187,24 @@ var Controler = Backbone.View.extend({
 			.data(_.pluck(metas, 'name')).enter()
 			.append('option')
 			.text(function(d){return d;})
-			.attr('value', function(d){return d;});
+			.attr('value', function(d){return d;})
+			.attr('data-content', function(d){
+				if (tooltipTexts.hasOwnProperty(d)) {
+					return '<div title="'+tooltipTexts[d]+
+						'" data-toggle="tooltip">'+d+'</div>';
+				} else{
+					return '<div>' + d + '</div>';
+				};
+			});
+
+		$('.selectpicker').selectpicker({
+			style: 'btn-default btn-sm',
+		});
+
+		$('[data-toggle="tooltip"]').tooltip({
+			placement: 'left',
+			container: 'body',
+		});
 
 		return this;
 	},
@@ -172,7 +212,9 @@ var Controler = Backbone.View.extend({
 	changeSelection: function(){
 		// change the current selected option to value
 		$('#shape').val(this.scatterPlot.shapeKey); 
+		$('#shape').selectpicker('val', this.scatterPlot.shapeKey)
 		$('#color').val(this.scatterPlot.colorKey);
+		$('#color').selectpicker('val', this.scatterPlot.colorKey)
 	},
 
 });
