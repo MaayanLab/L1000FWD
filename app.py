@@ -199,7 +199,7 @@ def result(result_id):
 	# retrieve enrichment results from db
 	result_obj = EnrichmentResult(result_id)
 	# bind enrichment result to the network layout
-	graph_df_res = result_obj.bind_to_graph(d_all_graphs[result_obj.graph_name], all_sig_ids)
+	graph_df_res = result_obj.bind_to_graph(d_all_graphs[result_obj.graph_name])
 
 	return graph_df_res.reset_index().to_json(orient='records')
 

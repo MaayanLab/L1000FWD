@@ -211,7 +211,7 @@ class EnrichmentResult(object):
 		self.type = doc['type']
 		self.graph_name = doc['graph_name']
 
-	def bind_to_graph(self, df, all_sig_ids):
+	def bind_to_graph(self, df):
 		'''Bind the enrichment results to the graph df'''
 		d_sig_id_score = dict(zip(df.index, self.result['scores']))
 		df['scores'] = [d_sig_id_score[sig_id] for sig_id in df.index]
@@ -238,13 +238,12 @@ class UserInput(object):
 		response = requests.post(RURL, data=json.dumps(payload),headers=self.headers)
 		result = pd.DataFrame(response.json()).set_index('sig_ids')
 		result = result.loc[df.index].reset_index()
+		result_sorted = result.sort_values('scores', ascending=False)
 		# Get the top N as list of records:
 		topn = {
-			'similar': result.iloc[:50].to_dict(orient='records'),
-			'opposite': result.iloc[-50:][::-1].to_dict(orient='records'),
+			'similar': result_sorted.iloc[:50].to_dict(orient='records'),
+			'opposite': result_sorted.iloc[-50:][::-1].to_dict(orient='records'),
 			}
-		# Sort scores by sig_ids to ensure consistency with the graph
-		result.sort_values(by='sig_id', inplace=True, ascending=True)
 		self.result = {
 			'scores': result['scores'].tolist(), 
 			'topn': topn
