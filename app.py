@@ -124,6 +124,12 @@ def send_file(filename):
 	'''
 	return send_from_directory(app.static_folder, filename)
 
+@app.route('/search_drug')
+def search_drug():
+	'''Redirect to drug search page.
+	'''
+	return redirect('http://amp.pharm.mssm.edu/dmoa/search_drug', code=302)	
+
 # @app.route(ENTER_POINT + '/toy', methods=['GET'])
 # def toy_data():
 # 	if request.method == 'GET':
