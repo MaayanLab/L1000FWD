@@ -8,19 +8,19 @@ var container = document.getElementById("body")
 var width = container.clientWidth;
 var height = container.clientHeight;
 
-var sdv = new Scatter3dView({
+var sdvDefaultConfig = {
 	container: container,
 	WIDTH: width,
 	HEIGHT: height,	
 	model: sd,
 	textures: textures,
-	// pointSize: 0.1, 
 	pointSize: 12,
 	is3d: false,
-	colorKey: 'scores',
-	shapeKey: 'Time',
-	labelKey: ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time'],
-})
+}
+
+sdvConfig = $.extend(sdvDefaultConfig, sdvConfig)
+
+var sdv = new Scatter3dView(sdvConfig)
 
 var legend = new Legend({scatterPlot: sdv, h: window.innerHeight, container: container})
 

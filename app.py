@@ -280,7 +280,7 @@ def result_page(result_id):
 	'''The result page.
 	'''
 	sdvConfig = {
-		'colorKey': 'Cell',
+		'colorKey': 'scores',
 		'shapeKey': 'Time',
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
 	}

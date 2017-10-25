@@ -1,12 +1,6 @@
 var textures = new Textures()
 
-
 var sd = new ScatterData({
-	// n: 10000,
-	// url: 'pca'
-	// url: 'graph/full'
-	// url: 'graph/A375-tSNE_layout.csv'
-	// url: 'graph/A375_kNN_5'
 	url : 'graph/' + graph_name // need to get this variable from server
 })
 
@@ -20,7 +14,6 @@ var sdvDefaultConfig = {
 	HEIGHT: height,	
 	model: sd,
 	textures: textures,
-	// pointSize: 0.1, 
 	pointSize: 12,
 	is3d: false,
 }
