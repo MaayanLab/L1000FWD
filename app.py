@@ -1,5 +1,6 @@
 import os, sys
 import json
+import time
 import StringIO
 import numpy as np
 np.random.seed(10)
@@ -59,7 +60,7 @@ def load_globals():
 
 	# Load all the graphs
 	d_all_graphs = {}
-	for graph_rec in graphs['cells'] + graphs['agg']:
+	for graph_rec in graphs['cells']:# + graphs['agg']:
 		graph_name = graph_rec['name']
 		graph_df_, _ = load_graph_from_db(graph_name, drug_meta_df=drug_meta_df)
 		d_all_graphs[graph_name] = graph_df_
@@ -70,7 +71,6 @@ def load_globals():
 @app.route(ENTER_POINT + '/')
 def index_page():
 	# The default main page
-	url = 'graph/full'
 	sdvConfig = {
 		'colorKey': 'Cell',
 		'shapeKey': 'Time',
@@ -116,6 +116,64 @@ def graph_page(graph_name):
 		graph_name=graph_name,
 		sdvConfig=json.dumps(sdvConfig),
 		)
+
+
+## /subset endpoints and pages
+@app.route(ENTER_POINT + '/subset_page', methods=['GET'])
+def send_subset_input_page():
+	return render_template('subset.html',
+		ENTER_POINT=ENTER_POINT,
+		graphs=graphs,
+
+		)
+
+@app.route(ENTER_POINT + '/subset', methods=['POST'])
+def create_graph_from_user_subset():
+	if request.method == 'POST':
+		# time_points = request.form.get('times', [6, 24, 48])
+		# drugs = request.form.get('pert_ids', [])
+		# cells = request.form.get('cells', [])
+
+		post_data = request.get_json()
+		times = post_data.get('times', [6, 24, 48])
+		pert_ids = post_data.get('pert_ids', [])
+		cells = post_data.get('cells', [])
+
+		user_subset = UserSubset({
+			'pert_ids': pert_ids,
+			'cells': cells,
+			'times': times,
+			})
+		rid = user_subset.save()
+		print rid
+		return json.dumps({'url':'/subset/' + rid})
+
+@app.route(ENTER_POINT + '/subset/<string:subset_id>', methods=['GET'])
+def send_subset_result_page(subset_id):
+	sdvConfig = {
+		'colorKey': 'MOA',
+		'shapeKey': 'Time',
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
+	}
+
+	return render_template('index.html', 
+		ENTER_POINT=ENTER_POINT,
+		subset_id=subset_id,
+		script='subset',
+		sdvConfig=json.dumps(sdvConfig),
+		graphs=graphs,
+		graph_name=graph_name_full
+		)
+
+@app.route(ENTER_POINT + '/subset/graph/<string:subset_id>', methods=['GET'])
+def retrieve_subset_id_and_subset_graph(subset_id):
+	user_subset = UserSubset.get(subset_id)
+	graph_df_sub = user_subset.subset_graph(graph_df)
+
+	# This somehow works
+	time.sleep(1)
+	return graph_df_sub.reset_index().to_json(orient='records')
+
 
 
 @app.route('/<path:filename>')
@@ -192,6 +250,14 @@ def search_drug_by_synonyms(query_string):
 	if request.method == 'GET':
 		mask = drug_synonyms['Name'].str.contains(query_string, case=False)
 		return drug_synonyms.loc[mask].to_json(orient='records') 
+
+@app.route(ENTER_POINT + '/cells', methods=['GET'])
+def get_cell_lines():
+	'''Get a list of cell line names in the default graph.
+	'''
+	cells = graph_df['Cell'].unique().tolist()
+	cells = [{'name': cell, 'value': cell} for cell in cells]
+	return json.dumps(cells)	
 
 
 ## /result/ endpoints

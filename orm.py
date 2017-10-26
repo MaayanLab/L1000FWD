@@ -262,11 +262,6 @@ class UserInput(object):
 		self.rid = res.inserted_id # <class 'bson.objectid.ObjectId'>
 		return str(self.rid)
 
-	# def bind_enrichment_to_graph(self, net):
-	# 	'''Bind the enrichment results to the graph df'''
-	# 	df['scores'] = self.result['scores']
-	# 	return df
-
 
 class GeneSets(UserInput):
 	"""docstring for GeneSets"""
@@ -279,5 +274,36 @@ class GeneSets(UserInput):
 		'''Return an object to be encoded to json format'''
 		return self.data
 
+
+class UserSubset(object):
+	"""Metadata (pert_ids, cells, times) from users to subset signatures.
+	"""
+	def __init__(self, data):
+		self.data = data
+	
+	def save(self):
+		res = mongo.db.userSubset.insert_one({
+			'data': self.data
+			})
+		self.rid = res.inserted_id # <class 'bson.objectid.ObjectId'>
+		return str(self.rid)
+
+	def subset_graph(self, graph_df):
+		'''Based on self's metadata to subset a graph_df
+		'''
+		mask = graph_df['pert_id'].isin(self.data['pert_ids']) &\
+			graph_df['Cell'].isin(self.data['cells']) &\
+			graph_df['Time'].isin(self.data['times'])
+		graph_df_sub = graph_df.loc[mask]
+		# Scale the x, y 
+		graph_df_sub['x'] = _minmax_scaling(graph_df_sub['x'].values)
+		graph_df_sub['y'] = _minmax_scaling(graph_df_sub['y'].values)
+		return graph_df_sub
+
+	@classmethod
+	def get(cls, rid):
+		rid = ObjectId(rid)
+		data = mongo.db.userSubset.find_one({'_id': rid}, {'_id':0})
+		return cls(data['data'])
 
 
