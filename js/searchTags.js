@@ -12,7 +12,13 @@ $('#pert_ids').selectize({
 				'<li>' + escape(item.Name) + '</li>' +
 				'<li>pert_id:' + escape(item.pert_id) + '</li>' +
 				'</ul>';
-		}
+		},
+		item: function(item, escape){
+			return '<div>' + 
+				'<span class="drug-name">' + escape(item.Name) + '</span>' + 
+				'<span class="drug-pert-id"> (' + escape(item.pert_id) + ')</span>' + 
+				'</div>';
+		},
 	},
 	load: function(query, callback){
 		if (!query.length) return callback();
