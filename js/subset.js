@@ -14,8 +14,9 @@ var sdvDefaultConfig = {
 	HEIGHT: height,	
 	model: sd,
 	textures: textures,
-	pointSize: 16,
+	pointSize: 12,
 	is3d: false,
+	raycasterThreshold: 0.12,
 }
 
 sdvConfig = $.extend(sdvDefaultConfig, sdvConfig)

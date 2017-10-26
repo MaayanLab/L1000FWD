@@ -354,6 +354,7 @@ var Scatter3dView = Backbone.View.extend({
 		pointSize: 0.01, // the size of the points
 		showStats: false, // whether to show Stats
 		is3d: true, // 3d or 2d
+		raycasterThreshold: undefined, // raycaster.Points.threshold
 	},
 
 	initialize: function(options){
@@ -440,12 +441,16 @@ var Scatter3dView = Backbone.View.extend({
 
 		// set up raycaster, mouse
 		this.raycaster = new THREE.Raycaster();
-		if (this.is3d){
-			this.raycaster.params.Points.threshold = this.pointSize/5;	
-		} else {
-			this.raycaster.params.Points.threshold = this.pointSize/500;	
+		if (this.raycasterThreshold){
+			this.raycaster.params.Points.threshold = this.raycasterThreshold;
+		} else{
+			if (this.is3d){
+				this.raycaster.params.Points.threshold = this.pointSize/5;	
+			} else {
+				this.raycaster.params.Points.threshold = this.pointSize/500;	
+			}			
 		}
-		// this.raycaster.params.Points.threshold = 0.5;
+		
 		this.mouse = new THREE.Vector2();
 
 		if (this.showStats) {
