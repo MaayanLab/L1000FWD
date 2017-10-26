@@ -130,14 +130,15 @@ def send_subset_input_page():
 @app.route(ENTER_POINT + '/subset', methods=['POST'])
 def create_graph_from_user_subset():
 	if request.method == 'POST':
-		# time_points = request.form.get('times', [6, 24, 48])
-		# drugs = request.form.get('pert_ids', [])
-		# cells = request.form.get('cells', [])
-
+		
 		post_data = request.get_json()
-		times = post_data.get('times', [6, 24, 48])
-		pert_ids = post_data.get('pert_ids', [])
-		cells = post_data.get('cells', [])
+		times = post_data.get('times', None)
+		pert_ids = post_data.get('pert_ids', None)
+		cells = post_data.get('cells', None)
+		if times is None:
+			times = [6, 24, 48]
+		if cells is None:
+			cells = graph_df['Cell'].unique().tolist()
 
 		user_subset = UserSubset({
 			'pert_ids': pert_ids,

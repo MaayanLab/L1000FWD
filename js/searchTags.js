@@ -65,26 +65,35 @@ $('#times').selectize({
 });
 
 
-
 var postUrl = 'subset';
 
 $('#submit-btn').click(function(e){
-	// e.preventDefault();
-	$.ajax(postUrl, {
-		contentType : 'application/json',
-		type: 'POST',
-		data: JSON.stringify({
-			pert_ids: $('#pert_ids').val(),
-			cells: $('#cells').val(),
-			times: $('#times').val(),
-		}),
-		success: function(result){
-			result = JSON.parse(result);
-			var getUrl = window.location;
-			var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
-			// redirect
-			window.location.href = baseUrl + result.url;
-		}
-	});
+	e.preventDefault();
+
+	var pert_ids = $('#pert_ids').val();
+	var cells = $('#cells').val();
+	var times = $('#times').val();
+
+	if (pert_ids === null){
+		alert('Please select at least one drug/compound');
+	} else{
+		$.ajax(postUrl, {
+			contentType : 'application/json',
+			type: 'POST',
+			data: JSON.stringify({
+				pert_ids: pert_ids,
+				cells: cells,
+				times: times,
+			}),
+			success: function(result){
+				result = JSON.parse(result);
+				var getUrl = window.location;
+				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+				// redirect
+				window.location.href = baseUrl + result.url;
+			}
+		});		
+	}
+
 
 })
