@@ -130,7 +130,7 @@ def send_subset_input_page():
 @app.route(ENTER_POINT + '/subset', methods=['POST'])
 def create_graph_from_user_subset():
 	if request.method == 'POST':
-		
+
 		post_data = request.get_json()
 		times = post_data.get('times', None)
 		pert_ids = post_data.get('pert_ids', None)
@@ -183,7 +183,7 @@ def send_file(filename):
 	'''
 	return send_from_directory(app.static_folder, filename)
 
-@app.route('/search_drug')
+@app.route(ENTER_POINT + '/search_drug')
 def search_drug():
 	'''Redirect to drug search page.
 	'''
