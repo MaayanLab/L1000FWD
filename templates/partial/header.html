@@ -12,25 +12,13 @@
         <a class="navbar-brand" title="L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures" href="">
           <span>
             <img src="images/logo.png" width="25px" height="25px">
-          </span>
-            L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures</a>
+          </span>L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures</a>
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
 
-          <!-- <li id="aggregated-graphs" class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown">Aggregated Graphs<span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              
-              {% for graph in graphs['agg'] %}
-                <li><a href="graph_page/{{ graph.name }}">{{ graph.display_name }}</a></li>
-              {% endfor %}
-
-            </ul>
-          </li> -->
-
           <li id="graphs-by-cells" class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown">Graphs by cell lines<span class="caret"></span></a>
+            <a class="dropdown-toggle" data-toggle="dropdown">Graphs by Cell Lines<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               
               {% for graph in graphs['cells'] %}
@@ -39,8 +27,8 @@
 
             </ul>
           </li>
-          <li id="search-drug"><a href="search_drug">Search drug reports</a></li>
-          <li id="subset-sigs"><a href="subset_page">Subset signatures</a></li>
+          <li id="search-drug"><a href="search_drug">Search Drug Reports</a></li>
+          <li id="subset-sigs"><a href="subset_page">Subset Signatures</a></li>
 
         </ul>
 

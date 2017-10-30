@@ -4,10 +4,16 @@ body {
 	margin: 0; 
 	padding: 0; 
 	position: relative; 
-	font-family: arial, sans-serif;
+	font-family: 'Roboto', arial, sans-serif;
 	font-size: 13px;
 }
 canvas { width: 100%; height: 100% }
+
+@media (min-width: 1200px) {
+  .container{
+    width: 1200px;
+  }  
+}
 
 #body { 
 	height: 100%; 
@@ -148,8 +154,8 @@ text.legendTitle{
 }
 
 #footer {
-  background-color: #ddd;
-  border-top: 10px solid black;
+  background-color: #f8f8f8;
+  border-top: solid #e7e7e7;
 }
 #footer a,
 #footer li,

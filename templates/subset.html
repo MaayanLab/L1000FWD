@@ -25,20 +25,26 @@
   <body>
     {% include 'partial/header.html' %}
     <div id="body" class="container-full">
-        <div class="form-group" id="search-control">
-            <label class="control-label">Include compounds:</label>
-            <select id="pert_ids" name="pert_ids" class="form-control"></select>
-            
-            <label class="control-label">Include cells (leave it blank if you were to include all):</label>
-            <select id="cells" name="cells" class="form-control"></select>
-
-
-            <label class="control-label">Include time points (leave it blank if you were to include all):</label>
-            <select id="times" name="times" class="form-control"></select>
-
-            <button id="submit-btn" class="btn btn-info">Submit</button>
-        </div> 
-
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2"> 
+                <div class="form-group">
+                    <label class="control-label">Include compounds:</label>
+                    <select id="pert_ids" name="pert_ids" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Include cells (leave blank to include all):</label>
+                    <select id="cells" name="cells" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Include time points (leave blank to include all):</label>
+                    <select id="times" name="times" class="form-control"></select>
+                </div>
+                
+                    <button id="example-btn" class="btn btn-default">Example</button>
+                    <input type="submit" id="submit-btn" class="btn btn-default pull-right" value="Submit" />
+                
+            </div>
+        </div>
     </div>
     {% include 'partial/footer.html' %}
 
