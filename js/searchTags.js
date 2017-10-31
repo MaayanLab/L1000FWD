@@ -1,4 +1,4 @@
-$('#pert_ids').selectize({
+var pert_ids_select = $('#pert_ids').selectize({
 	valueField: 'pert_id',
 	labelField: 'Name',
 	searchField: 'Name',
@@ -36,7 +36,7 @@ $('#pert_ids').selectize({
 	}
 });
 
-$('#cells').selectize({
+var cells_select = $('#cells').selectize({
 	valueField: 'value',
 	labelField: 'name',
 	searchField: 'name',
@@ -60,7 +60,7 @@ $('#cells').selectize({
 	}
 });
 
-$('#times').selectize({
+var times_select = $('#times').selectize({
 	valueField: 'value',
 	labelField: 'name',
 	searchField: 'name',
@@ -100,6 +100,34 @@ $('#submit-btn').click(function(e){
 			}
 		});		
 	}
+});
 
 
+function setExample(selectize, example, id_key){
+	selectize.clearOptions();
+	selectize.addOption(example);
+	selectize.setValue(_.pluck(example, id_key));
+}
+
+$('#example-btn').click(function(e){
+	e.preventDefault();
+
+	var example_drugs = [
+		{Name:'TEMSIROLIMUS', pert_id:'BRD-A62025033'}, 
+		{Name:'IRINOTECAN', pert_id:'BRD-K08547377'}, 
+	];
+	var example_cells = [
+		{name: 'A375', value: 'A375'}, 
+		{name: 'A549', value: 'A549'},
+		{name: 'VCAP', value: 'VCAP'},
+		{name: 'MCF7', value: 'MCF7'},
+		{name: 'PC3', value: 'PC3'},
+		{name: 'NPC', value: 'NPC'},
+	];
+	var example_times = [{name: '6H', value: 6}, {name: '24H', value: 24}];
+
+	setExample(pert_ids_select[0].selectize, example_drugs, 'pert_id');
+	setExample(cells_select[0].selectize, example_cells, 'value');
+	setExample(times_select[0].selectize, example_times, 'value');
+	
 })
