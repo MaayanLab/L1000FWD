@@ -733,14 +733,16 @@ var Scatter3dView = Backbone.View.extend({
 		uniqueCats = Array.from(uniqueCats);
 		// Make unknown to be gray 
 		if (uniqueCats.indexOf('unknown') !== -1) {
-			var idx = uniqueCats.indexOf('unknown');
-			greyIdx = 7;
-			if (uniqueCats.length == 20){
-				var greyIdx = 15;
+			if(uniqueCats.length > 7){
+				var idx = uniqueCats.indexOf('unknown');
+				greyIdx = 7;
+				if (uniqueCats.length == 20){
+					var greyIdx = 15;
+				}
+				var elem = uniqueCats[greyIdx];
+				uniqueCats[greyIdx] = 'unknown';
+				uniqueCats[idx] = elem;
 			}
-			var elem = uniqueCats[greyIdx];
-			uniqueCats[greyIdx] = 'unknown';
-			uniqueCats[idx] = elem;
 		};
 
 		// make colorScale
