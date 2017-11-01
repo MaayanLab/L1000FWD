@@ -24,25 +24,40 @@
   </head>
   <body>
     {% include 'partial/header.html' %}
-    <div id="body" class="container-full">
+    <div id="body" class="container-full">        
         <div class="row">
             <div class="col-md-8 col-md-offset-2"> 
-                <div class="form-group">
-                    <label class="control-label">Include compounds:</label>
-                    <select id="pert_ids" name="pert_ids" class="form-control"></select>
+                <div class="row">
+                    <div class="alert alert-info">
+                        <p>
+                            In this page, users can fill out the form below to visualize a subset of drug-induced gene expression sigantures of interest. User can type in single or multiple names of drugs, cell lines and time points. 
+                        </p>
+                        <p>
+                            Click on "Example" button for an example query.
+                        </p>
+                        <p>
+                            Click on "Submit" button to submit the form, which will post the information to server and return an interactive visualization of the subset of signatures.
+                        </p>
+                    </div>                    
                 </div>
-                <div class="form-group">
-                    <label class="control-label">Include cells (leave blank to include all):</label>
-                    <select id="cells" name="cells" class="form-control"></select>
+                <div class="row">
+                    <div class="form-group">
+                        <label class="control-label">Include compounds:</label>
+                        <select id="pert_ids" name="pert_ids" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Include cells (leave blank to include all):</label>
+                        <select id="cells" name="cells" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Include time points (leave blank to include all):</label>
+                        <select id="times" name="times" class="form-control"></select>
+                    </div>
+                    
+                        <button id="example-btn" class="btn btn-default">Example</button>
+                        <input type="submit" id="submit-btn" class="btn btn-default pull-right" value="Submit" />
+                                        
                 </div>
-                <div class="form-group">
-                    <label class="control-label">Include time points (leave blank to include all):</label>
-                    <select id="times" name="times" class="form-control"></select>
-                </div>
-                
-                    <button id="example-btn" class="btn btn-default">Example</button>
-                    <input type="submit" id="submit-btn" class="btn btn-default pull-right" value="Submit" />
-                
             </div>
         </div>
     </div>
