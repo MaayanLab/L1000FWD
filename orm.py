@@ -178,7 +178,11 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 		columns={
 			'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
 			'drug_class': 'Drug class', 'dose': 'Dose',
-			'pert_desc': 'Perturbation'},
+			'pert_desc': 'Perturbation',
+			'pert_id': 'Perturbation_ID',
+			'most_frequent_rx': 'EHR_Coprescribed_Drugs',
+			'most_frequent_dx': 'EHR_Diagnoses',
+			},
 		inplace=True)
 
 	return graph_df, meta_df

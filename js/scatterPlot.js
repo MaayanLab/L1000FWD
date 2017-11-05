@@ -139,7 +139,13 @@ var _ScatterDataSubset = Backbone.Model.extend({
 			var label = '';
 			for (var j = 0; j < labelKeys.length; j++) {
 				var labelKey = labelKeys[j];
-				label += labelKey + ': ' + record[labelKey] + '\n';
+				if (labelKey === 'Time'){
+					label += labelKey + ': ' + record[labelKey] + ' hours\n';
+				} else if (labelKey === 'Dose'){
+					label += labelKey + ': ' + record[labelKey] + ' μM\n';
+				} else {
+					label += labelKey + ': ' + record[labelKey] + '\n';
+				}
 			};
 			labels[i] = label
 		};
