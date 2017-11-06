@@ -274,6 +274,7 @@ var SearchSelectize = Backbone.View.extend({
 			sortField: 'Name',
 			options: [],
 			create:false,
+			placeholder: 'Type the name of a drug',
 			render: {
 				option: function(item, escape){
 					return '<ul>' + 
@@ -452,18 +453,88 @@ var SigSimSearchForm = Backbone.View.extend({
 
 		var submitBtn = $('<input type="submit" class="btn btn-default btn-xs pull-right" value="Submit"></input>');
 
+		var creedsDiv = $('<div class="form-group">');
+		creedsDiv.append($('<label for="creeds-search" class="control-label">Fetch a siganture from CREEDS</label>'));
+		var creedsSelectize = $('<select name="creeds-search" id="creeds-search" class="form-control"></select>');
+		creedsDiv.append(creedsSelectize)
+
+
 		// append everything to form
 		form.append(upGeneDiv)
 		form.append(dnGeneDiv)
+		form.append(creedsDiv)
 		form.append(exampleBtn)
 		form.append(clearBtn)
 		form.append(submitBtn)
+		
 		// append form the container
 		$(this.container).append(form)
 		// populate input genes if result_id is defined
 		if (this.result_id){
 			this.populateInputGenes();
 		}
+
+		// creedsSelectize
+		var callback = function(data){
+			return data;
+		}
+
+		creedsSelectize.selectize({
+			valueField: 'id',
+			labelField: 'name',
+			searchField: 'name',
+			sortField: 'name',
+			optgroupField: 'type',
+			optgroupLabelField: 'name',
+			optgroupValueField: 'id',
+			lockOptgroupOrder: true,
+			options: [],
+			placeholder: 'Type a name of disease, drug or gene symbol to select a siganture',
+			optgroups: [
+				{$order: 3, id: 'gene', name: 'gene'},
+				{$order: 2, id: 'drug', name: 'drug'},
+				{$order: 1, id: 'disease', name: 'disease'}
+				],
+			create:false,
+			render: {
+				option: function(item, escape){
+					return '<ul>' + 
+						'<li>' + escape(item.name) + '</li>' +
+						'<li>GEO ID:' + escape(item.geo_id) + '</li>' +
+						'<li>CREEDS ID:' + escape(item.id) + '</li>' +
+						'<li>organism:' + escape(item.organism) + '</li>' +
+						'</ul>';
+				},
+				item: function(item, escape){
+					return '<div>' + 
+						'<span class="sig-name">' + escape(item.name) + '</span>' + 
+						'<span class="sig-meta"> (' + escape(item.geo_id) + ', ' + 
+						escape(item.organism) + ')</span>' + 
+						'</div>';
+				},
+
+			},
+			load: function(query, callback){
+				if (!query.length) return callback();
+				$.ajax({
+					url: 'CREEDS/search/' + encodeURIComponent(query),
+					type: 'GET',
+					dataType: 'json',
+					error: function(){
+						callback();
+					},
+					success: function(res){
+						return callback(res);
+					}
+				});
+			}
+			});
+
+		creedsSelectize[0].selectize.on('change', function(creeds_id){
+			self.populateCreedsGenes(creeds_id)
+		})
+
+
 	},
 
 	populateGenes: function(upGenes, dnGenes){
@@ -477,6 +548,14 @@ var SigSimSearchForm = Backbone.View.extend({
 		var self = this;
 		$.getJSON('result/genes/'+this.result_id, function(geneSet){
 			self.populateGenes(geneSet.upGenes, geneSet.dnGenes);
+		});
+	},
+
+	populateCreedsGenes: function(creeds_id){
+		// To populate <textarea> with CREEDS genes
+		var self = this;
+		$.getJSON('CREEDS/genes/' + creeds_id, function(geneSet){
+			self.populateGenes(geneSet.upGenes, geneSet.dnGenes)
 		});
 	},
 });

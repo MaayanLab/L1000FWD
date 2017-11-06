@@ -42,6 +42,7 @@ def load_globals():
 	global all_sig_ids
 	global d_all_graphs # preload all graphs
 	global graph_name_full
+	global creeds_meta_df
 	graph_name_full = 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs'
 	graphs = load_graphs_meta()
 
@@ -65,6 +66,7 @@ def load_globals():
 		graph_df_, _ = load_graph_from_db(graph_name, drug_meta_df=drug_meta_df)
 		d_all_graphs[graph_name] = graph_df_
 
+	creeds_meta_df = pd.read_csv('data/CREEDS_meta.csv').set_index('id')
 	return
 
 
@@ -260,6 +262,23 @@ def get_cell_lines():
 	cells = [{'name': cell, 'value': cell} for cell in cells]
 	return json.dumps(cells)	
 
+@app.route(ENTER_POINT + '/CREEDS/search/<string:query_string>', methods=['GET'])
+def search_signature_from_creeds(query_string):
+	'''Handles searching signatures in CREEDS.
+	'''
+	mask = creeds_meta_df['name'].str.contains(query_string, flags=re.IGNORECASE)
+	return creeds_meta_df.loc[mask].reset_index().to_json(orient='records')
+
+@app.route(ENTER_POINT + '/CREEDS/genes/<string:creeds_id>', methods=['GET'])
+def retrieve_creeds_genes_by_id(creeds_id):
+	CREEDS_URL = 'http://amp.pharm.mssm.edu/CREEDS/'
+	response = requests.get(CREEDS_URL + 'api', params={'id': creeds_id})
+	signature = response.json()
+	gene_sets = {
+		'upGenes': map(lambda x:x[0], signature['up_genes']), 
+		'dnGenes': map(lambda x:x[0], signature['down_genes']),
+		}
+	return json.dumps(gene_sets)
 
 ## /result/ endpoints
 
@@ -310,13 +329,13 @@ def result_modal(result_id):
 	for i in range(n):
 		rec = result_obj.result['topn']['similar'][i]
 		sig_id = rec['sig_id']
-		rec['pert_id'] = graph_df_.ix[sig_id]['pert_id']
+		rec['pert_id'] = graph_df_.ix[sig_id]['Perturbation_ID']
 		rec['perturbation'] = graph_df_.ix[sig_id]['Perturbation']
 		topn['similar'][i] = rec
 		
 		rec = result_obj.result['topn']['opposite'][i]
 		sig_id = rec['sig_id']
-		rec['pert_id'] = graph_df_.ix[sig_id]['pert_id']
+		rec['pert_id'] = graph_df_.ix[sig_id]['Perturbation_ID']
 		rec['perturbation'] = graph_df_.ix[sig_id]['Perturbation']
 		topn['opposite'][i] = rec
 
