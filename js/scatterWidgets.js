@@ -239,7 +239,7 @@ var SearchSelectize = Backbone.View.extend({
 		// scatterPlot highlightQuery once selectize is searched
 		scatterPlot.listenTo(this, 'searched', function(query){
 			scatterPlot.removeHighlightedPoints();
-			scatterPlot.highlightQuery2(query, 'pert_id');
+			scatterPlot.highlightQuery2(query, 'Perturbation_ID');
 		});
 
 	},
@@ -489,7 +489,7 @@ var SigSimSearchForm = Backbone.View.extend({
 			optgroupValueField: 'id',
 			lockOptgroupOrder: true,
 			options: [],
-			placeholder: 'Type a name of disease, drug or gene symbol to select a siganture',
+			placeholder: 'i.e. diabetes',
 			optgroups: [
 				{$order: 3, id: 'gene', name: 'gene'},
 				{$order: 2, id: 'drug', name: 'drug'},
