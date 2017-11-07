@@ -238,7 +238,8 @@ class UserInput(object):
 		df is the graph_df to subset the scores
 		'''
 		self.config['method'] = self.type
-		payload = dict(self.data.items() + self.config.items())
+		data = self.humanize()
+		payload = dict(data.items() + self.config.items())
 		response = requests.post(RURL, data=json.dumps(payload),headers=self.headers)
 		result = pd.DataFrame(response.json()).set_index('sig_ids')
 		result = result.loc[df.index].reset_index()
@@ -277,6 +278,13 @@ class GeneSets(UserInput):
 	def json_data(self):
 		'''Return an object to be encoded to json format'''
 		return self.data
+
+	def humanize(self):
+		'''Convert genes to upper cases.'''
+		data = self.data
+		data['upGenes'] = map(lambda x:x.upper(), data['upGenes'])
+		data['dnGenes'] = map(lambda x:x.upper(), data['dnGenes'])
+		return data
 
 
 class UserSubset(object):

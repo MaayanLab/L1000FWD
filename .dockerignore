@@ -1,4 +1,8 @@
 log/
-data/
+data/*.h5
+data/*.npy
+data/*.tsv
+data/*.txt
+data/dump/
 notebooks/
 .DS_Store
