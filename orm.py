@@ -303,7 +303,7 @@ class UserSubset(object):
 	def subset_graph(self, graph_df):
 		'''Based on self's metadata to subset a graph_df
 		'''
-		mask = graph_df['pert_id'].isin(self.data['pert_ids']) &\
+		mask = graph_df['Perturbation_ID'].isin(self.data['pert_ids']) &\
 			graph_df['Cell'].isin(self.data['cells']) &\
 			graph_df['Time'].isin(self.data['times'])
 		graph_df_sub = graph_df.loc[mask]
