@@ -78,7 +78,7 @@ var Legend = Backbone.View.extend({
 // colorBy and shapeBy options.
 var tooltipTexts = { 
 	'p-value': 'An empirical p-value measuring the consistency between drug treatment replicates used for calculating the drug-induced signature.',
-	'scores': 'Similarity score measuring the overlap between the input DE genes and the signature DE genes divided by the effective input. The range of the score is [-1, 1]. Positive scores indicate similar signature whereas negative scores indicate opposite signature.',
+	'Scores': 'Similarity score measuring the overlap between the input DE genes and the signature DE genes divided by the effective input. The range of the score is [-1, 1]. Positive scores indicate similar signature whereas negative scores indicate opposite signature.',
 	'Cell': 'Cell line for the drug perturbation',
 	'Dose': 'Concentration of the drug',
 	'Perturbation_ID': 'ID of the drug/small molecule compound',
@@ -489,7 +489,7 @@ var SigSimSearchForm = Backbone.View.extend({
 			optgroupValueField: 'id',
 			lockOptgroupOrder: true,
 			options: [],
-			placeholder: 'i.e. diabetes',
+			placeholder: 'e.g. diabetes',
 			optgroups: [
 				{$order: 3, id: 'gene', name: 'gene'},
 				{$order: 2, id: 'drug', name: 'drug'},

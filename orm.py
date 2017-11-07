@@ -218,7 +218,7 @@ class EnrichmentResult(object):
 	def bind_to_graph(self, df):
 		'''Bind the enrichment results to the graph df'''
 		d_sig_id_score = dict(zip(df.index, self.result['scores']))
-		df['scores'] = [d_sig_id_score[sig_id] for sig_id in df.index]
+		df['Scores'] = [d_sig_id_score[sig_id] for sig_id in df.index]
 		return df
 
 class UserInput(object):

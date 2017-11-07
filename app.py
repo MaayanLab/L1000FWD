@@ -404,7 +404,7 @@ def result_page(result_id):
 	'''The result page.
 	'''
 	sdvConfig = {
-		'colorKey': 'scores',
+		'colorKey': 'Scores',
 		'shapeKey': 'Time',
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
 	}
@@ -428,7 +428,7 @@ def api_doc_page():
 
 from jinja2 import Markup
 app.jinja_env.globals['include_raw'] = lambda filename : Markup(app.jinja_loader.get_source(app.jinja_env, filename)[0])
-	
+
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=5000, threaded=True)
