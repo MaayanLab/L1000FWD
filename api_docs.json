@@ -1,0 +1,54 @@
+[
+	{
+		"id": "api1",
+		"name": "Search drugs using names or synonyms",
+		"Method": "GET",
+		"URL": "/L1000FWD/synonyms/<string:query_string>",
+		"Returns": "JSON array of drug objects",
+		"Example code": {
+			"Python": "api1.py",
+			"R": "api1.R"
+		},
+		"Example result": "api1_result.json"
+	},
+	{
+		"id": "api2",
+		"name": "Get a single signature by ID",
+		"Method": "GET",
+		"URL": "/L1000FWD/sig/<string:sig_id>",
+		"Returns": "Data and metadata of a signature.",
+		"Example code": {
+			"Python": "api2.py",
+			"R": "api2.R"
+		},
+		"Example result": "api2_result.json"
+	},	
+	{
+		"id": "api3",
+		"name": "Query the L1000 signatures using up/down gene sets",
+		"Method": "POST",
+		"URL": "/L1000FWD/sig_search",
+		"Returns": "ID of the result",
+		"Parameters": [
+			["up_genes", "Array", "An array of strings of gene symbols"],
+			["down_genes", "Array", "An array of strings of gene symbols"]
+		],
+		"Example code": {
+			"Python": "api3.py",
+			"R": "api3.R"
+		},
+		"Example result": "api3_result.json"
+	},
+	{
+		"id": "api4",
+		"name": "Retrieve the top 50 results.",
+		"Method": "GET",
+		"URL": "/L1000FWD/result/topn/<string:result_id>",
+		"Returns": "JSON object ",
+		"Example code": {
+			"Python": "api4.py",
+			"R": "api4.R"
+		},
+		"Example result": "api4_result.json"	
+	}
+]

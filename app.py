@@ -43,6 +43,7 @@ def load_globals():
 	global d_all_graphs # preload all graphs
 	global graph_name_full
 	global creeds_meta_df
+	global api_docs
 	graph_name_full = 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs'
 	graphs = load_graphs_meta()
 
@@ -67,6 +68,7 @@ def load_globals():
 		d_all_graphs[graph_name] = graph_df_
 
 	creeds_meta_df = pd.read_csv('data/CREEDS_meta.csv').set_index('id')
+	api_docs = json.load(open('api_docs.json', 'rb'))
 	return
 
 
@@ -420,7 +422,13 @@ def result_page(result_id):
 def api_doc_page():
 	return render_template('apis.html', 
 		ENTER_POINT=ENTER_POINT,
-		graphs=graphs)
+		graphs=graphs,
+		api_docs=api_docs
+		)
+
+from jinja2 import Markup
+app.jinja_env.globals['include_raw'] = lambda filename : Markup(app.jinja_loader.get_source(app.jinja_env, filename)[0])
+	
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=5000, threaded=True)
