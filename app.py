@@ -25,7 +25,7 @@ class CIFlask(Flask):
 
 
 from orm import *
-
+from crossdomain import crossdomain
 
 ENTER_POINT = os.environ['ENTER_POINT']
 app = CIFlask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
@@ -227,6 +227,32 @@ def get_all_sig_ids():
 	if request.method == 'GET':
 		return json.dumps({'sig_ids': all_sig_ids, 'n_sig_ids': len(all_sig_ids)})
 
+@app.route(ENTER_POINT + '/sig/<string:sig_id>', methods=['GET'])
+@crossdomain(origin='*')
+def get_sig_by_id(sig_id):
+	sig = Signature(sig_id, mongo)
+	return sig.json_data()
+
+
+@app.route(ENTER_POINT + '/sig_search', methods=['POST'])
+@crossdomain(origin='*')
+def post_to_sigine_api():
+	'''Endpoint handling signature similarity search, POST the up/down genes 
+	to the RURL and return the result_id.'''
+	if request.method == 'POST':
+		data = json.loads(request.data)
+		up_genes = data['up_genes']
+		down_genes = data['down_genes']
+		# init GeneSets instance
+		gene_sets = GeneSets(up_genes, down_genes)
+		# perform similarity search
+		graph_df_ = d_all_graphs[graph_name_full]
+		result = gene_sets.enrich(graph_df_, graph_name_full)
+		# save gene_sets and results to MongoDB
+		rid = gene_sets.save()
+		return json.dumps({'result_id': rid})
+
+
 @app.route(ENTER_POINT + '/search/<string:graph_name>', methods=['POST'])
 def post_to_sigine(graph_name):
 	'''Endpoint handling signature similarity search, POST the up/down genes 
@@ -247,6 +273,7 @@ def post_to_sigine(graph_name):
 
 
 @app.route(ENTER_POINT + '/synonyms/<string:query_string>', methods=['GET'])
+@crossdomain(origin='*')
 def search_drug_by_synonyms(query_string):
 	'''Endpoint handling synonym search for drugs in the graph.
 	'''
@@ -261,6 +288,8 @@ def get_cell_lines():
 	cells = graph_df['Cell'].unique().tolist()
 	cells = [{'name': cell, 'value': cell} for cell in cells]
 	return json.dumps(cells)	
+
+## /CREEDS/ endpoints
 
 @app.route(ENTER_POINT + '/CREEDS/search/<string:query_string>', methods=['GET'])
 def search_signature_from_creeds(query_string):
@@ -306,6 +335,7 @@ def result_genes(result_id):
 
 
 @app.route(ENTER_POINT + '/result/topn/<string:result_id>', methods=['GET'])
+@crossdomain(origin='*')
 def result_topn(result_id):
 	'''Retrieve topn signatures to visualize in a table.
 	'''
@@ -386,6 +416,11 @@ def result_page(result_id):
 		sdvConfig=json.dumps(sdvConfig),
 		)
 
+@app.route(ENTER_POINT + '/api_page', methods=['GET'])
+def api_doc_page():
+	return render_template('apis.html', 
+		ENTER_POINT=ENTER_POINT,
+		graphs=graphs)
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=5000, threaded=True)
