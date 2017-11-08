@@ -41,7 +41,7 @@
 	},
 	{
 		"id": "api4",
-		"name": "Retrieve the top 50 results.",
+		"name": "Retrieve the top 50 results",
 		"Method": "GET",
 		"URL": "/L1000FWD/result/topn/<string:result_id>",
 		"Returns": "JSON object ",

@@ -454,7 +454,7 @@ var SigSimSearchForm = Backbone.View.extend({
 		var submitBtn = $('<input type="submit" class="btn btn-default btn-xs pull-right" value="Submit"></input>');
 
 		var creedsDiv = $('<div class="form-group">');
-		creedsDiv.append($('<label for="creeds-search" class="control-label">Fetch a siganture from CREEDS</label>'));
+		creedsDiv.append($('<label for="creeds-search" class="control-label">Fetch a siganture from <a href="http://amp.pharm.mssm.edu/CREEDS/" target="_blank">CREEDS</a></label>'));
 		var creedsSelectize = $('<select name="creeds-search" id="creeds-search" class="form-control"></select>');
 		creedsDiv.append(creedsSelectize)
 
