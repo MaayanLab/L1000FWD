@@ -87,6 +87,8 @@ def load_drug_meta_from_db():
 		d = dict(zip(d['pert_desc'], d[col]))
 		drug_meta_df[col] = [d.get(name, None) for name in drug_meta_df['pert_desc']]
 
+	drug_chem_df = pd.read_sql_table('drug_scaffolds_sub', engine, index_col='pert_id')	
+	drug_meta_df = drug_meta_df.merge(drug_chem_df, left_index=True, right_index=True, how='left')
 	return drug_meta_df
 
 def load_drug_synonyms_from_db(meta_df, graph_df):
