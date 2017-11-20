@@ -575,6 +575,7 @@ var Scatter3dView = Backbone.View.extend({
 
 		// re-coloring nodes
 		this.colorBy(this.colorKey);
+		if (this.colorKey === 'Scores'){ this.highlightTopNScores(5); }
 		this.trigger('shapeChanged')
 		this.renderScatter();
 
@@ -815,6 +816,24 @@ var Scatter3dView = Backbone.View.extend({
 		var scatterDataSubsets = this.model.groupBy(metaKey);
 		this.highlightCould = new Scatter3dCloud({
 			model: scatterDataSubsets[query],
+			texture: this.textures.getTexture('circle'), 
+			pointSize: this.pointSize * 5,
+			sizeAttenuation: this.is3d,
+			opacity: 0.4
+		})
+		this.highlightCould.setSingleColor('yellow');
+		this.highlightCould.points.name = 'highlight';
+		this.scene.add(this.highlightCould.points)
+		this.renderScatter();
+
+	},
+
+	highlightTopNScores: function(n){
+		var sortedData = _.sortBy(this.model.data, 'Scores')
+		var dataSubsetsToHighlight = sortedData.slice(0, n).concat(sortedData.slice(-n))
+		var scatterDataSubsetsToHighlight = new _ScatterDataSubset({data: dataSubsetsToHighlight})
+		this.highlightCould = new Scatter3dCloud({
+			model: scatterDataSubsetsToHighlight,
 			texture: this.textures.getTexture('circle'), 
 			pointSize: this.pointSize * 5,
 			sizeAttenuation: this.is3d,
