@@ -750,6 +750,19 @@ var Scatter3dView = Backbone.View.extend({
 				uniqueCats[idx] = elem;
 			}
 		};
+		// Make RARE to be grey
+		if (uniqueCats.indexOf(RARE) !== -1) {
+			if (uniqueCats.length == 20){
+				var idx = uniqueCats.indexOf(RARE);
+				var greyIdx2 = 15;
+				if (uniqueCats.indexOf('unknown') !== -1){
+					var greyIdx2 = 14;
+				}
+				var elem = uniqueCats[greyIdx2];
+				uniqueCats[greyIdx2] = RARE;
+				uniqueCats[idx] = elem;
+			}
+		}
 
 		// make colorScale
 		if (dtype === 'boolean'){
