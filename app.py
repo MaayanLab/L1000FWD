@@ -55,6 +55,7 @@ def load_globals():
 	# N_SIGS = meta_df.shape[0]
 
 	# print graph_df.head()
+	# graph_df.to_csv('data/main_graph_clustered.csv', encoding='utf-8')
 
 	drug_synonyms = load_drug_synonyms_from_db(meta_df, graph_df)
 
@@ -80,7 +81,6 @@ def index_page():
 		'shapeKey': 'Time',
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
 	}
-
 
 	return render_template('index.html', 
 		script='main',

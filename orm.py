@@ -150,6 +150,15 @@ def _minmax_scaling(arr):
 	arr = scl.fit_transform(arr.reshape(-1, 1))
 	return arr[:, 0]
 
+from sklearn import cluster
+def _cluster(x, y, clstr):
+	data = np.zeros((len(x), 2))
+	data[:, 0] = x
+	data[:, 1] = y
+	clstr.fit(data)
+	return clstr.labels_
+
+
 def load_graph_from_db(graph_name, drug_meta_df=None):
 	# Find the graph by name
 	graph_doc = mongo.db.graphs.find_one({'name': graph_name}, {'_id':False})
@@ -162,6 +171,17 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 	# Scale the x, y 
 	graph_df['x'] = _minmax_scaling(graph_df['x'].values)
 	graph_df['y'] = _minmax_scaling(graph_df['y'].values)
+	# graph_df['DBSCAN'] = _cluster(graph_df['x'].values, graph_df['y'].values,
+	# 	clstr = cluster.DBSCAN(min_samples=15, eps=0.35))
+	graph_df['DBSCAN'] = _cluster(graph_df['x'].values, graph_df['y'].values,
+		clstr = cluster.DBSCAN(min_samples=15, eps=0.33))
+	graph_df['KMeans'] = _cluster(graph_df['x'].values, graph_df['y'].values, 
+		cluster.KMeans(n_clusters=30))
+	# graph_df['SpectralClustering'] = _cluster(graph_df['x'].values, graph_df['y'].values, 
+	# 	cluster.SpectralClustering(n_clusters=20))
+	# graph_df['Birch'] = _cluster(graph_df['x'].values, graph_df['y'].values, 
+	# 	cluster.Birch(n_clusters=20))
+
 
 	# Load the corresponding meta_df
 	meta_df = load_signature_meta_from_db(graph_doc['coll'], 
