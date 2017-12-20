@@ -48,7 +48,7 @@ def load_globals():
 	graphs = load_graphs_meta()
 
 	drug_meta_df = load_drug_meta_from_db()
-	
+
 	graph_df, meta_df = load_graph_from_db(graph_name_full,
 		drug_meta_df=drug_meta_df)
 	print meta_df.shape
@@ -79,7 +79,7 @@ def index_page():
 	sdvConfig = {
 		'colorKey': 'Cell',
 		'shapeKey': 'Time',
-		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
 
 	return render_template('index.html', 
@@ -98,7 +98,7 @@ def graph_page(graph_name):
 	sdvConfig = {
 		'colorKey': 'MOA',
 		'shapeKey': 'Time',
-		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
 
 	if graph_name == 'graph_pert_cell_12894nodes_99.9.gml.cyjs': 
@@ -158,7 +158,7 @@ def send_subset_result_page(subset_id):
 	sdvConfig = {
 		'colorKey': 'MOA',
 		'shapeKey': 'Time',
-		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
 
 	return render_template('index.html', 
@@ -406,7 +406,7 @@ def result_page(result_id):
 	sdvConfig = {
 		'colorKey': 'Scores',
 		'shapeKey': 'Time',
-		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA'],
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
 	result_obj = EnrichmentResult(result_id)
 	return render_template('index.html', 
