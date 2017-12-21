@@ -69,12 +69,13 @@ def load_graphs_meta():
 			graphs['cells'].append(rec)
 	return graphs
 
-def load_predicted_MOAs():
+def load_predicted_MOAs(filename, name='predicted_MOA'):
 	# Load pert level MOA predictions
-	drug_moa_preds_df = pd.read_csv('data/agg_MOA_preds_at_pert_level_XGB680.csv').set_index('pert_id')
+	# drug_moa_preds_df = pd.read_csv('data/agg_MOA_preds_at_pert_level_XGB680.csv').set_index('pert_id')
+	drug_moa_preds_df = pd.read_csv(filename).set_index('pert_id')
 	classes = drug_moa_preds_df.columns.values
 	max_idx = drug_moa_preds_df.values.argmax(axis=1)
-	predicted_MOAs = pd.DataFrame({'predicted_MOA': classes[max_idx]},
+	predicted_MOAs = pd.DataFrame({name: classes[max_idx]},
 		index=drug_moa_preds_df.index)
 	return predicted_MOAs
 
@@ -100,8 +101,14 @@ def load_drug_meta_from_db():
 	drug_chem_df = pd.read_sql_table('drug_scaffolds_sub', engine, index_col='pert_id')	
 	drug_meta_df = drug_meta_df.merge(drug_chem_df, left_index=True, right_index=True, how='left')
 
-	predicted_MOAs = load_predicted_MOAs()
-	drug_meta_df = drug_meta_df.merge(predicted_MOAs, left_index=True, right_index=True, how='left')
+	predicted_MOAs = load_predicted_MOAs('data/agg_MOA_preds_at_pert_level_XGB680.csv')
+	drug_meta_df = drug_meta_df.merge(predicted_MOAs, left_index=True, right_index=True
+		, how='left')
+
+	predicted_MOAs_GE = load_predicted_MOAs('data/agg_MOA_preds_at_pert_level_kNN15_GE.csv',
+		name='predicted_MOA_GE')
+	drug_meta_df = drug_meta_df.merge(predicted_MOAs_GE, left_index=True, right_index=True,
+		how='left')
 	return drug_meta_df
 
 def load_drug_synonyms_from_db(meta_df, graph_df):
