@@ -272,6 +272,7 @@ var SearchSelectize = Backbone.View.extend({
 			labelField: 'Name',
 			searchField: 'Name',
 			sortField: 'Name',
+			preload: 'focus',
 			options: [],
 			create:false,
 			placeholder: 'Type the name of a drug',
@@ -284,7 +285,7 @@ var SearchSelectize = Backbone.View.extend({
 				}
 			},
 			load: function(query, callback){
-				if (!query.length) return callback();
+				if (!query.length) query = 'a'; // to preload some options when focused 
 				$.ajax({
 					url: 'synonyms/' + encodeURIComponent(query),
 					type: 'GET',
@@ -488,6 +489,7 @@ var SigSimSearchForm = Backbone.View.extend({
 			optgroupLabelField: 'name',
 			optgroupValueField: 'id',
 			lockOptgroupOrder: true,
+			preload: 'focus',
 			options: [],
 			placeholder: 'e.g. diabetes',
 			optgroups: [
@@ -515,7 +517,7 @@ var SigSimSearchForm = Backbone.View.extend({
 
 			},
 			load: function(query, callback){
-				if (!query.length) return callback();
+				if (!query.length) query = 'c';
 				$.ajax({
 					url: 'CREEDS/search/' + encodeURIComponent(query),
 					type: 'GET',
