@@ -77,7 +77,7 @@ def load_globals():
 def index_page():
 	# The default main page
 	sdvConfig = {
-		'colorKey': 'Cell',
+		'colorKey': 'MOA',
 		'shapeKey': 'Time',
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}

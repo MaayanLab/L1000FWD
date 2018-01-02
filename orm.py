@@ -82,21 +82,21 @@ def load_predicted_MOAs(filename, name='predicted_MOA'):
 
 def load_drug_meta_from_db():
 	drug_meta_df = pd.read_sql_query('''
-		SELECT drug_repurposedb.pert_id, drug_repurposedb.pert_iname AS pert_desc,
+		SELECT drug_repurposedb2.pert_id, drug_repurposedb2.pert_iname AS pert_desc,
 		most_frequent_dx_rx.most_frequent_rx, most_frequent_dx_rx.most_frequent_dx, 
-		drug_repurposedb.Phase, drug_repurposedb.MOA
+		drug_repurposedb2.Phase, drug_repurposedb2.MOA
 		FROM most_frequent_dx_rx
-		RIGHT JOIN drug_repurposedb
-		ON drug_repurposedb.pert_id=most_frequent_dx_rx.pert_id
+		RIGHT JOIN drug_repurposedb2
+		ON drug_repurposedb2.pert_id=most_frequent_dx_rx.pert_id
 		''', engine, 
 		index_col='pert_id')
 	print drug_meta_df.shape
 
-	# Borrow the info from pert_ids with the same pert_desc
-	for col in ['most_frequent_rx','most_frequent_dx','Phase', 'MOA']:
-		d = drug_meta_df[['pert_desc', col]].dropna(axis=0)
-		d = dict(zip(d['pert_desc'], d[col]))
-		drug_meta_df[col] = [d.get(name, None) for name in drug_meta_df['pert_desc']]
+	# # Borrow the info from pert_ids with the same pert_desc
+	# for col in ['most_frequent_rx','most_frequent_dx','Phase', 'MOA']:
+	# 	d = drug_meta_df[['pert_desc', col]].dropna(axis=0)
+	# 	d = dict(zip(d['pert_desc'], d[col]))
+	# 	drug_meta_df[col] = [d.get(name, None) for name in drug_meta_df['pert_desc']]
 
 	drug_chem_df = pd.read_sql_table('drug_scaffolds_sub', engine, index_col='pert_id')	
 	drug_meta_df = drug_meta_df.merge(drug_chem_df, left_index=True, right_index=True, how='left')
