@@ -93,10 +93,16 @@ $('#submit-btn').click(function(e){
 			}),
 			success: function(result){
 				result = JSON.parse(result);
-				var getUrl = window.location;
-				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+				if (result.absolute){
+					var redirectUrl = result.url
+				}else{
+					var getUrl = window.location;
+					var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+					var redirectUrl = baseUrl + result.url;					
+				}
+
 				// redirect
-				window.location.href = baseUrl + result.url;
+				window.location.href = redirectUrl;
 			}
 		});		
 	}

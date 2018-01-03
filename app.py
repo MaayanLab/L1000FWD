@@ -149,9 +149,19 @@ def create_graph_from_user_subset():
 			'cells': cells,
 			'times': times,
 			})
-		rid = user_subset.save()
-		print rid
-		return json.dumps({'url':'/subset/' + rid})
+
+		graph_df_sub = user_subset.subset_graph(graph_df)
+		if graph_df_sub.shape[0] == 1:
+			# Redirect to signature page 
+			sig_id = graph_df_sub.index[0]
+			return json.dumps({
+				'url': 'http://amp.pharm.mssm.edu/dmoa/sig/%s'%sig_id,
+				'absolute': True
+				})
+		else:
+			rid = user_subset.save()
+			print rid
+			return json.dumps({'url':'/subset/' + rid, 'absolute': False})
 
 @app.route(ENTER_POINT + '/subset/<string:subset_id>', methods=['GET'])
 def send_subset_result_page(subset_id):
