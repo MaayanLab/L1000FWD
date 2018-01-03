@@ -242,6 +242,34 @@ def get_all_sig_ids_from_graphs():
 	sig_ids = sorted(set(sig_ids))	
 	return sig_ids
 
+def get_download_meta():
+	files = [
+	('Adjacency_matrix_LM_space_42809x42809.gctx', 'Adjacency matrix of all significant CD signatures. Cosine similarity is used to compute the signature similarity.'),
+	('CD_signatures_LM_42809x978.gctx', 'CD signature matrix in the Landmark gene space.'), 
+	('CD_signatures_full_42809x22268.gctx', 'CD signature matrix in the full space (22268 probes).'), 
+	('CD_signature_metadata.csv', 'Metadata of the signatures indexed by the `sig_id`.'), 
+	('Probes_L1000_metadata.csv', 'Metadata of the probes of the Landmark genes.'),
+	('Probes_full_metadata.csv', 'Metadata of the probes used in the full space.'), 	
+	]
+	def sizeof_fmt(num, suffix='B'):
+		for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+			if abs(num) < 1024.0:
+				return "%3.1f%s%s" % (num, unit, suffix)
+			num /= 1024.0
+		return "%.1f%s%s" % (num, 'Yi', suffix)
+
+
+	files_meta = []
+	for filename, desc in files:
+		size = os.path.getsize(os.path.join('data/download', filename))
+		files_meta.append({
+			'name': filename,
+			'desc': desc,
+			'size': sizeof_fmt(size)
+			})
+
+	return files_meta
+
 ### ORMs for user imput
 class EnrichmentResult(object):
 	"""EnrichmentResult: object for documents in the userResults collection"""

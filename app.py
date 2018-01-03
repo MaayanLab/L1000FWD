@@ -28,6 +28,7 @@ from orm import *
 from crossdomain import crossdomain
 
 ENTER_POINT = os.environ['ENTER_POINT']
+SCRIPT_PATH = os 
 app = CIFlask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
 app.debug = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
@@ -44,6 +45,7 @@ def load_globals():
 	global graph_name_full
 	global creeds_meta_df
 	global api_docs
+	global download_files_meta
 	graph_name_full = 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs'
 	graphs = load_graphs_meta()
 
@@ -70,6 +72,7 @@ def load_globals():
 
 	creeds_meta_df = pd.read_csv('data/CREEDS_meta.csv').set_index('id')
 	api_docs = json.load(open('api_docs.json', 'rb'))
+	download_files_meta = get_download_meta()
 	return
 
 
@@ -190,7 +193,6 @@ def retrieve_subset_id_and_subset_graph(subset_id):
 	return graph_df_sub.reset_index().to_json(orient='records')
 
 
-
 @app.route('/<path:filename>')
 def send_file(filename):
 	'''Serve static files.
@@ -202,19 +204,6 @@ def search_drug():
 	'''Redirect to drug search page.
 	'''
 	return redirect('http://amp.pharm.mssm.edu/dmoa/search_drug', code=302)	
-
-# @app.route(ENTER_POINT + '/toy', methods=['GET'])
-# def toy_data():
-# 	if request.method == 'GET':
-# 		n = int(request.args.get('n', 10))
-# 		rand_idx = np.random.choice(range(N_SIGS), n, replace=False)
-
-# 		rand_coords = np.random.randn(n, 3)
-# 		df = meta_df.iloc[rand_idx]
-# 		df = df.assign(x=rand_coords[:,0], y=rand_coords[:,1], z=rand_coords[:,2])
-
-# 		return df.to_json(orient='records')
-# 		# return jsonify(df.to_dict(orient='list'))
 
 
 @app.route(ENTER_POINT + '/graph/<string:graph_name>', methods=['GET'])
@@ -427,6 +416,24 @@ def result_page(result_id):
 		graph_name=result_obj.graph_name,
 		sdvConfig=json.dumps(sdvConfig),
 		)
+
+
+@app.route(ENTER_POINT + '/download_page', methods=['GET'])
+def download_page():
+	return render_template('download.html', 
+		ENTER_POINT=ENTER_POINT,
+		graphs=graphs,
+		download_files_meta=download_files_meta
+		)
+
+
+@app.route(ENTER_POINT + '/download/<path:filename>')
+def download_file(filename):
+	'''Serve download files.
+	'''
+	download_file_path = os.path.join(app.static_folder, 'data/download')
+	return send_from_directory(download_file_path, filename)
+
 
 @app.route(ENTER_POINT + '/api_page', methods=['GET'])
 def api_doc_page():

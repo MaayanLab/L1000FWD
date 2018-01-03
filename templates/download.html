@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <base href="{{ ENTER_POINT }}/"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Zichen Wang (zichen.wang@mssm.edu)">    
+    <title>L1000 Fireworks Display</title>
+    <!-- <link rel="icon" href="images/favicon.png" type="image/x-icon"> -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="lib/selectize.bootstrap3.css">
+    <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+  </head>
+  <body>
+    {% include 'partial/header.html' %}
+    <div id="body" class="container-full">        
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2"> 
+                <div class="row">
+                	<div class="page-header">
+                		<h3>Drug-induced gene expression signatures and adjacency matrix.</h3>	
+                	</div>
+                    <table class="table table-striped table-hover">
+                    	<thead>
+                    		<tr>
+                    			<th>Name</th>
+                    			<th>Description</th>
+                    			<th>Size</th>
+                    		</tr>
+                    	</thead>
+                    	<tbody>
+                    		{% for file in download_files_meta %}
+                    		<tr>
+	                    		<td><a href="download/{{ file['name'] }}">{{ file['name'] }}</a></td>
+	                    		<td>{{ file['desc'] }}</td>
+	                    		<td>{{ file['size'] }}</td>
+                    		</tr>
+                    		{% endfor %}
+                    	</tbody>
+                    </table>
+                </div>
+                <div class="row">
+                	<div class="page-header">
+                		<h3>Graphs</h3>
+                	</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'partial/footer.html' %}
+
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/underscore-min.js"></script>
+    <script src="lib/backbone-min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
+    
+    <script src="lib/d3.v3.min.js"></script>
+    <script src="lib/d3-legend.min.js"></script>
+    <script src="lib/selectize.js"></script>
+    <script src="lib/datatables.js"></script>
+    <script src="lib/datatables.bootstrap.js"></script>
+    <script src="lib/bootstrap-select.min.js"></script>
+
+
+  </body>
+</html>
