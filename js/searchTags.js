@@ -109,7 +109,7 @@ function setExample(selectize, example, id_key){
 	selectize.setValue(_.pluck(example, id_key));
 }
 
-$('#example-btn').click(function(e){
+$('.example-btn').click(function(e){
 	e.preventDefault();
 
 	var example_drugs = [
@@ -125,6 +125,20 @@ $('#example-btn').click(function(e){
 		{name: 'NPC', value: 'NPC'},
 	];
 	var example_times = [{name: '6H', value: 6}, {name: '24H', value: 24}];
+
+	setExample(pert_ids_select[0].selectize, example_drugs, 'pert_id');
+	setExample(cells_select[0].selectize, example_cells, 'value');
+	setExample(times_select[0].selectize, example_times, 'value');
+	
+})
+
+
+$('#example-btn-2').click(function(e){
+	e.preventDefault();
+
+	var example_drugs = [{Name:'IMATINIB', pert_id:'BRD-K92723993'}];
+	var example_cells = [{name: 'BT20', value: 'BT20'}];
+	var example_times = [{name: '6H', value: 6}];
 
 	setExample(pert_ids_select[0].selectize, example_drugs, 'pert_id');
 	setExample(cells_select[0].selectize, example_cells, 'value');
