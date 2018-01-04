@@ -13,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
     <link rel="stylesheet" type="text/css" href="lib/bootstrap-select.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/download.css">
   </head>
   <body>
     {% include 'partial/header.html' %}
@@ -23,7 +24,7 @@
                 	<div class="page-header">
                 		<h3>Drug-induced gene expression signatures and adjacency matrix.</h3>	
                 	</div>
-                    <table class="table table-striped table-hover">
+                    <table class="table table-striped table-hover table-condensed">
                     	<thead>
                     		<tr>
                     			<th>Name</th>
@@ -46,6 +47,26 @@
                 	<div class="page-header">
                 		<h3>Graphs</h3>
                 	</div>
+                    <table class="table table-striped table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Cell line</th>
+                                <th># signatures</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+              
+                        {% for graph in graphs['cells'] %}
+                        <tr>
+                            <td><a href="download_graph/{{graph['name']}}">{{ graph['display_name'] }}</a></td>
+                            <td>{{ graph['cell'] }}</td>
+                            <td>{{ graph['n_sigs'] }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                        
+                    </table>
                 </div>
             </div>
         </div>

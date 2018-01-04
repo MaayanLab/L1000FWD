@@ -41,31 +41,39 @@ def load_graphs_meta():
 	graph_names = mongo.db.graphs.distinct('name')
 	graphs = {
 		'cells':[
-			{'name': 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs', 'display_name': 'All cell lines'}
+			{'name': 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs', 
+			'display_name': 'All cell lines', 'cell': 'all',
+			'n_sigs': 16848
+			}
 		],
 		'agg': [
 			{'name': 'graph_pert_cell_12894nodes_99.9.gml.cyjs', 'display_name': 'Aggregated by drugs and cells'},
-			{'name': 'kNN_5_layout', 'display_name': 'Aggregated by drugs (kNN)'},
-			{'name': 'threshold_99.5', 'display_name': 'Aggregated by drugs (thresholding)'},
+			{'name': 'kNN_5_layout', 'display_name': 'Aggregated by drugs (kNN-FWD)'},
+			{'name': 'threshold_99.5', 'display_name': 'Aggregated by drugs (thresholding-FWD)'},
 		],
 	}
 
 	# process graphs for individual cells
 	for graph_name in graph_names:
+		doc = mongo.db.graphs.find_one({'name': graph_name}, 
+			{'sig_ids':True, '_id':False})
+		
+		n_sigs = len(doc['sig_ids'])
+		rec = {
+			'name': graph_name,
+			'n_sigs': n_sigs
+		}
 		if graph_name.endswith('-tSNE_layout.csv'):
 			cell = graph_name.split('-')[0]
-			rec = {
-				'name': graph_name, 
-				'display_name': '%s (tSNE)' % cell
-				}
-			graphs['cells'].append(rec)
-
+			display_name = '%s (tSNE)' % cell
+			rec['cell'] = cell
+			rec['display_name'] = display_name
+			graphs['cells'].append(rec)			
 		elif graph_name.endswith('kNN_5'):
 			cell = graph_name.split('_')[0]
-			rec = {
-				'name': graph_name,
-				'display_name': '%s (kNN)' % cell
-			}
+			display_name = '%s (FWD)' % cell
+			rec['display_name'] = display_name
+			rec['cell'] = cell
 			graphs['cells'].append(rec)
 	return graphs
 

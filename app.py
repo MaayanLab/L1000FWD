@@ -18,7 +18,7 @@ class CIRule(Rule):
 
 
 from flask import Flask, request, redirect, render_template, \
-	jsonify, send_from_directory, abort, Response
+	jsonify, send_from_directory, abort, Response, send_file
 
 class CIFlask(Flask):
     url_rule_class = CIRule
@@ -194,7 +194,7 @@ def retrieve_subset_id_and_subset_graph(subset_id):
 
 
 @app.route('/<path:filename>')
-def send_file(filename):
+def serve_static_file(filename):
 	'''Serve static files.
 	'''
 	return send_from_directory(app.static_folder, filename)
@@ -434,6 +434,17 @@ def download_file(filename):
 	download_file_path = os.path.join(app.static_folder, 'data/download')
 	return send_from_directory(download_file_path, filename)
 
+@app.route(ENTER_POINT + '/download_graph/<string:name>')
+def download_graph_by_name(name):
+	temp_file = StringIO.StringIO()
+	d_all_graphs[name]\
+		[['x','y','Cell','Dose','Time','Perturbation_ID',
+		'Perturbation','MOA','Phase','Batch','p-value']]\
+		.to_csv(temp_file)
+	temp_file.seek(0)
+	return send_file(temp_file,
+		attachment_filename="%s.csv"%name.split('.')[0],
+		as_attachment=True)
 
 @app.route(ENTER_POINT + '/api_page', methods=['GET'])
 def api_doc_page():
