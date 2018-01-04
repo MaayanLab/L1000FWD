@@ -54,10 +54,6 @@ def load_globals():
 	graph_df, meta_df = load_graph_from_db(graph_name_full,
 		drug_meta_df=drug_meta_df)
 	print meta_df.shape
-	# N_SIGS = meta_df.shape[0]
-
-	# print graph_df.head()
-	# graph_df.to_csv('data/main_graph_clustered.csv', encoding='utf-8')
 
 	drug_synonyms = load_drug_synonyms_from_db(meta_df, graph_df)
 
@@ -440,7 +436,7 @@ def download_graph_by_name(name):
 	d_all_graphs[name]\
 		[['x','y','Cell','Dose','Time','Perturbation_ID',
 		'Perturbation','MOA','Phase','Batch','p-value']]\
-		.to_csv(temp_file)
+		.to_csv(temp_file, encoding='utf-8')
 	temp_file.seek(0)
 	return send_file(temp_file,
 		attachment_filename="%s.csv"%name.split('.')[0],
