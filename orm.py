@@ -378,9 +378,20 @@ class UserSubset(object):
 		self.rid = res.inserted_id # <class 'bson.objectid.ObjectId'>
 		return str(self.rid)
 
-	def subset_graph(self, graph_df):
+	def subset_graph(self, d_all_graphs):
 		'''Based on self's metadata to subset a graph_df
 		'''
+		graph_name_full = 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs'
+		graph_df = d_all_graphs[graph_name_full]
+
+		cells = self.data['cells']
+		if len(cells) == 1: 
+			# if only one cell input, use cell specific graph
+			cell = cells[0]
+			graph_name = '%s-tSNE_layout.csv'%cell
+			if graph_name in d_all_graphs:
+				graph_df = d_all_graphs[graph_name]
+
 		mask = graph_df['Perturbation_ID'].isin(self.data['pert_ids']) &\
 			graph_df['Cell'].isin(self.data['cells']) &\
 			graph_df['Time'].isin(self.data['times'])

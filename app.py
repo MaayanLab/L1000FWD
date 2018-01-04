@@ -170,8 +170,7 @@ def create_graph_from_user_subset():
 			'cells': cells,
 			'times': times,
 			})
-
-		graph_df_sub = user_subset.subset_graph(graph_df)
+		graph_df_sub = user_subset.subset_graph(d_all_graphs)
 		# sig_ids_sub = get_subset_sig_ids(user_subset)
 		if graph_df_sub.shape[0] == 1:
 		# if len(sig_ids_sub) == 1:
@@ -211,7 +210,7 @@ def send_subset_result_page(subset_id):
 @app.route(ENTER_POINT + '/subset/graph/<string:subset_id>', methods=['GET'])
 def retrieve_subset_id_and_subset_graph(subset_id):
 	user_subset = UserSubset.get(subset_id)
-	graph_df_sub = user_subset.subset_graph(graph_df)
+	graph_df_sub = user_subset.subset_graph(d_all_graphs)
 	# coords_df = subset_mat_and_do_tsne(user_subset)
 	# graph_df_sub = meta_df_full.merge(coords_df, 
 	# 	left_index=True,
