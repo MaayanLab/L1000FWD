@@ -93,16 +93,19 @@ $('#submit-btn').click(function(e){
 			}),
 			success: function(result){
 				result = JSON.parse(result);
-				if (result.absolute){
-					var redirectUrl = result.url
-				}else{
-					var getUrl = window.location;
-					var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
-					var redirectUrl = baseUrl + result.url;					
+				if (result.error){
+					alert(result.error);
+				} else{
+					if (result.absolute){
+						var redirectUrl = result.url
+					}else{
+						var getUrl = window.location;
+						var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+						var redirectUrl = baseUrl + result.url;
+					}
+					// redirect
+					window.location.href = redirectUrl;
 				}
-
-				// redirect
-				window.location.href = redirectUrl;
 			}
 		});		
 	}
@@ -130,11 +133,12 @@ $('.example-btn').click(function(e){
 		{name: 'PC3', value: 'PC3'},
 		{name: 'NPC', value: 'NPC'},
 	];
-	var example_times = [{name: '6H', value: 6}, {name: '24H', value: 24}];
+	// var example_times = [{name: '6H', value: 6}, {name: '24H', value: 24}];
+	var example_times = [6, 24]
 
 	setExample(pert_ids_select[0].selectize, example_drugs, 'pert_id');
 	setExample(cells_select[0].selectize, example_cells, 'value');
-	setExample(times_select[0].selectize, example_times, 'value');
+	times_select[0].selectize.setValue(example_times,);
 	
 })
 
@@ -142,12 +146,14 @@ $('.example-btn').click(function(e){
 $('#example-btn-2').click(function(e){
 	e.preventDefault();
 
-	var example_drugs = [{Name:'IMATINIB', pert_id:'BRD-K92723993'}];
-	var example_cells = [{name: 'BT20', value: 'BT20'}];
-	var example_times = [{name: '6H', value: 6}];
+	var example_drugs = [{Name:'TYRPHOSTIN-AG-82', pert_id:'BRD-K03670461'}];
+	var example_cells = [{name: 'PC3', value: 'PC3'}];
+	// var example_times = [{name: '6H', value: 6}];
+	var example_times = [6];
 
 	setExample(pert_ids_select[0].selectize, example_drugs, 'pert_id');
 	setExample(cells_select[0].selectize, example_cells, 'value');
-	setExample(times_select[0].selectize, example_times, 'value');
+	// setExample(times_select[0].selectize, example_times, 'value');
+	times_select[0].selectize.setValue(example_times,);
 	
 })

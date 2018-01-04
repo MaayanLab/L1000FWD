@@ -385,9 +385,10 @@ class UserSubset(object):
 			graph_df['Cell'].isin(self.data['cells']) &\
 			graph_df['Time'].isin(self.data['times'])
 		graph_df_sub = graph_df.loc[mask]
-		# Scale the x, y 
-		graph_df_sub['x'] = _minmax_scaling(graph_df_sub['x'].values)
-		graph_df_sub['y'] = _minmax_scaling(graph_df_sub['y'].values)
+		if graph_df_sub.shape[0] > 0:
+			# Scale the x, y 
+			graph_df_sub['x'] = _minmax_scaling(graph_df_sub['x'].values)
+			graph_df_sub['y'] = _minmax_scaling(graph_df_sub['y'].values)
 		return graph_df_sub
 
 	@classmethod

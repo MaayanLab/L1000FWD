@@ -25,6 +25,7 @@ class CIFlask(Flask):
 
 
 from orm import *
+# from subset_signatures import *
 from crossdomain import crossdomain
 
 ENTER_POINT = os.environ['ENTER_POINT']
@@ -46,6 +47,7 @@ def load_globals():
 	global creeds_meta_df
 	global api_docs
 	global download_files_meta
+	# global meta_df_full
 	graph_name_full = 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs'
 	graphs = load_graphs_meta()
 
@@ -65,6 +67,26 @@ def load_globals():
 		graph_name = graph_rec['name']
 		graph_df_, _ = load_graph_from_db(graph_name, drug_meta_df=drug_meta_df)
 		d_all_graphs[graph_name] = graph_df_
+
+	# # The full metadata for all_sig_ids, then filter out signatures from poscons
+	# meta_df_full = load_signature_meta_from_db('sigs', 
+	# 	query={'sig_id': {'$in': all_sig_ids}},
+	# 	drug_meta_df=drug_meta_df		
+	# 	)
+	# meta_df_full.rename(
+	# 	index=str, 
+	# 	columns={
+	# 		'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
+	# 		'drug_class': 'Drug class', 'dose': 'Dose',
+	# 		'pert_desc': 'Perturbation',
+	# 		'pert_id': 'Perturbation_ID',
+	# 		'most_frequent_rx': 'EHR_Coprescribed_Drugs',
+	# 		'most_frequent_dx': 'EHR_Diagnoses',
+	# 		},
+	# 	inplace=True)
+	# # meta_df_full = meta_df_full.groupby('Perturbation_ID')['p-value'].apply(lambda x: x.sort_values(ascending=True).head(20))
+	# # meta_df_full = meta_df_full.reset_index().set_index('sig_id')
+	# print meta_df_full.shape
 
 	creeds_meta_df = pd.read_csv('data/CREEDS_meta.csv').set_index('id')
 	api_docs = json.load(open('api_docs.json', 'rb'))
@@ -150,13 +172,20 @@ def create_graph_from_user_subset():
 			})
 
 		graph_df_sub = user_subset.subset_graph(graph_df)
+		# sig_ids_sub = get_subset_sig_ids(user_subset)
 		if graph_df_sub.shape[0] == 1:
+		# if len(sig_ids_sub) == 1:
 			# Redirect to signature page 
 			sig_id = graph_df_sub.index[0]
+			# sig_id = sig_ids_sub[0]
 			return json.dumps({
 				'url': 'http://amp.pharm.mssm.edu/dmoa/sig/%s'%sig_id,
 				'absolute': True
 				})
+		# elif len(sig_ids_sub) == 0:
+		elif graph_df_sub.shape[0] == 0:
+			# No results found
+			return json.dumps({'error': 'No signatures can be found for the subset criteria.'})
 		else:
 			rid = user_subset.save()
 			print rid
@@ -183,6 +212,12 @@ def send_subset_result_page(subset_id):
 def retrieve_subset_id_and_subset_graph(subset_id):
 	user_subset = UserSubset.get(subset_id)
 	graph_df_sub = user_subset.subset_graph(graph_df)
+	# coords_df = subset_mat_and_do_tsne(user_subset)
+	# graph_df_sub = meta_df_full.merge(coords_df, 
+	# 	left_index=True,
+	# 	right_index=True,
+	# 	how='inner'
+	# 	)
 
 	# This somehow works
 	time.sleep(1)
