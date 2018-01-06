@@ -1,13 +1,16 @@
 import numpy as np
 import pandas as pd
-from scipy import stats
+# from scipy import stats
 
 # Load null ranks from file
 def load_null_ranks():
-	mat = np.load('data/null_scores_mat_genes_from_Probes_10000x42809.npy')['mat']
-	rankmat = np.apply_along_axis(lambda x: stats.rankdata(x, method='ordinal'), 1, mat)
-	mean_ranks = rankmat.mean(axis=0)
-	std_ranks = rankmat.std(axis=0)
+	# mat = np.load('data/null_scores_mat_genes_from_Probes_10000x42809.npy')['mat']
+	# rankmat = np.apply_along_axis(lambda x: stats.rankdata(x, method='ordinal'), 1, mat)
+	# mean_ranks = rankmat.mean(axis=0)
+	# std_ranks = rankmat.std(axis=0)
+	f = np.load('data/null_scores_mean_std_genes_from_Probes.npy')
+	mean_ranks = f['mean_ranks']
+	std_ranks = f['std_ranks']
 	return mean_ranks, std_ranks
 
 mean_ranks, std_ranks = load_null_ranks()
