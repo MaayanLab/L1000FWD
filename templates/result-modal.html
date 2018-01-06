@@ -11,11 +11,21 @@
 				<tr>
 					<th>sig_id</th>
 					<th>drug</th>
-					<th>similarity score</th>
-					<th>p-value</th>
-					<th>q-value</th>
-					<th>Z-score</th>
-					<th>combined score</th>
+					<th>
+						<div title="Similarity score measuring the overlap between the input DE genes and the signature DE genes divided by the effective input. The range of the score is [-1, 1]. Positive scores indicate similar signature whereas negative scores indicate opposite signature." data-toggle="tooltip">similarity score</div>
+					</th>
+					<th>
+						<div title="The p-value is computed from Fisher exact test to assess the statistical significance of overlapped genes between input gene sets and drug-induced signatures." data-toggle="tooltip">p-value</div>
+					</th>
+					<th>
+						<div title="Adjusted p-value using the Benjamini-Hochberg procedure" data-toggle="tooltip">q-value</div>
+					</th>
+					<th>
+						<div title="The Z-score assess the deviation of the observed rank from the expected ranks for signatures. The expected ranks were calculated using many random gene set pairs as input to order signatures by the similarity scores." data-toggle="tooltip">Z-score</div>
+					</th>
+					<th>
+						<div title="Combined score is computed by taking the log of the p-value from the Fisher exact test and multiply by the Z-score of deviation from the expected rank." data-toggle="tooltip">combined score</div>
+					</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -44,11 +54,21 @@
 				<tr>
 					<th>sig_id</th>
 					<th>drug</th>
-					<th>similarity score</th>
-					<th>p-value</th>
-					<th>q-value</th>
-					<th>Z-score</th>
-					<th>combined score</th>
+					<th>
+						<div title="Similarity score measuring the overlap between the input DE genes and the signature DE genes divided by the effective input. The range of the score is [-1, 1]. Positive scores indicate similar signature whereas negative scores indicate opposite signature." data-toggle="tooltip">similarity score</div>
+					</th>
+					<th>
+						<div title="The p-value is computed from Fisher exact test to assess the statistical significance of overlapped genes between input gene sets and drug-induced signatures." data-toggle="tooltip">p-value</div>
+					</th>
+					<th>
+						<div title="Adjusted p-value using the Benjamini-Hochberg procedure" data-toggle="tooltip">q-value</div>
+					</th>
+					<th>
+						<div title="The Z-score assess the deviation of the observed rank from the expected ranks for signatures. The expected ranks were calculated using many random gene set pairs as input to order signatures by the similarity scores." data-toggle="tooltip">Z-score</div>
+					</th>
+					<th>
+						<div title="Combined score is computed by taking the log of the p-value from the Fisher exact test and multiply by the Z-score of deviation from the expected rank." data-toggle="tooltip">combined score</div>
+					</th>
 				</tr>
 			</thead>
 			<tbody>

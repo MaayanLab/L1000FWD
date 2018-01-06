@@ -194,6 +194,7 @@ text.legendTitle{
 
 .tooltip-inner {
   white-space: pre-wrap;
+  min-width: 200px;
 }
 
 .alert-info {
