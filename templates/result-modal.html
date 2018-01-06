@@ -6,12 +6,16 @@
 
 <div class="tab-content">
 	<div id="similar" class="tab-pane fade in active">
-		<table class="table table-hover table-striped">
+		<table class="table table-hover table-striped table-condensed">
 			<thead>
 				<tr>
 					<th>sig_id</th>
 					<th>drug</th>
 					<th>similarity score</th>
+					<th>p-value</th>
+					<th>q-value</th>
+					<th>Z-score</th>
+					<th>combined score</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -23,7 +27,11 @@
 					<td>
 						<a href="http://amp.pharm.mssm.edu/dmoa/report/{{ row['pert_id'] }}" target="_blank">{{ row['perturbation'] }}</a>
 					</td>
-					<td>{{ row['scores'] }}</td>
+					<td>{{ '%.4f' % row['scores'] }}</td>
+					<td>{{ '%.2e' % row['pvals'] }}</td>
+					<td>{{ '%.2e' % row['qvals'] }}</td>
+					<td>{{ '%.2f' % row['zscores'] }}</td>
+					<td>{{ '%.2f' % row['combined_scores'] }}</td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -37,6 +45,10 @@
 					<th>sig_id</th>
 					<th>drug</th>
 					<th>similarity score</th>
+					<th>p-value</th>
+					<th>q-value</th>
+					<th>Z-score</th>
+					<th>combined score</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -48,7 +60,11 @@
 					<td>
 						<a href="http://amp.pharm.mssm.edu/dmoa/report/{{ row['pert_id'] }}" target="_blank">{{ row['perturbation'] }}</a>
 					</td>
-					<td>{{ row['scores'] }}</td>
+					<td>{{ '%.4f' % row['scores'] }}</td>
+					<td>{{ '%.2e' % row['pvals'] }}</td>
+					<td>{{ '%.2e' % row['qvals'] }}</td>
+					<td>{{ '%.2f' % row['zscores'] }}</td>
+					<td>{{ '%.2f' % row['combined_scores'] }}</td>
 				</tr>
 				{% endfor %}
 			</tbody>

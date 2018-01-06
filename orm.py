@@ -20,6 +20,8 @@ MONGOURI = os.environ['MONGOURI']
 MYSQLURI = os.environ['MYSQLURI']
 engine = create_engine(MYSQLURI)
 
+from gene_set_match import *
+
 def encode_rare_categories(df, colname, max=19):
 	'''
 	Encode rare categories in a df as 'RARE'
@@ -266,7 +268,6 @@ def get_download_meta():
 			num /= 1024.0
 		return "%.1f%s%s" % (num, 'Yi', suffix)
 
-
 	files_meta = []
 	for filename, desc in files:
 		size = os.path.getsize(os.path.join('data/download', filename))
@@ -277,6 +278,7 @@ def get_download_meta():
 			})
 
 	return files_meta
+
 
 ### ORMs for user imput
 class EnrichmentResult(object):
@@ -297,6 +299,11 @@ class EnrichmentResult(object):
 		'''Bind the enrichment results to the graph df'''
 		d_sig_id_score = dict(zip(df.index, self.result['scores']))
 		df['Scores'] = [d_sig_id_score[sig_id] for sig_id in df.index]
+		# df['Scores'] = self.result['scores']
+		# df['p-values'] = self.result['pvals']
+		# df['q-values'] = self.result['qvals']
+		# df['Z-scores'] = self.result['zscores']
+		# df['Combined_scores'] = self.result['combined_scores']
 		return df
 
 class UserInput(object):
@@ -320,6 +327,10 @@ class UserInput(object):
 		payload = dict(data.items() + self.config.items())
 		response = requests.post(RURL, data=json.dumps(payload),headers=self.headers)
 		result = pd.DataFrame(response.json()).set_index('sig_ids')
+		# get zscores and combined_scores
+		result = get_enrich_table(result, 
+			mean_ranks=mean_ranks, std_ranks=std_ranks)
+
 		result = result.loc[df.index].reset_index()
 		result_sorted = result.sort_values('scores', ascending=False)
 		# Get the top N as list of records:
@@ -329,6 +340,10 @@ class UserInput(object):
 			}
 		self.result = {
 			'scores': result['scores'].tolist(), 
+			'pvals': result['pvals'].tolist(), 
+			'qvals': result['qvals'].tolist(), 
+			'zscores': result['zscores'].tolist(), 
+			'combined_scores': result['combined_scores'].tolist(), 
 			'topn': topn
 			}
 		self.graph_name = graph_name
