@@ -89,6 +89,13 @@ var tooltipTexts = {
 	'Phase': 'Drug development phase',
 	'MOA': 'Mechanisms of action',
 	'Batch': 'Experimental batch',
+	'DBSCAN': 'Signature clustering result using DBSCAN algorithm',
+	'KMeans': 'Signature clustering result using KMeans algorithm',
+	'rings': "The molecule's rings in the drug/compounds",
+	'scaffolds': "The chemical scaffolds of the drugs/compounds",
+	'n_rings': 'Number of rings in the drugs/compounds',
+	'n_rscaffolds': 'Number of scaffolds in the drugs/compounds',
+	'predicted_MOA': 'Mechanisms of action predicted based on gene expression and chemical signatures',
 };
 
 var Controler = Backbone.View.extend({
@@ -135,7 +142,10 @@ var Controler = Backbone.View.extend({
 		var metas = _.filter(model.metas, function(meta){ return meta.nUnique < model.n; });
 		var self = this;
 		// filter out metas not suitable for shapes
-		var metasShape = _.filter(metas, function(meta){ return meta.nUnique < 6 || meta.type !=='string'});
+		// var metasShape = _.filter(metas, function(meta){ return meta.nUnique < 6 || meta.type !=='string'});
+		// Only retrain these attributes as shapes
+		var metasShapeNames = ['p-value', 'Dose', 'Time'];
+		var metasShape = _.filter(metas, function(meta){return metasShapeNames.indexOf(meta.name) !== -1 });
 
 		// Shapes: 
 		var shapeControl = this.el.append('div')

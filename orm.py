@@ -115,10 +115,10 @@ def load_drug_meta_from_db():
 	drug_meta_df = drug_meta_df.merge(predicted_MOAs, left_index=True, right_index=True
 		, how='left')
 
-	predicted_MOAs_GE = load_predicted_MOAs('data/agg_MOA_preds_at_pert_level_kNN15_GE.csv',
-		name='predicted_MOA_GE')
-	drug_meta_df = drug_meta_df.merge(predicted_MOAs_GE, left_index=True, right_index=True,
-		how='left')
+	# predicted_MOAs_GE = load_predicted_MOAs('data/agg_MOA_preds_at_pert_level_kNN15_GE.csv',
+	# 	name='predicted_MOA_GE')
+	# drug_meta_df = drug_meta_df.merge(predicted_MOAs_GE, left_index=True, right_index=True,
+	# 	how='left')
 	return drug_meta_df
 
 def load_drug_synonyms_from_db(meta_df, graph_df):
