@@ -83,7 +83,7 @@ var tooltipTexts = {
 	'Dose': 'Concentration of the drug',
 	'Perturbation_ID': 'ID of the drug/small molecule compound',
 	'Time': 'Duration of drug treatment',
-	'Popular-Perturbation': 'Name of drug/small molecule compound',
+	'Perturbation': 'Name of drug/small molecule compound',
 	'EHR_Coprescribed_Drugs': 'Most frequently associated co-prescribed drug',
 	'EHR_Diagnoses': 'Most frequently associated diagnosis',
 	'Phase': 'Drug development phase',
@@ -94,7 +94,7 @@ var tooltipTexts = {
 	'rings': "The molecule's rings in the drug/compounds",
 	'scaffolds': "The chemical scaffolds of the drugs/compounds",
 	'n_rings': 'Number of rings in the drugs/compounds',
-	'n_rscaffolds': 'Number of scaffolds in the drugs/compounds',
+	'n_scaffolds': 'Number of scaffolds in the drugs/compounds',
 	'predicted_MOA': 'Mechanisms of action predicted based on gene expression and chemical signatures',
 };
 
@@ -173,7 +173,12 @@ var Controler = Backbone.View.extend({
 					return '<div title="'+tooltipTexts[d]+
 						'" data-toggle="tooltip">'+d+'</div>';
 				} else{
-					return '<div>' + d + '</div>';
+					// special case for perturbation
+					if (d === 'Perturbation'){ 
+						return '<div>Popular-Perturbation</div>'
+					}else {
+						return '<div>' + d + '</div>';
+					}
 				};
 			});
 
@@ -192,9 +197,11 @@ var Controler = Backbone.View.extend({
 				self.trigger('colorChanged', selectedMetaKey)
 			});
 
+		var metasColorExclude = ['p-value', 'Dose', 'Perturbation_ID'];
+		var metasColor = _.filter(metas, function(meta){return metasColorExclude.indexOf(meta.name) === -1 });
 		var colorOptions = colorSelect
 			.selectAll('option')
-			.data(_.pluck(metas, 'name')).enter()
+			.data(_.pluck(metasColor, 'name')).enter()
 			.append('option')
 			.text(function(d){return d;})
 			.attr('value', function(d){return d;})

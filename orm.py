@@ -230,7 +230,7 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 		columns={
 			'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
 			'drug_class': 'Drug class', 'dose': 'Dose',
-			'pert_desc': 'Popular-Perturbation',
+			'pert_desc': 'Perturbation',
 			'pert_id': 'Perturbation_ID',
 			'most_frequent_rx': 'EHR_Coprescribed_Drugs',
 			'most_frequent_dx': 'EHR_Diagnoses',
@@ -298,13 +298,9 @@ class EnrichmentResult(object):
 	def bind_to_graph(self, df):
 		'''Bind the enrichment results to the graph df'''
 		d_sig_id_score = dict(zip(df.index, self.result['scores']))
-		df['Scores'] = [d_sig_id_score[sig_id] for sig_id in df.index]
-		# df['Scores'] = self.result['scores']
-		# df['p-values'] = self.result['pvals']
-		# df['q-values'] = self.result['qvals']
-		# df['Z-scores'] = self.result['zscores']
-		# df['Combined_scores'] = self.result['combined_scores']
-		return df
+		df_copy = df.copy()
+		df_copy['Scores'] = [d_sig_id_score[sig_id] for sig_id in df.index]
+		return df_copy
 
 class UserInput(object):
 	"""The base class for GeneSets and Signature"""
