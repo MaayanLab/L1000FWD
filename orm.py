@@ -119,6 +119,9 @@ def load_drug_meta_from_db():
 	# 	name='predicted_MOA_GE')
 	# drug_meta_df = drug_meta_df.merge(predicted_MOAs_GE, left_index=True, right_index=True,
 	# 	how='left')
+	drug_meta_df.replace('Surgical operation with transplant of whole organ causing abnormal patient reaction, or later complication, without mention of misadventure at time of operation', 
+		'Surgical operation with transplant of whole organ',
+		inplace=True)
 	return drug_meta_df
 
 def load_drug_synonyms_from_db(meta_df, drug_meta_df):
