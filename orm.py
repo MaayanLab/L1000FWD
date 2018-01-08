@@ -203,9 +203,9 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 	graph_df['y'] = _minmax_scaling(graph_df['y'].values)
 	# graph_df['DBSCAN'] = _cluster(graph_df['x'].values, graph_df['y'].values,
 	# 	clstr = cluster.DBSCAN(min_samples=15, eps=0.35))
-	graph_df['DBSCAN'] = _cluster(graph_df['x'].values, graph_df['y'].values,
+	graph_df['DBSCAN-clustering'] = _cluster(graph_df['x'].values, graph_df['y'].values,
 		clstr = cluster.DBSCAN(min_samples=15, eps=0.33))
-	graph_df['KMeans'] = _cluster(graph_df['x'].values, graph_df['y'].values, 
+	graph_df['KMeans-clustering'] = _cluster(graph_df['x'].values, graph_df['y'].values, 
 		cluster.KMeans(n_clusters=30))
 	# graph_df['SpectralClustering'] = _cluster(graph_df['x'].values, graph_df['y'].values, 
 	# 	cluster.SpectralClustering(n_clusters=20))
@@ -230,7 +230,7 @@ def load_graph_from_db(graph_name, drug_meta_df=None):
 		columns={
 			'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
 			'drug_class': 'Drug class', 'dose': 'Dose',
-			'pert_desc': 'Perturbation',
+			'pert_desc': 'Popular-Perturbation',
 			'pert_id': 'Perturbation_ID',
 			'most_frequent_rx': 'EHR_Coprescribed_Drugs',
 			'most_frequent_dx': 'EHR_Diagnoses',
@@ -262,11 +262,11 @@ def get_download_meta():
 	('Probes_full_metadata.csv', 'Metadata of the probes used in the full space.'), 	
 	]
 	def sizeof_fmt(num, suffix='B'):
-		for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+		for unit in ['','K','M','G','T','P','E','Z']:
 			if abs(num) < 1024.0:
 				return "%3.1f%s%s" % (num, unit, suffix)
 			num /= 1024.0
-		return "%.1f%s%s" % (num, 'Yi', suffix)
+		return "%.1f%s%s" % (num, 'Y', suffix)
 
 	files_meta = []
 	for filename, desc in files:
