@@ -57,7 +57,7 @@ def load_globals():
 		drug_meta_df=drug_meta_df)
 	print meta_df.shape
 
-	drug_synonyms = load_drug_synonyms_from_db(meta_df, graph_df)
+	drug_synonyms = load_drug_synonyms_from_db(meta_df, drug_meta_df)
 
 	all_sig_ids = get_all_sig_ids_from_graphs()
 
@@ -311,6 +311,19 @@ def search_drug_by_synonyms(query_string):
 	if request.method == 'GET':
 		mask = drug_synonyms['Name'].str.contains(query_string, case=False)
 		return drug_synonyms.loc[mask].to_json(orient='records') 
+
+@app.route(ENTER_POINT + '/synonyms_by_graph/<string:graph_name>/<string:query_string>', methods=['GET'])
+@crossdomain(origin='*')
+def search_drug_by_synonyms_on_graph(graph_name, query_string):
+	'''Endpoint handling synonym search for drugs in the graph.
+	'''
+	if request.method == 'GET':
+		graph_df_ = d_all_graphs[graph_name]
+		pert_ids_in_this_graph = graph_df_['Perturbation_ID'].unique()
+		drug_synonyms_sub = drug_synonyms.loc[drug_synonyms['pert_id'].isin(pert_ids_in_this_graph)]
+		mask = drug_synonyms_sub['Name'].str.contains(query_string, case=False)
+		return drug_synonyms_sub.loc[mask].to_json(orient='records') 
+
 
 @app.route(ENTER_POINT + '/cells', methods=['GET'])
 def get_cell_lines():

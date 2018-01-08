@@ -146,7 +146,7 @@ $('.example-btn').click(function(e){
 $('#example-btn-2').click(function(e){
 	e.preventDefault();
 
-	var example_drugs = [{Name:'TYRPHOSTIN-AG-82', pert_id:'BRD-K03670461'}];
+	var example_drugs = [{Name:'FEXOFENADINE', pert_id:'BRD-A73368467'}];
 	var example_cells = [{name: 'PC3', value: 'PC3'}];
 	// var example_times = [{name: '6H', value: 6}];
 	var example_times = [6];

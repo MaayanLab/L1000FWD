@@ -121,17 +121,17 @@ def load_drug_meta_from_db():
 	# 	how='left')
 	return drug_meta_df
 
-def load_drug_synonyms_from_db(meta_df, graph_df):
+def load_drug_synonyms_from_db(meta_df, drug_meta_df):
 	# Load synonyms for drugs
 	drug_synonyms = pd.read_sql_table('drug_synonyms', engine, columns=['pert_id', 'Name'])
 	print drug_synonyms.shape
 	# Keep only the pert_id that are in the graph
-	pert_ids_in_graph = meta_df.loc[graph_df.index]['pert_id'].unique()
-	print 'Number of unique pert_id in graph:', len(pert_ids_in_graph)
-	drug_synonyms = drug_synonyms.loc[drug_synonyms['pert_id'].isin(pert_ids_in_graph)]
+	# pert_ids_in_graph = meta_df.loc[graph_df.index]['pert_id'].unique()
+	# print 'Number of unique pert_id in graph:', len(pert_ids_in_graph)
+	# drug_synonyms = drug_synonyms.loc[drug_synonyms['pert_id'].isin(pert_ids_in_graph)]
 	# Add pert_id itself as name
 	drug_synonyms = drug_synonyms.append(
-		pd.DataFrame({'pert_id': pert_ids_in_graph, 'Name': pert_ids_in_graph})
+		pd.DataFrame({'pert_id': drug_meta_df.index, 'Name': drug_meta_df.index})
 		)
 	drug_synonyms.drop_duplicates(inplace=True)
 	print drug_synonyms.shape

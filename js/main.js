@@ -26,7 +26,7 @@ var legend = new Legend({scatterPlot: sdv, h: window.innerHeight, container: con
 
 var controler = new Controler({scatterPlot: sdv, h: window.innerHeight, w: 200, container: container})
 
-var search = new SearchSelectize({scatterPlot: sdv, container: "#controls"})
+var search = new SearchSelectize({scatterPlot: sdv, container: "#controls", synonymsUrl: 'synonyms_by_graph/'+graph_name})
 
 var sigSimSearch = new SigSimSearchForm({
 	scatterPlot: sdv, 

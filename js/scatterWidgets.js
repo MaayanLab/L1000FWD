@@ -241,6 +241,7 @@ var SearchSelectize = Backbone.View.extend({
 	defaults: {
 		container: document.body,
 		scatterPlot: Scatter3dView,
+		synonymsUrl: 'synonyms/'
 	},
 
 	initialize: function(options){
@@ -283,7 +284,7 @@ var SearchSelectize = Backbone.View.extend({
 			return data;
 		}
 
-
+		var self = this;
 		this.$el.selectize({
 			valueField: 'pert_id',
 			labelField: 'Name',
@@ -304,7 +305,7 @@ var SearchSelectize = Backbone.View.extend({
 			load: function(query, callback){
 				if (!query.length) query = 'a'; // to preload some options when focused 
 				$.ajax({
-					url: 'synonyms/' + encodeURIComponent(query),
+					url: self.synonymsUrl + '/' + encodeURIComponent(query),
 					type: 'GET',
 					dataType: 'json',
 					error: function(){
@@ -317,8 +318,6 @@ var SearchSelectize = Backbone.View.extend({
 			}
 			});
 
-		
-		var self = this;
 		// The button to clear highlighted points
 		this.btn = $('<button class="btn btn-default btn-xs">Clear highlighted points</button>').click(function(e){
 			self.scatterPlot.removeHighlightedPoints();
