@@ -172,13 +172,6 @@ var Controler = Backbone.View.extend({
 				if (tooltipTexts.hasOwnProperty(d)) {
 					return '<div title="'+tooltipTexts[d]+
 						'" data-toggle="tooltip">'+d+'</div>';
-				} else{
-					// special case for perturbation
-					if (d === 'Perturbation'){ 
-						return '<div>Popular-Perturbation</div>'
-					}else {
-						return '<div>' + d + '</div>';
-					}
 				};
 			});
 
@@ -207,8 +200,14 @@ var Controler = Backbone.View.extend({
 			.attr('value', function(d){return d;})
 			.attr('data-content', function(d){
 				if (tooltipTexts.hasOwnProperty(d)) {
+					if (d==='Perturbation') {
 					return '<div title="'+tooltipTexts[d]+
-						'" data-toggle="tooltip">'+d+'</div>';
+						'" data-toggle="tooltip">Popular-Perturbation</div>'; 
+					}else {
+						return '<div title="'+tooltipTexts[d]+
+							'" data-toggle="tooltip">'+d+'</div>';						
+					}
+
 				} else{
 					return '<div>' + d + '</div>';
 				};
