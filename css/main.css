@@ -93,9 +93,9 @@ text.legendTitle{
 #footer {
   position: absolute;
   left: 0;
-  top: 120%;
+  top: 110%;
   bottom: 0;
-  height: 210px;
+  height: 260px;
   width: 100%;
 }
 #header {
