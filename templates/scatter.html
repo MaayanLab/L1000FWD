@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <base href="{{ ENTER_POINT }}/"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Zichen Wang (zichen.wang@mssm.edu)">    
+    <title>L1000 Fireworks Display</title>
+    <!-- <link rel="icon" href="images/favicon.png" type="image/x-icon"> -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="lib/selectize.bootstrap3.css">
+    <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <meta name="application-name" content="L1000FWD">
+    <meta name="description" content="L1000 fireworks display (L1000FWD) provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. It enables overlaying various drug attributes such as MOA and clinical usages extracted from the EMR/EHR.">
+    <meta name="keywords" content="L1000, data visualization, drug discovery, drug reporposing, drug repositioning, drugs, big data, lincs, biomedical, ehr, emr, bioinformatics, biomedical informatics, systems pharmacology, systems biology, transcriptomics, bd2k, lincs, bd2k-lincs dcic, data integration, avi ma'ayan, avi maayan, maayan lab, zichen wang">
+    <meta name="robots" content="index, follow">
+  </head>
+  <body>
+    {% include 'partial/header.html' %}
+    <div id="body" class="container-full">
+      <canvas id="text-label"></canvas>
+    </div>
+    {% include 'partial/footer.html' %}
+
+    <script src="lib/three.min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+
+    <script src="lib/Detector.js"></script>
+    <script src="lib/stats.min.js"></script>
+    
+    <script src="js/textures.js"></script>
+    <script src="js/scatterPlot.js"></script>
+    <script src="js/scatterWidgets.js"></script>
+    <script>
+        var result_id = "{{ result_id }}";
+        var subset_id = "{{ subset_id }}";
+        var graph_name = "{{ graph_name }}"
+        var sdvConfig = {{ sdvConfig|safe }};
+    </script>
+    <script src="js/{{ script }}.js"></script>
+
+    {% if script == 'result' %}
+        <div class="modal fade" id="result-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Signature similarity search results</h4>
+              </div>
+              <div class="modal-body"></div>
+            </div>
+          </div>
+        </div>
+    {% endif %}
+  </body>
+</html>

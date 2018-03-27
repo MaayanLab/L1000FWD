@@ -98,6 +98,15 @@ text.legendTitle{
   height: 260px;
   width: 100%;
 }
+
+#footer-index {
+  left: 0;
+  top: 110%;
+  bottom: 0;
+  height: 180px;
+  width: 100%;
+}
+
 #header {
   background-color: #ddd;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
@@ -172,29 +181,29 @@ text.legendTitle{
   float: none;
 }
 
-#footer {
+.footer {
   background-color: #f8f8f8;
   border-top: solid #e7e7e7;
 }
-#footer a,
-#footer li,
-#footer p {
+.footer a,
+.footer li,
+.footer p {
   color: black;
   font-family: 'Roboto', arial, sans-serif;
   font-size: 14px;
   font-weight: 100;
 }
-#footer h3 {
+.footer h3 {
   color: black;
 }
-#footer a {
+.footer a {
   color: #777;
   text-decoration: none;
 }
-#footer a:hover {
+.footer a:hover {
   text-decoration: underline;
 }
-#footer .container {
+.footer .container {
   margin-top: 15px;
 }
 

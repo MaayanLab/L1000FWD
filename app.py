@@ -93,9 +93,13 @@ def load_globals():
 	download_files_meta = get_download_meta()
 	return
 
-
 @app.route(ENTER_POINT + '/')
 def index_page():
+	return render_template('index.html', 
+		ENTER_POINT=ENTER_POINT)
+
+@app.route(ENTER_POINT + '/main')
+def main_page():
 	# The default main page
 	sdvConfig = {
 		'colorKey': 'MOA',
@@ -103,7 +107,7 @@ def index_page():
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
 
-	return render_template('index.html', 
+	return render_template('scatter.html', 
 		script='main',
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
@@ -133,7 +137,7 @@ def graph_page(graph_name):
 		sdvConfig['shapeKey'] = 'avg_pvalue'
 		sdvConfig['labelKey'] = ['Perturbation', 'avg_dose', 'avg_time', 'avg_pvalue', 
 					'Phase', 'MOA', 'n_signatures_aggregated']
-	return render_template('index.html', 
+	return render_template('scatter.html', 
 		script='main',
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
@@ -198,7 +202,7 @@ def send_subset_result_page(subset_id):
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
 
-	return render_template('index.html', 
+	return render_template('scatter.html', 
 		ENTER_POINT=ENTER_POINT,
 		subset_id=subset_id,
 		script='subset',
@@ -451,7 +455,7 @@ def result_page(result_id):
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
 	result_obj = EnrichmentResult(result_id)
-	return render_template('index.html', 
+	return render_template('scatter.html', 
 		script='result', 
 		ENTER_POINT=ENTER_POINT,
 		result_id=result_id,
