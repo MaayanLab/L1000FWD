@@ -81,7 +81,7 @@ def load_globals():
 	# The full metadata for all_sig_ids, then filter out signatures from poscons
 	meta_df_full = load_signature_meta_from_db('sigs', 
 		query={'sig_id': {'$in': all_sig_ids}},
-		drug_meta_df=drug_meta_df[['pert_desc', 'MOA', 'Phase']]
+		drug_meta_df=drug_meta_df[['pert_desc']]
 		)
 	meta_df_full.rename(
 		index=str, 
@@ -115,18 +115,20 @@ def search_all_entities(query_string):
 		# drugs: `drug_synonyms` df for all pert_ids	
 		mask_drugs = drug_synonyms['Name'].str.contains(query_string, case=False)
 		drugs_sub_df = drug_synonyms.loc[mask_drugs]\
-			.merge(drug_meta_df[['MOA', 'Phase']], right_index=True, left_on='pert_id', how='left')
-		drugs_sub_df['MOA'] = drugs_sub_df['MOA'].map(nan_to_none)
-		drugs_sub_df['Phase'] = drugs_sub_df['Phase'].map(nan_to_none)
+			.merge(drug_meta_df[['MOA', 'Phase']], right_index=True, left_on='pert_id', how='left')\
+			.fillna('unknown')\
+			.rename(index=str, columns={'pert_id': 'id', 'Name': 'name'})
 		drugs_sub_df['type'] = 'drug'
 		# cells: `cells_df`
 		mask_cells = cells_df.index.str.contains(query_string, case=False)
 		cells_sub_df = cells_df.loc[mask_cells]
 		cells_sub_df['type'] = 'cell'
+		cells_sub_df.index.name = 'id'
 		# signatures: `all_sig_ids`
 		mask_sigs = meta_df_full.index.str.contains(query_string, case=False)
 		sigs_sub_df = meta_df_full.loc[mask_sigs]
 		sigs_sub_df['type'] = 'sig'
+		sigs_sub_df.index.name = 'id'
 		records = drugs_sub_df.to_dict(orient='records') + \
 			cells_sub_df.reset_index().to_dict(orient='records') + \
 			sigs_sub_df.reset_index().to_dict(orient='records')
