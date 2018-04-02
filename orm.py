@@ -22,6 +22,16 @@ engine = create_engine(MYSQLURI)
 
 from gene_set_match import *
 
+def nan_to_none(x):
+	'''Convert np.nan to None.'''
+	try:
+		if np.isnan(x):
+			x = None
+	except TypeError:
+		pass
+	return x
+
+
 def encode_rare_categories(df, colname, max=19):
 	'''
 	Encode rare categories in a df as 'RARE'

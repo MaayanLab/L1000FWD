@@ -47,9 +47,19 @@ def load_globals():
 	global creeds_meta_df
 	global api_docs
 	global download_files_meta
-	# global meta_df_full
+	global meta_df_full
+	global cells_df
+
 	graph_name_full = 'Signature_Graph_CD_center_LM_sig-only_16848nodes.gml.cyjs'
 	graphs = load_graphs_meta()
+	# make a df for the cells with FWD plots
+	cells_df = pd.DataFrame(graphs['cells'])
+	cells_df = cells_df.loc[cells_df['cell'] != 'all']
+	cells_df['plot'] = cells_df.display_name.map(lambda x:x.split('(')[1].strip(')'))
+	cells_df = cells_df.groupby('cell').agg({
+		'name': 'unique', 'n_sigs': 'first', 'plot': 'unique'})
+	cells_df['name'] = cells_df['name'].map(list)
+	cells_df['plot'] = cells_df['plot'].map(list)
 
 	drug_meta_df = load_drug_meta_from_db()
 
@@ -68,25 +78,25 @@ def load_globals():
 		graph_df_, _ = load_graph_from_db(graph_name, drug_meta_df=drug_meta_df)
 		d_all_graphs[graph_name] = graph_df_
 
-	# # The full metadata for all_sig_ids, then filter out signatures from poscons
-	# meta_df_full = load_signature_meta_from_db('sigs', 
-	# 	query={'sig_id': {'$in': all_sig_ids}},
-	# 	drug_meta_df=drug_meta_df		
-	# 	)
-	# meta_df_full.rename(
-	# 	index=str, 
-	# 	columns={
-	# 		'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
-	# 		'drug_class': 'Drug class', 'dose': 'Dose',
-	# 		'pert_desc': 'Perturbation',
-	# 		'pert_id': 'Perturbation_ID',
-	# 		'most_frequent_rx': 'EHR_Coprescribed_Drugs',
-	# 		'most_frequent_dx': 'EHR_Diagnoses',
-	# 		},
-	# 	inplace=True)
-	# # meta_df_full = meta_df_full.groupby('Perturbation_ID')['p-value'].apply(lambda x: x.sort_values(ascending=True).head(20))
-	# # meta_df_full = meta_df_full.reset_index().set_index('sig_id')
-	# print meta_df_full.shape
+	# The full metadata for all_sig_ids, then filter out signatures from poscons
+	meta_df_full = load_signature_meta_from_db('sigs', 
+		query={'sig_id': {'$in': all_sig_ids}},
+		drug_meta_df=drug_meta_df[['pert_desc', 'MOA', 'Phase']]
+		)
+	meta_df_full.rename(
+		index=str, 
+		columns={
+			'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
+			'drug_class': 'Drug class', 'dose': 'Dose',
+			'pert_desc': 'Perturbation',
+			'pert_id': 'Perturbation_ID',
+			# 'most_frequent_rx': 'EHR_Coprescribed_Drugs',
+			# 'most_frequent_dx': 'EHR_Diagnoses',
+			},
+		inplace=True)
+	# meta_df_full = meta_df_full.groupby('Perturbation_ID')['p-value'].apply(lambda x: x.sort_values(ascending=True).head(20))
+	# meta_df_full = meta_df_full.reset_index().set_index('sig_id')
+	print meta_df_full.shape
 
 	creeds_meta_df = pd.read_csv('data/CREEDS_meta.csv').set_index('id')
 	api_docs = json.load(open('api_docs.json', 'rb'))
@@ -97,6 +107,32 @@ def load_globals():
 def index_page():
 	return render_template('index.html', 
 		ENTER_POINT=ENTER_POINT)
+
+@app.route(ENTER_POINT + '/search_all/<string:query_string>')
+def search_all_entities(query_string):
+	# This endpoint handles search for all entities for the search bar on index.html
+	if request.method == 'GET':
+		# drugs: `drug_synonyms` df for all pert_ids	
+		mask_drugs = drug_synonyms['Name'].str.contains(query_string, case=False)
+		drugs_sub_df = drug_synonyms.loc[mask_drugs]\
+			.merge(drug_meta_df[['MOA', 'Phase']], right_index=True, left_on='pert_id', how='left')
+		drugs_sub_df['MOA'] = drugs_sub_df['MOA'].map(nan_to_none)
+		drugs_sub_df['Phase'] = drugs_sub_df['Phase'].map(nan_to_none)
+		drugs_sub_df['type'] = 'drug'
+		# cells: `cells_df`
+		mask_cells = cells_df.index.str.contains(query_string, case=False)
+		cells_sub_df = cells_df.loc[mask_cells]
+		cells_sub_df['type'] = 'cell'
+		# signatures: `all_sig_ids`
+		mask_sigs = meta_df_full.index.str.contains(query_string, case=False)
+		sigs_sub_df = meta_df_full.loc[mask_sigs]
+		sigs_sub_df['type'] = 'sig'
+		records = drugs_sub_df.to_dict(orient='records') + \
+			cells_sub_df.reset_index().to_dict(orient='records') + \
+			sigs_sub_df.reset_index().to_dict(orient='records')
+
+	return json.dumps(records)
+
 
 @app.route(ENTER_POINT + '/main')
 def main_page():
