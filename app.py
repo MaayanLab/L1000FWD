@@ -67,7 +67,8 @@ def load_globals():
 		drug_meta_df=drug_meta_df)
 	print meta_df.shape
 
-	drug_synonyms = load_drug_synonyms_from_db(meta_df, drug_meta_df)
+	drug_synonyms = load_drug_synonyms_from_db(drug_meta_df)
+
 
 	all_sig_ids = get_all_sig_ids_from_graphs()
 
@@ -115,7 +116,7 @@ def search_all_entities(query_string):
 		# drugs: `drug_synonyms` df for all pert_ids	
 		mask_drugs = drug_synonyms['Name'].str.contains(query_string, case=False)
 		drugs_sub_df = drug_synonyms.loc[mask_drugs]\
-			.merge(drug_meta_df[['MOA', 'Phase']], right_index=True, left_on='pert_id', how='left')\
+			.merge(drug_meta_df[['MOA', 'Phase']], right_index=True, left_on='pert_id', how='inner')\
 			.fillna('unknown')\
 			.rename(index=str, columns={'pert_id': 'id', 'Name': 'name'})
 		drugs_sub_df['type'] = 'drug'
