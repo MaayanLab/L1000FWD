@@ -1,3 +1,4 @@
+// Search bar
 var selectizeDom = $("#main-search-box").selectize({
 
     create: false,
@@ -74,3 +75,120 @@ var selectizeDom = $("#main-search-box").selectize({
     }
 
 });
+
+
+// highcharts
+var colors = Highcharts.getOptions().colors;
+// get the data for the stats
+var cat_inner = 'Cell',
+    cat_outer = 'Phase';
+
+$.getJSON('stats/'+ cat_inner+'/' + cat_outer, function(data){
+    var categories = _.map(data, function(rec){
+        return rec.drilldown.name;
+    })
+
+    // include colors into the records
+    for (var i = data.length - 1; i >= 0; i--) {
+        var rec = data[i];
+        rec['color'] = colors[i];
+    }
+
+    var browserData = [],
+    versionsData = [],
+    i,
+    j,
+    dataLen = data.length,
+    drillDataLen,
+    brightness;
+// Build the data arrays
+for (i = 0; i < dataLen; i += 1) {
+
+    // add browser data
+    browserData.push({
+        name: categories[i],
+        y: parseFloat(data[i].y.toFixed(2)),
+        color: data[i].color
+    });
+
+    // add version data
+    drillDataLen = data[i].drilldown.data.length;
+    for (j = 0; j < drillDataLen; j += 1) {
+        brightness = 0.2 - (j / drillDataLen) / 5;
+        versionsData.push({
+            name: data[i].drilldown.categories[j],
+            y: parseFloat(data[i].drilldown.data[j].toFixed(2)),
+            color: Highcharts.Color(data[i].color).brighten(brightness).get()
+        });
+    }
+}
+
+// Create the chart
+Highcharts.chart('highcharts-container', {
+    chart: {
+        type: 'pie'
+    },
+    title: {
+        text: 'Signature compositions'
+    },
+    subtitle: {
+        text: ''
+    },
+    yAxis: {
+        title: {
+            text: 'Total percent market share'
+        }
+    },
+    plotOptions: {
+        pie: {
+            shadow: false,
+            center: ['50%', '50%']
+        }
+    },
+    tooltip: {
+        valueSuffix: '%'
+    },
+    series: [{
+        name: cat_inner,
+        data: browserData,
+        size: '60%',
+        dataLabels: {
+            formatter: function () {
+                return this.y > 5 ? this.point.name : null;
+            },
+            color: '#ffffff',
+            distance: -30
+        }
+    }, {
+        name: cat_outer,
+        data: versionsData,
+        size: '80%',
+        innerSize: '60%',
+        dataLabels: {
+            formatter: function () {
+                // display only if larger than 1
+                return this.y > 1 ? '<b>' + this.point.name + ':</b> ' +
+                    this.y + '%' : null;
+            }
+        },
+        id: 'versions'
+    }],
+    responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 400
+            },
+            chartOptions: {
+                series: [{
+                    id: 'versions',
+                    dataLabels: {
+                        enabled: false
+                    }
+                }]
+            }
+        }]
+    }
+});
+
+
+})

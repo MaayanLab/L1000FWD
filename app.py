@@ -81,7 +81,7 @@ def load_globals():
 	# The full metadata for all_sig_ids, then filter out signatures from poscons
 	meta_df_full = load_signature_meta_from_db('sigs', 
 		query={'sig_id': {'$in': all_sig_ids}},
-		drug_meta_df=drug_meta_df[['pert_desc']]
+		drug_meta_df=drug_meta_df[['pert_desc', 'MOA', 'Phase']]
 		)
 	meta_df_full.rename(
 		index=str, 
@@ -134,6 +134,42 @@ def search_all_entities(query_string):
 			sigs_sub_df.reset_index().to_dict(orient='records')
 
 	return json.dumps(records)
+
+
+@app.route(ENTER_POINT + '/stats/<string:cat_inner>/<string:cat_outer>')
+def get_summary_stats_for_cells(cat_inner, cat_outer):
+	# groupby(['inner categories', 'outer categories'])
+	# remove inner unknowns
+	# meta_df_ = meta_df.loc[meta_df[cat_inner] != 'unknown']
+	# meta_df_ = meta_df_full.loc[meta_df_full[cat_inner] != 'unknown']
+	meta_df_ = meta_df_full.copy()
+	grouped_meta_df = meta_df_.reset_index().groupby([cat_inner, cat_outer])['sig_id']\
+		.count()\
+		.reset_index()\
+		.rename(index=str, columns={'sig_id': 'value'})
+		# .sort_values('value', ascending=False)
+
+	# normalize the counts into percentages
+	grouped_meta_df['value'] /= float(grouped_meta_df['value'].sum()) / 100
+	# rare encode small MOA categories
+	grouped_meta_df = encode_rare_categories(grouped_meta_df, cat_inner, max=9)
+
+	data = []
+	# rare encode small Perturbation categories
+	for cat_inner_i, sub_df in grouped_meta_df.groupby(cat_inner):
+		sub_df = encode_rare_categories(sub_df, cat_outer, max=9)
+		sub_df = sub_df.groupby(cat_outer).agg({'value': 'sum'})
+		rec = {
+			'y': sub_df['value'].sum(),
+			'drilldown': {
+				'name': cat_inner_i,
+				'categories': sub_df.index.tolist(),
+				'data': sub_df['value'].tolist()
+				}
+			}
+		data.append(rec)
+
+	return json.dumps(data)
 
 
 @app.route(ENTER_POINT + '/main')

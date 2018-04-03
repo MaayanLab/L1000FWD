@@ -13,6 +13,15 @@
     <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
     <link rel="stylesheet" type="text/css" href="lib/bootstrap-select.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <style type="text/css">
+#highcharts-container {
+    max-width: 660px;
+    margin: auto;
+    height: 400px;
+    margin: 0 auto;
+}        
+
+    </style>
     <meta name="application-name" content="L1000FWD">
     <meta name="description" content="L1000 fireworks display (L1000FWD) provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. It enables overlaying various drug attributes such as MOA and clinical usages extracted from the EMR/EHR.">
     <meta name="keywords" content="L1000, data visualization, drug discovery, drug reporposing, drug repositioning, drugs, big data, lincs, biomedical, ehr, emr, bioinformatics, biomedical informatics, systems pharmacology, systems biology, transcriptomics, bd2k, lincs, bd2k-lincs dcic, data integration, avi ma'ayan, avi maayan, maayan lab, zichen wang">
@@ -59,7 +68,7 @@
 
                     <div class="col-sm-4">
                         <h3>Summary statistics</h3>
-                        <div class="stats"></div>
+                        <div class="stats" id="highcharts-container"></div>
                         <h3>Citation</h3>
                         <div class="citation">
                             <span>Wang Z, Lachmann A, Keenan AB, Ma'ayan A (2018) </span>
@@ -143,6 +152,9 @@
 <script src="lib/datatables.js"></script>
 <script src="lib/datatables.bootstrap.js"></script>
 <script src="lib/bootstrap-select.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
 
 <script src="js/index.js"></script>
 

@@ -41,7 +41,7 @@ def encode_rare_categories(df, colname, max=19):
 		if element in frequent_categories:
 			return element
 		else:
-			return 'rare'
+			return 'other'
 
 	df[colname] = df[colname].apply(_encode_rare)
 	return df
