@@ -2,7 +2,7 @@
 var selectizeDom = $("#main-search-box").selectize({
 
     create: false,
-    preload: 'focus',
+    // preload: 'focus',
     options: [],
     optgroups: [
         {id: 'drug', name: 'drugs'},
@@ -46,7 +46,7 @@ var selectizeDom = $("#main-search-box").selectize({
         }
     },
     load: function(query, callback){
-        if (!query.length) query = 'vc'; // to preload some options when focused 
+        // if (!query.length) query = 'vc'; // to preload some options when focused 
         $.ajax({
             url: 'search_all/' + encodeURIComponent(query),
             type: 'GET',
@@ -66,19 +66,20 @@ var selectizeDom = $("#main-search-box").selectize({
         if (item.type == 'drug') {
             url = 'http://amp.pharm.mssm.edu/dmoa/report/' + item.id;
         } else if (item.type == 'cell') {
-            url = 'http://amp.pharm.mssm.edu/l1000fwd/graph_page/' + item.name[0];
+            url = 'graph_page/' + item.name[0];
         } else {
             url = 'http://amp.pharm.mssm.edu/dmoa/sig/' + item.id;
         }
         
-        window.location.href = url;
+        location.href = url;
     }
 
 });
 
 
 // highcharts
-var colors = Highcharts.getOptions().colors;
+// var colors = Highcharts.getOptions().colors;
+var colors = d3.scale.category20()
 // get the data for the stats
 var cat_inner = 'Cell',
     cat_outer = 'Phase';
@@ -91,7 +92,11 @@ $.getJSON('stats/'+ cat_inner+'/' + cat_outer, function(data){
     // include colors into the records
     for (var i = data.length - 1; i >= 0; i--) {
         var rec = data[i];
-        rec['color'] = colors[i];
+        rec['color'] = colors(i);
+        if (rec['drilldown']['name'] != 'other'){
+            rec['url'] = 'http://amp.pharm.mssm.edu/l1000fwd/graph_page/' + rec['drilldown']['name'] + '_kNN_5'
+        }
+        
     }
 
     var browserData = [],
@@ -108,7 +113,9 @@ for (i = 0; i < dataLen; i += 1) {
     browserData.push({
         name: categories[i],
         y: parseFloat(data[i].y.toFixed(2)),
-        color: data[i].color
+        color: data[i].color,
+        // add url for cells
+        url: data[i].url
     });
 
     // add version data
@@ -152,6 +159,16 @@ Highcharts.chart('highcharts-container', {
         name: cat_inner,
         data: browserData,
         size: '60%',
+        cursor: 'pointer',
+        point: {
+            events: {
+                click: function(){
+                    if (this.options.url != undefined){
+                        location.href = this.options.url;    
+                    }
+                }
+            }
+        },
         dataLabels: {
             formatter: function () {
                 return this.y > 5 ? this.point.name : null;

@@ -153,12 +153,12 @@ def get_summary_stats_for_cells(cat_inner, cat_outer):
 	# normalize the counts into percentages
 	grouped_meta_df['value'] /= float(grouped_meta_df['value'].sum()) / 100
 	# rare encode small MOA categories
-	grouped_meta_df = encode_rare_categories(grouped_meta_df, cat_inner, max=9)
+	grouped_meta_df = encode_rare_categories(grouped_meta_df, cat_inner, max=19)
 
 	data = []
 	# rare encode small Perturbation categories
 	for cat_inner_i, sub_df in grouped_meta_df.groupby(cat_inner):
-		sub_df = encode_rare_categories(sub_df, cat_outer, max=9)
+		sub_df = encode_rare_categories(sub_df, cat_outer, max=19)
 		sub_df = sub_df.groupby(cat_outer).agg({'value': 'sum'})
 		rec = {
 			'y': sub_df['value'].sum(),
