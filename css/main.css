@@ -176,6 +176,9 @@ text.legendTitle{
 .footer {
   background-color: #f8f8f8;
   border-top: solid #e7e7e7;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
 .footer a,
 .footer li,
