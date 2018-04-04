@@ -155,10 +155,10 @@ Highcharts.chart('highcharts-container', {
         type: 'pie'
     },
     title: {
-        text: 'Signature compositions'
+        text: ''
     },
     subtitle: {
-        text: 'click a cell line to launch the FWD visualization'
+        text: 'Click cell line slice to launch cell-specific visualization'
     },
     yAxis: {
         title: {
