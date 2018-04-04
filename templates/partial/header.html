@@ -16,8 +16,9 @@
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-
-          <li id="graph_page"><a id="info-modal-btn">{{ graph_rec['display_name'] }} <span class="glyphicon glyphicon-info-sign"></span></a></li>
+          {% if graph_rec is defined%}
+            <li id="graph_page"><a id="info-modal-btn">{{ graph_rec['display_name'] }} <span class="glyphicon glyphicon-info-sign"></span></a></li>
+          {% endif %}
           <li id="search_drug"><a href="search_drug">Drug Reports</a></li>
           <li id="subset_page"><a href="subset_page">Signature Reports</a></li>
           <li id="download_page"><a href="download_page">Download</a></li>
