@@ -46,6 +46,15 @@ def encode_rare_categories(df, colname, max=19):
 	df[colname] = df[colname].apply(_encode_rare)
 	return df
 
+def shorten_label(label, max_commas=1):
+	if label:
+		if ',' in label:
+			n_commas = len(label.split(',')) - 1
+			if n_commas > max_commas:
+				label = label.split(',')[:max_commas+1]
+				label = ', '.join([l.strip() for l in label])
+	return label
+
 
 def load_graphs_meta():
 	'''Load and preprocess the meta for graphs in the `graphs` collection.
@@ -132,6 +141,8 @@ def load_drug_meta_from_db():
 	drug_meta_df.replace('Surgical operation with transplant of whole organ causing abnormal patient reaction, or later complication, without mention of misadventure at time of operation', 
 		'Surgical operation with transplant of whole organ',
 		inplace=True)
+	for col in ['MOA', 'most_frequent_dx']:
+		drug_meta_df[col] = drug_meta_df[col].map(shorten_label)
 	return drug_meta_df
 
 def load_drug_synonyms_from_db(drug_meta_df):

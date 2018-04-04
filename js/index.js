@@ -79,7 +79,8 @@ var selectizeDom = $("#main-search-box").selectize({
 
 // highcharts
 // var colors = Highcharts.getOptions().colors;
-var colors = d3.scale.category20()
+var colors = d3.scale.category20(),
+    colors10 = d3.scale.category10();
 // get the data for the stats
 var cat_inner = 'Cell',
     cat_outer = 'Phase';
@@ -87,14 +88,29 @@ var cat_inner = 'Cell',
 $.getJSON('stats/'+ cat_inner+'/' + cat_outer, function(data){
     var categories = _.map(data, function(rec){
         return rec.drilldown.name;
-    })
+    });
+    var subCategories = data[0].drilldown.categories;
+    // Make unknown to be gray 
+    if (subCategories.indexOf('unknown') !== -1) {
+        var idx = subCategories.indexOf('unknown');
+        greyIdx = 7;
+        var colorsSub = colors10
+        if (subCategories.length == 20){
+            var greyIdx = 15;
+            colorsSub = colors;
+        }
+        var elem = subCategories[greyIdx];
+        subCategories[greyIdx] = 'unknown';
+        subCategories[idx] = elem;
+    };
+
 
     // include colors into the records
     for (var i = data.length - 1; i >= 0; i--) {
         var rec = data[i];
         rec['color'] = colors(i);
         if (rec['drilldown']['name'] != 'other'){
-            rec['url'] = 'http://amp.pharm.mssm.edu/l1000fwd/graph_page/' + rec['drilldown']['name'] + '_kNN_5'
+            rec['url'] = 'graph_page/' + rec['drilldown']['name'] + '_kNN_5'
         }
         
     }
@@ -122,10 +138,13 @@ for (i = 0; i < dataLen; i += 1) {
     drillDataLen = data[i].drilldown.data.length;
     for (j = 0; j < drillDataLen; j += 1) {
         brightness = 0.2 - (j / drillDataLen) / 5;
+        var subCategory = data[i].drilldown.categories[j];
+        var idx = subCategories.indexOf(subCategory);
         versionsData.push({
-            name: data[i].drilldown.categories[j],
+            name: subCategory,
             y: parseFloat(data[i].drilldown.data[j].toFixed(2)),
-            color: Highcharts.Color(data[i].color).brighten(brightness).get()
+            // color: Highcharts.Color(data[i].color).brighten(brightness).get()
+            color: colorsSub(idx)
         });
     }
 }
@@ -139,11 +158,11 @@ Highcharts.chart('highcharts-container', {
         text: 'Signature compositions'
     },
     subtitle: {
-        text: ''
+        text: 'click a cell line to launch the FWD visualization'
     },
     yAxis: {
         title: {
-            text: 'Total percent market share'
+            text: ''
         }
     },
     plotOptions: {
@@ -153,7 +172,10 @@ Highcharts.chart('highcharts-container', {
         }
     },
     tooltip: {
-        valueSuffix: '%'
+        formatter: function(){
+            return '<b>' + this.series.name + ': ' + this.point.name + '</b><br>' + 
+                this.y + '%';
+        }
     },
     series: [{
         name: cat_inner,
@@ -204,7 +226,11 @@ Highcharts.chart('highcharts-container', {
                 }]
             }
         }]
-    }
+    },
+    credits: {
+        enabled: false
+    },
+
 });
 
 

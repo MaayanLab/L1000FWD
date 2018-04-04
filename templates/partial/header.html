@@ -17,16 +17,7 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
 
-          <li id="graph_page" class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown">Cell Specific Maps<span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              
-              {% for graph in graphs['cells'] %}
-                <li><a href="graph_page/{{ graph.name }}">{{ graph.display_name }}</a></li>
-              {% endfor %}
-
-            </ul>
-          </li>
+          <li id="graph_page"><a id="info-modal-btn">{{ graph_rec['display_name'] }} <span class="glyphicon glyphicon-info-sign"></span></a></li>
           <li id="search_drug"><a href="search_drug">Drug Reports</a></li>
           <li id="subset_page"><a href="subset_page">Signature Reports</a></li>
           <li id="download_page"><a href="download_page">Download</a></li>

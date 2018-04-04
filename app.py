@@ -181,12 +181,12 @@ def main_page():
 		'shapeKey': 'Time',
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
-
+	graph_rec = [x for x in graphs['cells'] if x['name'] == graph_name_full][0]
 	return render_template('scatter.html', 
 		script='main',
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
-		graphs=graphs,
+		graph_rec=graph_rec,
 		graph_name=graph_name_full,
 		sdvConfig=json.dumps(sdvConfig),
 		)
@@ -212,11 +212,13 @@ def graph_page(graph_name):
 		sdvConfig['shapeKey'] = 'avg_pvalue'
 		sdvConfig['labelKey'] = ['Perturbation', 'avg_dose', 'avg_time', 'avg_pvalue', 
 					'Phase', 'MOA', 'n_signatures_aggregated']
+
+	graph_rec = [x for x in graphs['cells'] if x['name'] == graph_name][0]
 	return render_template('scatter.html', 
 		script='main',
 		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
-		graphs=graphs,
+		graph_rec=graph_rec,
 		graph_name=graph_name,
 		sdvConfig=json.dumps(sdvConfig),
 		)

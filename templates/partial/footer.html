@@ -48,6 +48,25 @@
 </div>
 
 
+<div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">{{graph_rec['display_name']}}</h4>
+      </div>
+      <div class="modal-body">
+        <dl class="dl-horizontal">
+          <dt>Cell line(s)</dt>
+          <dd>{{graph_rec['cell']}}</dd>
+          <dt>Number os signatures</dt>
+          <dd>{{graph_rec['n_sigs']}}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Go to www.addthis.com/dashboard to customize your tools --> 
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-52026ded4b51162b" async="async"></script>
 
@@ -80,4 +99,11 @@
     $(this).removeClass('active');
   });
   $("#" + currentUrlRoute).addClass("active");
+
+  // modal btn
+  $("#info-modal-btn").click(function(e){
+    e.preventDefault();
+    $('#info-modal').modal('show')
+  });
+
 </script>
