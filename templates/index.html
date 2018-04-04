@@ -1,157 +1,142 @@
 <html>
-  <head>
-    <base href="{{ ENTER_POINT }}/"/>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="Zichen Wang (zichen.wang@mssm.edu)">    
-    <title>L1000 Fireworks Display</title>
-    <!-- <link rel="icon" href="images/favicon.png" type="image/x-icon"> -->
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="stylesheet" type="text/css" href="lib/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="lib/selectize.bootstrap3.css">
-    <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="lib/bootstrap-select.min.css">
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <style type="text/css">
-        #highcharts-container {
-            max-width: 660px;
-            margin: auto;
-            height: 400px;
-            margin: 0 auto;
-        }
-    </style>
-    <meta name="application-name" content="L1000FWD">
-    <meta name="description" content="L1000 fireworks display (L1000FWD) provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. It enables overlaying various drug attributes such as MOA and clinical usages extracted from the EMR/EHR.">
-    <meta name="keywords" content="L1000, data visualization, drug discovery, drug reporposing, drug repositioning, drugs, big data, lincs, biomedical, ehr, emr, bioinformatics, biomedical informatics, systems pharmacology, systems biology, transcriptomics, bd2k, lincs, bd2k-lincs dcic, data integration, avi ma'ayan, avi maayan, maayan lab, zichen wang">
-    <meta name="robots" content="index, follow">
-  </head>
-  <body>
-    <div class="container-fluid">
+<head>
+  <base href="{{ ENTER_POINT }}/"/>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Zichen Wang (zichen.wang@mssm.edu)">    
+  <title>L1000 Fireworks Display</title>
+  <!-- <link rel="icon" href="images/favicon.png" type="image/x-icon"> -->
+  <link rel="shortcut icon" href="images/favicon.ico">
+  <link rel="stylesheet" type="text/css" href="lib/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="lib/selectize.bootstrap3.css">
+  <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="lib/bootstrap-select.min.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <meta name="application-name" content="L1000FWD">
+  <meta name="description" content="L1000 fireworks display (L1000FWD) provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. It enables overlaying various drug attributes such as MOA and clinical usages extracted from the EMR/EHR.">
+  <meta name="keywords" content="L1000, data visualization, drug discovery, drug reporposing, drug repositioning, drugs, big data, lincs, biomedical, ehr, emr, bioinformatics, biomedical informatics, systems pharmacology, systems biology, transcriptomics, bd2k, lincs, bd2k-lincs dcic, data integration, avi ma'ayan, avi maayan, maayan lab, zichen wang">
+  <meta name="robots" content="index, follow">
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
         <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-                <div class="row">
-                    <h2 class="text-center"><img src="images/logo.png" width="60px">L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures</h2>
-                </div>
-                <div class="row">
-                    <div class="text-center">
-                        <a href="main" class="btn btn-lg btn-warning">Visualization</a>
-                        <a href="search_drug" class="btn btn-lg btn-primary">Drugs</a>
-                        <a href="subset_page" class="btn btn-lg btn-info">Signatures</a>
-                        <a href="download_page" class="btn btn-lg btn-default">Download</a>
-                        <a href="api_page" class="btn btn-lg btn-danger">API</a>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="input-group">
-                        <input id="main-search-box" type="text" class="form-control" placeholder="e.g. Dexamethasone, MCF7">
-                        <span class="input-group-btn">
-                            <button class="btn btn-info" type="button">
-                                Search <span class="glyphicon glyphicon-search"></span>
-                            </button>
-                        </span>
-                    </div>
-
-
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <h3>Abstract</h3>
-                        <p align="justify">L1000 fireworks display (L1000FWD) is a web application that provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. L1000FWD enables coloring of signatures by different attributes such as cell type, time point, concentration, as well as drug attributes such as MOA and clinical phase. Signature similarity search is implemented to enable the search for mimicking or opposing signatures given as input of up and down gene sets. Each point on the L1000FWD interactive map is linked to a signature landing page, which provides multifaceted knowledge from various sources about the signature and the drug. Notably such information includes most frequent diagnoses, co-prescribed drugs and age distribution of prescriptions as extracted from the Mount Sinai Health System electronic medical records (EMR). Overall, L1000FWD serves as a platform for identifying functions for novel small molecules using unsupervised clustering, as well as for exploring drug MOA.</p>
-                    </div>
-                    <div class="col-sm-4">
-                        <a href="main" class="btn btn-lg btn-info">Launch</a>
-                        <a href="main"><img src="images/scatter.gif" class="img-responsive"></a>
-                    </div>
-
-                    <div class="col-sm-4">
-                        <h3>Summary statistics</h3>
-                        <div class="stats" id="highcharts-container"></div>
-
-                    </div>  
-                </div>
-
-            </div>
+          <h2 class="text-center"><img src="images/logo.png" width="60px">L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures</h2>
         </div>
+        <div class="row">
+          <div class="text-center">
+            <a href="main" class="btn btn-lg btn-warning">Visualization</a>
+            <a href="search_drug" class="btn btn-lg btn-primary">Drugs</a>
+            <a href="subset_page" class="btn btn-lg btn-info">Signatures</a>
+            <a href="download_page" class="btn btn-lg btn-default">Download</a>
+            <a href="api_page" class="btn btn-lg btn-danger">API</a>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="input-group">
+            <input id="main-search-box" type="text" class="form-control" placeholder="e.g. Dexamethasone, MCF7">
+            <span class="input-group-btn">
+              <button class="btn btn-info" type="button">
+                Search <span class="glyphicon glyphicon-search"></span>
+              </button>
+            </span>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-sm-4">
+            <h3>Abstract</h3>
+            <p align="justify">L1000 fireworks display (L1000FWD) is a web application that provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. L1000FWD enables coloring of signatures by different attributes such as cell type, time point, concentration, as well as drug attributes such as MOA and clinical phase. Signature similarity search is implemented to enable the search for mimicking or opposing signatures given as input of up and down gene sets. Each point on the L1000FWD interactive map is linked to a signature landing page, which provides multifaceted knowledge from various sources about the signature and the drug. Notably such information includes most frequent diagnoses, co-prescribed drugs and age distribution of prescriptions as extracted from the Mount Sinai Health System electronic medical records (EMR). Overall, L1000FWD serves as a platform for identifying functions for novel small molecules using unsupervised clustering, as well as for exploring drug MOA.</p>
+          </div>
+          <div class="col-sm-4">
+            <a href="main" class="btn btn-lg btn-info">Launch</a>
+            <a href="main"><img src="images/scatter.gif" class="img-responsive"></a>
+          </div>
+
+          <div class="col-sm-4">
+            <h3>Summary statistics</h3>
+            <div class="stats" id="highcharts-container"></div>
+          </div>  
+        </div>
+
+      </div>
     </div>
 
+  </div>
 
-
-<div class='container-full footer' id='footer-index'>
-  <div class='container'>
+  <div class="navbar-fixed-bottom footer">
     <div class='row'>
-      <div class='col-md-4 col-sm-4'>
-        <h3>Contact</h3>
-        <ul class='list-unstyled'>
-          <li>
-            <a href='mailto:mailto:zichen.wang@mssm.edu;avi.maayan@mssm.edu'>Zichen Wang and Avi Ma'ayan</a>
-          </li>
-        </ul>        
-      </div>
-      <div class='col-md-4 col-sm-4'>
-        <h3>Affiliations</h3>
-        <ul class='list-unstyled'>
-          <li>
-            <a href='http://lincs-dcic.org/#/' target='_blank'>BD2K-LINCS DCIC</a>
-          </li>
-          <li>
-            <a href='http://www.lincsproject.org/' target='_blank'>NIH LINCS Program</a>
-          </li>
-          <li>
-            <a href='https://commonfund.nih.gov/idg/overview' target='_blank'>NIH IDG program</a>
-          </li>
-          <li>
-            <a href='http://commonfund.nih.gov/lincs/' target='_blank'>NIH Common Fund</a>
-          </li>
-          <li>
-            <a href='http://icahn.mssm.edu/research/bioinformatics' target='_blank'>Mount Sinai Center for Bioinformatics</a>
-          </li>
-        </ul>
-      </div>
-      <div class='col-md-4 col-sm-4'>
-            <h3>Citation</h3>
-            <div class="citation">
-                <span>Wang Z, Lachmann A, Keenan AB, Ma'ayan A (2018) </span>
-                <strong>L1000FWD: fireworks visualization of drug-induced transcriptomic signatures.</strong>
-                <i>Bioinformatics</i>
-                <span>doi: </span>
-                <a href="https://doi.org/10.1093/bioinformatics/bty060" target="_blank">10.1093/bioinformatics/bty060</a>
-            </div>
+      <div class="col-md-10 col-md-offset-1">
+        <div class='col-md-4 col-sm-4'>
+          <h3>Contact</h3>
+          <ul class='list-unstyled'>
+            <li>
+              <a href='mailto:mailto:zichen.wang@mssm.edu;avi.maayan@mssm.edu'>Zichen Wang and Avi Ma'ayan</a>
+            </li>
+          </ul>        
+        </div>
+        <div class='col-md-4 col-sm-4'>
+          <h3>Affiliations</h3>
+          <ul class='list-unstyled'>
+            <li>
+              <a href='http://lincs-dcic.org/#/' target='_blank'>BD2K-LINCS DCIC</a>
+            </li>
+            <li>
+              <a href='http://www.lincsproject.org/' target='_blank'>NIH LINCS Program</a>
+            </li>
+            <li>
+              <a href='https://commonfund.nih.gov/idg/overview' target='_blank'>NIH IDG program</a>
+            </li>
+            <li>
+              <a href='http://commonfund.nih.gov/lincs/' target='_blank'>NIH Common Fund</a>
+            </li>
+            <li>
+              <a href='http://icahn.mssm.edu/research/bioinformatics' target='_blank'>Mount Sinai Center for Bioinformatics</a>
+            </li>
+          </ul>
+        </div>
+        <div class='col-md-4 col-sm-4'>
+          <h3>Citation</h3>
+          <div class="citation">
+            <span>Wang Z, Lachmann A, Keenan AB, Ma'ayan A (2018) </span>
+            <strong>L1000FWD: fireworks visualization of drug-induced transcriptomic signatures.</strong>
+            <i>Bioinformatics</i>
+            <span>doi: </span>
+            <a href="https://doi.org/10.1093/bioinformatics/bty060" target="_blank">10.1093/bioinformatics/bty060</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
+    ga('create', 'UA-60506844-10', 'auto');
+    ga('send', 'pageview');
+  </script>
+  <script src="lib/jquery.min.js"></script>
+  <script src="lib/underscore-min.js"></script>
+  <script src="lib/backbone-min.js"></script>
+  <script src="lib/bootstrap.min.js"></script>
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  <script src="lib/d3.v3.min.js"></script>
+  <script src="lib/d3-legend.min.js"></script>
+  <script src="lib/selectize.js"></script>
+  <script src="lib/datatables.js"></script>
+  <script src="lib/datatables.bootstrap.js"></script>
+  <script src="lib/bootstrap-select.min.js"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
-  ga('create', 'UA-60506844-10', 'auto');
-  ga('send', 'pageview');
-</script>
-<script src="lib/jquery.min.js"></script>
-<script src="lib/underscore-min.js"></script>
-<script src="lib/backbone-min.js"></script>
-<script src="lib/bootstrap.min.js"></script>
+  <script src="js/index.js"></script>
 
-<script src="lib/d3.v3.min.js"></script>
-<script src="lib/d3-legend.min.js"></script>
-<script src="lib/selectize.js"></script>
-<script src="lib/datatables.js"></script>
-<script src="lib/datatables.bootstrap.js"></script>
-<script src="lib/bootstrap-select.min.js"></script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-
-
-<script src="js/index.js"></script>
-
-  </body>
+</body>
 </html>

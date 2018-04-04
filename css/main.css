@@ -99,14 +99,6 @@ text.legendTitle{
   width: 100%;
 }
 
-#footer-index {
-  left: 0;
-  top: 110%;
-  bottom: 0;
-  height: 180px;
-  width: 100%;
-}
-
 #header {
   background-color: #ddd;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
@@ -223,4 +215,11 @@ text.legendTitle{
 }
 .sig-meta{
   color: grey;
+}
+
+#highcharts-container {
+  max-width: 660px;
+  margin: auto;
+  height: 400px;
+  margin: 0 auto;
 }
