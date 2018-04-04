@@ -225,3 +225,17 @@ text.legendTitle{
   height: 400px;
   margin: 0 auto;
 }
+
+#search-btn {
+  background-color: #000000d1;
+  border-color: black;
+  z-index: 2;
+}
+#search-btn:hover, #search-btn:focus, #search-btn.focus {
+  background-color: #000000e0;
+}
+
+.btn-lg {
+  margin-left: 10px;
+  margin-right: 10px;
+}
