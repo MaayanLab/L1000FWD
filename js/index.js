@@ -196,7 +196,9 @@ Highcharts.chart('highcharts-container', {
                 return this.y > 5 ? this.point.name : null;
             },
             color: '#ffffff',
-            distance: -30
+            distance: -30,
+            defer: true,
+            enabled: true
         }
     }, {
         name: cat_outer,
@@ -208,7 +210,9 @@ Highcharts.chart('highcharts-container', {
                 // display only if larger than 1
                 return this.y > 1 ? '<b>' + this.point.name + ':</b> ' +
                     this.y + '%' : null;
-            }
+            },
+            defer: true,
+            enabled: true            
         },
         id: 'versions'
     }],

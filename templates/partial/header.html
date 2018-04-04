@@ -1,32 +1,23 @@
-<div id="nav">
-  <nav class="navbar navbar-default" role="navigation">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" title="L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures" href="">
-          <span>
-            <img src="images/logo.png" width="25px" height="25px">
-          </span>L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures</a>
-      </div>
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          {% if graph_rec is defined%}
-            <li id="graph_page"><a id="info-modal-btn">{{ graph_rec['display_name'] }} <span class="glyphicon glyphicon-info-sign"></span></a></li>
-          {% endif %}
-          <li id="search_drug"><a href="search_drug">Drug Reports</a></li>
-          <li id="subset_page"><a href="subset_page">Signature Reports</a></li>
-          <li id="download_page"><a href="download_page">Download</a></li>
-          <li id="api_page"><a href="api_page">API</a></li>
-
-        </ul>
-
-      </div><!-- /.navbar-collapse -->
-    </div><!-- /.container -->
-  </nav>
+<style type="text/css">
+  a.unstyled:hover, a.unstyled:focus {
+    text-decoration: none;
+    color: #1689E5;
+  }
+</style>
+<div class="row">
+  <h2 class="text-center"><a class="unstyled" href="#">L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures</a></h2>
+</div>
+<div class="row">
+  <div class="text-center">
+    
+    {% if graph_rec is defined%}
+      <a id="info-modal-btn" class="btn btn-lg btn-warning">{{ graph_rec['display_name'] }} <span class="glyphicon glyphicon-info-sign"></span></a>
+    {% else %}
+      <a href="main" class="btn btn-lg btn-warning">Visualization</a>
+    {% endif %}
+    <a href="search_drug" class="btn btn-lg btn-primary">Drugs</a>
+    <a href="subset_page" class="btn btn-lg btn-info">Signatures</a>
+    <a href="download_page" class="btn btn-lg btn-default">Download</a>
+    <a href="api_page" class="btn btn-lg btn-danger">API</a>
+  </div>
 </div>
