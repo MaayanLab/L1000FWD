@@ -8,7 +8,8 @@
   <title>L1000 Fireworks Display</title>
   <!-- <link rel="icon" href="images/favicon.png" type="image/x-icon"> -->
   <link rel="shortcut icon" href="images/favicon.ico">
-  <link rel="stylesheet" type="text/css" href="lib/bootstrap.css">
+  <!-- <link rel="stylesheet" type="text/css" href="lib/bootstrap.css"> -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" href="lib/selectize.bootstrap3.css">
   <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
   <link rel="stylesheet" type="text/css" href="lib/bootstrap-select.min.css">
@@ -19,88 +20,102 @@
   <meta name="robots" content="index, follow">
 </head>
 <body>
-  {% include 'partial/header.html' %}
+  
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-10 col-md-offset-1">
-
+    <div class="row justify-content-center">
+      <div class="col-10">
+        {% include 'partial/header.html' %}
         <hr>
         <div class="row">
-          <div class="input-group">
+          <!-- <div class="input-group">
             <input id="main-search-box" type="text" class="form-control" placeholder="e.g. Dexamethasone, MCF7">
             <span class="input-group-btn">
               <button class="btn btn-info" type="button" id="search-btn">
                 Search <span class="glyphicon glyphicon-search"></span>
               </button>
             </span>
+          </div> -->
+          <div class="col-12">
+            <div class="input-group mb-3">
+              <input id="main-search-box" type="text" class="form-control" placeholder="e.g. Dexamethasone, MCF7">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button">Search</button>
+              </div>
+            </div>
           </div>
+
         </div>
-        <hr>
+
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col-4">
             <h3>Abstract</h3>
             <p align="justify">L1000 fireworks display (L1000FWD) is a web application that provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. L1000FWD enables coloring of signatures by different attributes such as cell type, time point, concentration, as well as drug attributes such as MOA and clinical phase. Signature similarity search is implemented to enable the search for mimicking or opposing signatures given as input of up and down gene sets. Each point on the L1000FWD interactive map is linked to a signature landing page, which provides multifaceted knowledge from various sources about the signature and the drug. Notably such information includes most frequent diagnoses, co-prescribed drugs and age distribution of prescriptions as extracted from the Mount Sinai Health System electronic medical records (EMR). Overall, L1000FWD serves as a platform for identifying functions for novel small molecules using unsupervised clustering, as well as for exploring drug MOA.</p>
           </div>
-          <div class="col-sm-4 text-center">
+          <div class="col-4">
             <a href="main"><img src="images/scatter.gif" class="img-responsive"></a>
             <a href="main" class="btn btn-lg btn-default">Launch</a>
           </div>
 
-          <div class="col-sm-4">
+          <div class="col-4">
             <h3 class="text-center">Summary Statistics</h3>
             <div class="stats" id="highcharts-container"></div>
           </div>  
         </div>
 
-      </div>
-    </div>
+        </div> <!-- .col-10 -->
+      </div> <!-- .row justify-content-center -->
+    </div> <!-- .container-fluid -->
 
-  </div>
 
-  <div class="footer">
-    <div class='row'>
-      <div class="col-md-10 col-md-offset-1">
-        <div class='col-md-4 col-sm-4'>
-          <h3>Contact</h3>
-          <ul class='list-unstyled'>
-            <li>
-              <a href='mailto:mailto:zichen.wang@mssm.edu;avi.maayan@mssm.edu'>Zichen Wang and Avi Ma'ayan</a>
-            </li>
-          </ul>        
-        </div>
-        <div class='col-md-4 col-sm-4'>
-          <h3>Affiliations</h3>
-          <ul class='list-unstyled'>
-            <li>
-              <a href='http://lincs-dcic.org/#/' target='_blank'>BD2K-LINCS DCIC</a>
-            </li>
-            <li>
-              <a href='http://www.lincsproject.org/' target='_blank'>NIH LINCS Program</a>
-            </li>
-            <li>
-              <a href='https://commonfund.nih.gov/idg/overview' target='_blank'>NIH IDG program</a>
-            </li>
-            <li>
-              <a href='http://commonfund.nih.gov/lincs/' target='_blank'>NIH Common Fund</a>
-            </li>
-            <li>
-              <a href='http://icahn.mssm.edu/research/bioinformatics' target='_blank'>Mount Sinai Center for Bioinformatics</a>
-            </li>
-          </ul>
-        </div>
-        <div class='col-md-4 col-sm-4'>
-          <h3>Citation</h3>
-          <div class="citation">
-            <span>Wang Z, Lachmann A, Keenan AB, Ma'ayan A (2018) </span>
-            <strong>L1000FWD: fireworks visualization of drug-induced transcriptomic signatures.</strong>
-            <i>Bioinformatics</i>
-            <span>doi: </span>
-            <a href="https://doi.org/10.1093/bioinformatics/bty060" target="_blank">10.1093/bioinformatics/bty060</a>
+
+
+  <div class="container-fluid footer">
+    <div class="row justify-content-center">
+      <div class="col-10">
+        <div class="row">
+          <div class='col-4'>
+            <h3>Contact</h3>
+            <ul class='list-unstyled'>
+              <li>
+                <a href='mailto:mailto:zichen.wang@mssm.edu;avi.maayan@mssm.edu'>Zichen Wang and Avi Ma'ayan</a>
+              </li>
+            </ul>        
+          </div>
+          <div class='col-4'>
+            <h3>Affiliations</h3>
+            <ul class='list-unstyled'>
+              <li>
+                <a href='http://lincs-dcic.org/#/' target='_blank'>BD2K-LINCS DCIC</a>
+              </li>
+              <li>
+                <a href='http://www.lincsproject.org/' target='_blank'>NIH LINCS Program</a>
+              </li>
+              <li>
+                <a href='https://commonfund.nih.gov/idg/overview' target='_blank'>NIH IDG program</a>
+              </li>
+              <li>
+                <a href='http://commonfund.nih.gov/lincs/' target='_blank'>NIH Common Fund</a>
+              </li>
+              <li>
+                <a href='http://icahn.mssm.edu/research/bioinformatics' target='_blank'>Mount Sinai Center for Bioinformatics</a>
+              </li>
+            </ul>
+          </div>
+          <div class='col-4'>
+            <h3>Citation</h3>
+            <div class="citation">
+              <span>Wang Z, Lachmann A, Keenan AB, Ma'ayan A (2018) </span>
+              <strong>L1000FWD: fireworks visualization of drug-induced transcriptomic signatures.</strong>
+              <i>Bioinformatics</i>
+              <span>doi: </span>
+              <a href="https://doi.org/10.1093/bioinformatics/bty060" target="_blank">10.1093/bioinformatics/bty060</a>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
 
 
   <script>
@@ -112,10 +127,14 @@
     ga('create', 'UA-60506844-10', 'auto');
     ga('send', 'pageview');
   </script>
-  <script src="lib/jquery.min.js"></script>
+  <!-- <script src="lib/jquery.min.js"></script> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="lib/underscore-min.js"></script>
   <script src="lib/backbone-min.js"></script>
-  <script src="lib/bootstrap.min.js"></script>
+  <!-- <script src="lib/bootstrap.min.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 
   <script src="lib/d3.v3.min.js"></script>
   <script src="lib/d3-legend.min.js"></script>

@@ -4,20 +4,20 @@
     color: #1689E5;
   }
 </style>
-<div class="row">
-  <h2 class="text-center"><a class="unstyled" href="#"><b>L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures</b></a></h2>
+<div class="row justify-content-center">
+  <div class="col-12">
+    <h2 class="text-center font-weight-bold"><a class="unstyled" href="#">L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures</a></h2>
+  </div>  
 </div>
-<div class="row">
-  <div class="text-center">
-    
-    {% if graph_rec is defined%}
-      <a id="info-modal-btn" class="btn btn-lg btn-warning">{{ graph_rec['display_name'] }} <span class="glyphicon glyphicon-info-sign"></span></a>
-    {% else %}
-      <a href="main" class="btn btn-lg btn-warning">Visualization</a>
-    {% endif %}
-    <a href="search_drug" class="btn btn-lg btn-primary">Drugs</a>
-    <a href="subset_page" class="btn btn-lg btn-info">Signatures</a>
-    <a href="download_page" class="btn btn-lg btn-success">Download</a>
-    <a href="api_page" class="btn btn-lg btn-danger">API</a>
-  </div>
+
+<div class="row justify-content-center">
+  {% if graph_rec is defined%}
+    <a id="info-modal-btn" class="mx-3 btn btn-lg btn-warning">{{ graph_rec['display_name'] }} <span class="glyphicon glyphicon-info-sign"></span></a>
+  {% else %}
+    <a href="main" class="mx-3 btn btn-lg btn-warning">Visualization</a>
+  {% endif %}
+  <a href="search_drug" class="mx-3 btn btn-lg btn-primary">Drugs</a>
+  <a href="subset_page" class="mx-3 btn btn-lg btn-info">Signatures</a>
+  <a href="download_page" class="mx-3 btn btn-lg btn-success">Download</a>
+  <a href="api_page" class="mx-3 btn btn-lg btn-danger">API</a>
 </div>

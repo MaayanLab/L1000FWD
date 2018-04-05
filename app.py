@@ -30,7 +30,8 @@ from crossdomain import crossdomain
 
 ENTER_POINT = os.environ['ENTER_POINT']
 SCRIPT_PATH = os 
-app = CIFlask(__name__, static_url_path=ENTER_POINT, static_folder=os.getcwd())
+app = CIFlask(__name__, static_url_path=ENTER_POINT, 
+	static_folder=os.path.join(os.getcwd(), 'static'))
 app.debug = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 app.config['MONGO_URI'] = MONGOURI
