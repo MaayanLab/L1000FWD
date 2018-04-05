@@ -5,3 +5,4 @@ log/
 .DS_Store
 notebooks/data/*
 notebooks/figs/*
+static/node_modules/

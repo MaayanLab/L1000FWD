@@ -1,0 +1,19 @@
+{
+  "name": "l1000fwd",
+  "version": "1.0.0",
+  "description": "Large-scale Visualization of Drug-induced Transcriptomic Signatures",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Zichen Wang",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^4.0.0",
+    "highcharts": "^6.0.7",
+    "selectizebootstrap": "git+https://git@github.com/papakay/selectize-bootstrap-4-style.git"
+  }
+}
