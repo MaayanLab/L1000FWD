@@ -21,6 +21,10 @@ a {
   }  
 }
 
+.table th, .table td {
+  white-space: nowrap;
+}
+
 #body { 
 	height: 100%; 
 	margin-left: 20px; 
@@ -39,8 +43,11 @@ a {
     min-width: 300px;   
 }
 
-#controls{
-	/*overflow-y: scroll;*/
+.btn-group-xs > .btn, .btn-xs {
+  padding  : .25rem .4rem;
+  font-size  : .875rem;
+  line-height  : .5;
+  border-radius : .2rem;
 }
 
 #share-link input{
@@ -60,19 +67,6 @@ a {
 	position: absolute;
 	right: 5px;
 	top: 0px;
-}
-
-#clear-btn {
-  margin-left: 5px;
-}
-
-input.pull-right {
-  color: beige;
-  background-color: black;
-}
-input.pull-right:hover{
-  color: beige;
-  background-color: #5bc0de;
 }
 
 #modal-btn{

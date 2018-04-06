@@ -1,12 +1,12 @@
 <!-- DOMs to be loaded into .modal-body for the similarity search result -->
 <ul class="nav nav-tabs">
-	<li role="presentation" class="active"><a data-toggle="tab" href="#similar">Similar signatures</a></li>
-	<li role="presentation"><a data-toggle="tab" href="#opposite">Opposite signatures</a></li>
+	<li role="presentation" class="nav-item"><a class="nav-link active" data-toggle="tab" href="#similar">Similar signatures</a></li>
+	<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" href="#opposite">Opposite signatures</a></li>
 </ul>
 
 <div class="tab-content">
-	<div id="similar" class="tab-pane fade in active">
-		<table class="table table-hover table-striped table-condensed">
+	<div id="similar" class="tab-pane fade show active">
+		<table class="table table-hover table-sm">
 			<thead>
 				<tr>
 					<th>sig_id</th>
@@ -49,7 +49,7 @@
 	</div>
 
 	<div id="opposite" class="tab-pane fade">
-		<table class="table table-hover table-striped">
+		<table class="table table-hover table-sm">
 			<thead>
 				<tr>
 					<th>sig_id</th>
@@ -98,7 +98,7 @@
 	<input type="text">
 </div>
 <br>
-<a class="btn btn-info" href="result/download/{{ result_id }}" data-toggle="tooltip" data-placement="top" title="Click to download the full results with both similar and opposite signatures">Download results</a>
+<a class="btn btn-info btn-sm float-right" href="result/download/{{ result_id }}" data-toggle="tooltip" data-placement="top" title="Click to download the full results with both similar and opposite signatures">Download results</a>
 
 <script>
 $(function () {

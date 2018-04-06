@@ -103,8 +103,8 @@ var Controler = Backbone.View.extend({
 	defaults: {
 		container: document.body,
 		scatterPlot: Scatter3dView,
-		w: 300,
-		h: 800,
+		w: '300px',
+		h: '800px',
 	},
 
 	initialize: function(options){
@@ -153,7 +153,7 @@ var Controler = Backbone.View.extend({
 
 		// Shapes: 
 		var shapeControl = this.el.append('div')
-			.attr('class', 'form-group');
+			.attr('class', 'form-group my-1');
 		shapeControl.append('label')
 			.attr('class', 'control-label')
 			.text('Shape by:');
@@ -181,7 +181,7 @@ var Controler = Backbone.View.extend({
 
 		// Colors
 		var colorControl = this.el.append('div')
-			.attr('class', 'form-group')
+			.attr('class', 'form-group my-1')
 		colorControl.append('label')
 			.attr('class', 'control-label')
 			.text('Color by:');
@@ -219,7 +219,7 @@ var Controler = Backbone.View.extend({
 
 
 		$('.selectpicker').selectpicker({
-			style: 'btn-default btn-sm',
+			style: 'btn-outline-secondary btn-sm',
 		});
 		$('.selectpicker').on('shown.bs.select', function(e){
 			console.log('shown.bs.select')
@@ -277,7 +277,7 @@ var SearchSelectize = Backbone.View.extend({
 
 		// set up the DOMs
 		// wrapper for SearchSelectize
-		var searchControl = $('<div class="form-group" id="search-control"></div>')
+		var searchControl = $('<div class="form-group my-1" id="search-control"></div>')
 		searchControl.append($('<label class="control-label">Search compounds:</label>'))
 
 		this.$el = $('<select id="search" class="form-control"></select>');
@@ -300,7 +300,7 @@ var SearchSelectize = Backbone.View.extend({
 			placeholder: 'Type the name of a drug',
 			render: {
 				option: function(item, escape){
-					return '<ul>' + 
+					return '<ul class="list-unstyled">' + 
 						'<li>' + escape(item.Name) + '</li>' +
 						'<li>pert_id:' + escape(item.pert_id) + '</li>' +
 						'</ul>';
@@ -323,7 +323,7 @@ var SearchSelectize = Backbone.View.extend({
 			});
 
 		// The button to clear highlighted points
-		this.btn = $('<button class="btn btn-default btn-xs">Clear highlighted points</button>').click(function(e){
+		this.btn = $('<button class="btn btn-outline-secondary btn-xs">Clear highlighted points</button>').click(function(e){
 			self.scatterPlot.removeHighlightedPoints();
 			self.hideButton();
 		});
@@ -378,12 +378,12 @@ var SigSimSearch = Backbone.View.extend({
 	render: function(){
 		// set up DOMs
 		var container = $(this.container);
-		container.append($('<h4>Signature Similarity Search:</h4>'))
-		var upGeneDiv = $('<div class="form-group">')
+		container.append($('<h5>Signature Similarity Search:</h5>'))
+		var upGeneDiv = $('<div class="form-group my-1">')
 		upGeneDiv.append($('<label for="upGenes" class="control-label">Up genes</label>'));
 		upGeneDiv.append($('<textarea name="upGenes" rows="5" class="form-control" required></textarea>'));
 
-		var dnGeneDiv = $('<div class="form-group">')
+		var dnGeneDiv = $('<div class="form-group my-1">')
 		dnGeneDiv.append($('<label for="dnGenes" class="control-label">Down genes</label>'));
 		dnGeneDiv.append($('<textarea name="dnGenes" rows="5" class="form-control" required></textarea>'));
 
@@ -450,31 +450,31 @@ var SigSimSearchForm = Backbone.View.extend({
 		var form = $('<form method="post" id="geneSet"></form>');
 		form.attr('action', this.action);
 
-		form.append($('<h4>Signature Similarity Search:</h4>'))
-		var upGeneDiv = $('<div class="form-group">')
+		form.append($('<h5>Signature Similarity Search:</h5>'))
+		var upGeneDiv = $('<div class="form-group my-1">')
 		upGeneDiv.append($('<label for="upGenes" class="control-label">Up genes</label>'));
 		this.upGeneTa = $('<textarea name="upGenes" rows="5" class="form-control" required></textarea>');
 		upGeneDiv.append(this.upGeneTa);
 
-		var dnGeneDiv = $('<div class="form-group">')
+		var dnGeneDiv = $('<div class="form-group my-1">')
 		dnGeneDiv.append($('<label for="dnGenes" class="control-label">Down genes</label>'));
 		this.dnGeneTa = $('<textarea name="dnGenes" rows="5" class="form-control" required></textarea>');
 		dnGeneDiv.append(this.dnGeneTa);
 
 		var self = this;
-		var exampleBtn = $('<button class="btn btn-default btn-xs pull-left">Example</button>').click(function(e){
+		var exampleBtn = $('<button class="btn btn-outline-secondary btn-sm float-left">Example</button>').click(function(e){
 			e.preventDefault();
 			self.populateGenes(self.exampleGenes.up, self.exampleGenes.down);
 		});
 
-		var clearBtn = $('<button id="clear-btn" class="btn btn-default btn-xs">Clear</button>').click(function(e){
+		var clearBtn = $('<button id="clear-btn" class="btn btn-outline-secondary btn-sm mx-1">Clear</button>').click(function(e){
 			e.preventDefault();
 			self.populateGenes([], []);
 		});
 
-		var submitBtn = $('<input type="submit" class="btn btn-default btn-xs pull-right" value="Submit"></input>');
+		var submitBtn = $('<input type="submit" class="btn btn-dark btn-sm float-right" value="Submit"></input>');
 
-		var creedsDiv = $('<div class="form-group">');
+		var creedsDiv = $('<div class="form-group my-1">');
 		creedsDiv.append($('<label for="creeds-search" class="control-label">Fetch a signature from <a href="http://amp.pharm.mssm.edu/CREEDS/" target="_blank">CREEDS</a></label>'));
 		var creedsSelectize = $('<select name="creeds-search" id="creeds-search" class="form-control"></select>');
 		creedsDiv.append(creedsSelectize)
@@ -520,7 +520,7 @@ var SigSimSearchForm = Backbone.View.extend({
 			create:false,
 			render: {
 				option: function(item, escape){
-					return '<ul>' + 
+					return '<ul class="list-unstyled">' + 
 						'<li>' + escape(item.name) + '</li>' +
 						'<li>GEO ID:' + escape(item.geo_id) + '</li>' +
 						'<li>CREEDS ID:' + escape(item.id) + '</li>' +
@@ -603,7 +603,7 @@ var ResultModalBtn = Backbone.View.extend({
 
 	render: function(){
 		// set up the button
-		this.button = $('<a id="modal-btn" class="btn btn-info">Show detailed results</a>');
+		this.button = $('<a id="modal-btn" class="btn btn-info btn-sm">Show detailed results</a>');
 		var modal_url = 'result/modal/' + this.result_id;
 
 		this.button.click(function(e){
