@@ -1,102 +1,91 @@
-<html>
-  <head>
-    <base href="{{ ENTER_POINT }}/"/>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="Zichen Wang (zichen.wang@mssm.edu)">    
-    <title>L1000 Fireworks Display</title>
-    <!-- <link rel="icon" href="images/favicon.png" type="image/x-icon"> -->
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <!-- <link rel="stylesheet" type="text/css" href="lib/bootstrap.css"> -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="lib/selectize.bootstrap3.css">
-    <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="lib/bootstrap-select.min.css">
-    <link rel="stylesheet" type="text/css" href="lib/github.css">
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <link rel="stylesheet" type="text/css" href="css/api_docs.css">
-  </head>
-  <body>
+<!doctype html>
+<html lang="en">
+{% include 'partial/head.html' %}
+
+<body>
+  <div class="container-fluid">
     {% include 'partial/header.html' %}
-    <div id="body" class="container-full">        
+
+    <div class="row justify-content-center">
+      <div class="col-10">    
+
         <div class="row">
-            <div class="col-md-8 col-md-offset-2"> 
-                <div class="row">
-                    <div class="page-header">
-                        <h3>API Documentation</h3>
-                    </div>
-                     <div>
-                         <ul id="api_docs">
-                            {% for api_doc in api_docs %}
-                                <li id="{{ api_doc['id'] }}">
-                                    <h4>{{ api_doc['name'] }}</h4>
-                                    <dl class="dl-horizontal">
-                                        <dt>Method</dt>
-                                        <dd>{{ api_doc['Method'] }}</dd>
-                                        <dt>URL</dt>
-                                        <dd>{{ api_doc['URL'] }}</dd>
-                                        <dt>Returns</dt>
-                                        <dd>{{ api_doc['Returns'] }}</dd>
-                                        {% if 'Parameters' in api_doc %}
-                                            <dt>Parameters</dt>
-                                            <dd>
-                                                <table class="table parameters">
-                                                    <tbody>
-                                                        {% for param in api_doc['Parameters'] %}
-                                                            <tr>
-                                                                {% for item in param %}
-                                                                    <td>{{ item }}</td>
-                                                                {% endfor %}        
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </dd>
-                                        {% endif %}
-                                        <dt>Example code</dt>
-                                        <dd>
-                                            <ul class="nav nav-tabs">
-                                                <li data-toggle="tab" role="presentation" data-target="#{{ api_doc['Example code']['Python'].replace('.', '-') }}" class="active">
-                                                    <a>Python</a>
-                                                </li>
-                                                <li data-toggle="tab" role="presentation" data-target="#{{ api_doc['Example code']['R'].replace('.', '-') }}">
-                                                    <a>R</a>
-                                                </li>
-                                            </ul>
-                                            <div class="tab-content">
-                                                <div class="tab-pane fade active in" id="{{ api_doc['Example code']['Python'].replace('.', '-') }}">
-                                                    <pre><code class="python">{{ include_raw('apis/'+api_doc['Example code']['Python']) }}</code></pre>
-                                                </div>
-                                                <div class="tab-pane fade" id="{{ api_doc['Example code']['R'].replace('.', '-') }}">
-                                                    <pre><code class="r">{{ include_raw('apis/'+api_doc['Example code']['R']) }}</code></pre>
-                                                </div>
-                                            </div>
-                                        </dd>
-                                        <dt>Example result</dt>
-                                        <dd>
-                                            <pre><code class="json">{{ include_raw('apis/'+api_doc['Example result']) }}</code></pre>
-                                        </dd>
-                                    </dl>
-                                </li>
-                            {% endfor %}
-                         </ul>
-                     </div>
-                </div>
-
+          <div class="col-12">
+            <div class="page-header">
+              <h3>API Documentation</h3>
             </div>
+            <ul id="api_docs">
+              {% for api_doc in api_docs %}
+              <li id="{{ api_doc['id'] }}">
+                <h4>{{ api_doc['name'] }}</h4>
+                <dl class="row">
+                  <dt class="col-2">Method</dt>
+                  <dd class="col-10">{{ api_doc['Method'] }}</dd>
+                  <dt class="col-2">URL</dt>
+                  <dd class="col-10">{{ api_doc['URL'] }}</dd>
+                  <dt class="col-2">Returns</dt>
+                  <dd class="col-10">{{ api_doc['Returns'] }}</dd>
+                  {% if 'Parameters' in api_doc %}
+                  <dt class="col-2">Parameters</dt>
+                  <dd class="col-10">
+                    <table class="table parameters">
+                      <tbody>
+                        {% for param in api_doc['Parameters'] %}
+                        <tr>
+                          {% for item in param %}
+                          <td>{{ item }}</td>
+                          {% endfor %}        
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </dd>
+                  {% endif %}
+                  <dt class="col-2">Example code</dt>
+                  <dd class="col-10">
+                    <ul class="nav nav-tabs">
+                      <li class="nav-item">
+                        <a class="nav-link active" href="" data-toggle="tab" data-target="#{{ api_doc['Example code']['Python'].replace('.', '-') }}" role="tab" aria-selected="true">Python</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="" data-toggle="tab" data-target="#{{ api_doc['Example code']['R'].replace('.', '-') }}" aria-selected="false">R</a>
+                      </li>
+                    </ul>
+                    <div class="tab-content">
+                      <div class="tab-pane fade show active" id="{{ api_doc['Example code']['Python'].replace('.', '-') }}">
+                        <pre><code class="python">{{ include_raw('apis/'+api_doc['Example code']['Python']) }}</code></pre>
+                      </div>
+                      <div class="tab-pane fade" id="{{ api_doc['Example code']['R'].replace('.', '-') }}">
+                        <pre><code class="r">{{ include_raw('apis/'+api_doc['Example code']['R']) }}</code></pre>
+                      </div>
+                    </div>
+                  </dd>
+                  <dt class="col-2">Example result</dt>
+                  <dd class="col-10">
+                    <pre><code class="json">{{ include_raw('apis/'+api_doc['Example result']) }}</code></pre>
+                  </dd>
+                </dl>
+              </li>
+              {% endfor %}
+            </ul>
+            
+          </div>
         </div>
+      </div>
     </div>
-    {% include 'partial/footer.html' %}
+  </div>
+</div>
+{% include 'partial/footer.html' %}
 
-    <script src="lib/highlight.pack.js"></script>
-    <script>
-        var codeBlock = $('pre')
+<script src="lib/highlight.pack.js"></script>
+<script>
+  var codeBlock = $('pre')
         // highlight this block of codes
         codeBlock.each(function(i, block) {
-            hljs.highlightBlock(block);
+          hljs.highlightBlock(block);
         });
-    </script>
 
-  </body>
-</html>
+      </script>
+
+    </body>
+    </html>

@@ -8,7 +8,7 @@ var pert_ids_select = $('#pert_ids').selectize({
 	maxItems: 50,
 	render: {
 		option: function(item, escape){
-			return '<ul>' + 
+			return '<ul class="list-unstyled">' + 
 				'<li>' + escape(item.Name) + '</li>' +
 				'<li>pert_id:' + escape(item.pert_id) + '</li>' +
 				'</ul>';

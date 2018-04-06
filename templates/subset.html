@@ -1,23 +1,6 @@
-<html>
-  <head>
-    <base href="{{ ENTER_POINT }}/"/>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="Zichen Wang (zichen.wang@mssm.edu)">    
-    <title>L1000 Fireworks Display</title>
-    <!-- <link rel="icon" href="images/favicon.png" type="image/x-icon"> -->
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <!-- <link rel="stylesheet" type="text/css" href="lib/bootstrap.css"> -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="lib/selectize.bootstrap3.css">
-    <link rel="stylesheet" type="text/css" href="lib/datatables.bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="lib/bootstrap-select.min.css">
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <meta name="application-name" content="L1000FWD">
-    <meta name="description" content="L1000 fireworks display (L1000FWD) provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. It enables overlaying various drug attributes such as MOA and clinical usages extracted from the EMR/EHR.">
-    <meta name="keywords" content="L1000, data visualization, drug discovery, drug reporposing, drug repositioning, drugs, big data, lincs, biomedical, ehr, emr, bioinformatics, biomedical informatics, systems pharmacology, systems biology, transcriptomics, bd2k, lincs, bd2k-lincs dcic, data integration, avi ma'ayan, avi maayan, maayan lab, zichen wang">
-    <meta name="robots" content="index, follow">
+<!doctype html>
+<html lang="en">
+{% include 'partial/head.html' %}
     <style type="text/css">
     .drug-name{
         color: red;
@@ -29,47 +12,52 @@
         font-size: 16px;
     }
     </style>
-  </head>
   <body>
+  <div class="container-fluid">
     {% include 'partial/header.html' %}
-    <div id="body" class="container-full">        
+    <div class="row justify-content-center">
+      <div class="col-10">
+        <hr>
         <div class="row">
-            <div class="col-md-8 col-md-offset-2"> 
-                <div class="row">
-                    <div class="page-header">
-                        <h3>Generate Signature Reports</h3>
-                    </div>
-                    <div id="instructions">
-                        <p>
-                            From this page you can select a subset of drug-induced gene expression signatures to visualize. Start by typing, in the appropriate text boxes, drug terms, cell line terms, and time points to include.
-                        </p>
-                        <p>
-                            Click on the "<a class="example-btn">Example</a>" button to populate the form with an example query.
-                        </p>
-                        <p>
-                            Click on the "Submit" button to submit the form for processing. The information entered will be posted the to server and then an interactive visualization of the subset of signatures will be displayed.
-                        </p>
-                    </div>                    
+            <div class="col-12"> 
+                <div class="page-header">
+                    <h3>Generate Signature Reports</h3>
                 </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label class="control-label">Compounds to include:</label>
-                        <select id="pert_ids" name="pert_ids" class="form-control"></select>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Cell lines to include: (leave blank to include all):</label>
-                        <select id="cells" name="cells" class="form-control"></select>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Time points to include (leave blank to include all):</label>
-                        <select id="times" name="times" class="form-control"></select>
-                    </div>
-                    
-                        <button id="example-btn-1" class="btn btn-default example-btn">Example1</button>
-                        <button id="example-btn-2" class="btn btn-default">Example2</button>
-                        <input type="submit" id="submit-btn" class="btn btn-default pull-right" value="Submit" />
-                                        
+                <div id="instructions">
+                    <p>
+                        From this page you can select a subset of drug-induced gene expression signatures to visualize. Start by typing, in the appropriate text boxes, drug terms, cell line terms, and time points to include.
+                    </p>
+                    <p>
+                        Click on the "<a href="" class="example-btn">Example</a>" button to populate the form with an example query.
+                    </p>
+                    <p>
+                        Click on the "Submit" button to submit the form for processing. The information entered will be posted the to server and then an interactive visualization of the subset of signatures will be displayed.
+                    </p>
                 </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group my-1">
+                    <label class="control-label">Compounds to include:</label>
+                    <select id="pert_ids" name="pert_ids" class="form-control"></select>
+                </div>
+                <div class="form-group my-1">
+                    <label class="control-label">Cell lines to include: (leave blank to include all):</label>
+                    <select id="cells" name="cells" class="form-control"></select>
+                </div>
+                <div class="form-group my-1">                                                                         
+                    <label class="control-label">Time points to include (leave blank to include all):</label>
+                    <select id="times" name="times" class="form-control"></select>
+                </div>
+                
+                    <button id="example-btn-1" class="btn btn-secondary btn-sm example-btn">Example1</button>
+                    <button id="example-btn-2" class="btn btn-secondary btn-sm">Example2</button>
+                    <input type="submit" id="submit-btn" class="btn btn-dark btn-sm float-right" value="Submit" />
+            </div>             
+        </div>
+
             </div>
         </div>
     </div>
