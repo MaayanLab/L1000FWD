@@ -117,9 +117,9 @@ var Controler = Backbone.View.extend({
 		this.listenTo(this.model, 'sync', this.render);
 
 		var scatterPlot = this.scatterPlot;
-
-		this.listenTo(scatterPlot, 'shapeChanged', this.changeSelection)
 		var self = this;
+		this.listenTo(scatterPlot, 'shapeChanged', this.changeSelection)
+		
 		scatterPlot.listenTo(this, 'shapeChanged', function(selectedMetaKey){
 			if (selectedMetaKey != self.scatterPlot.shapeKey){
 				scatterPlot.shapeBy(selectedMetaKey);	
@@ -217,14 +217,18 @@ var Controler = Backbone.View.extend({
 				};
 			});
 
+
 		$('.selectpicker').selectpicker({
 			style: 'btn-default btn-sm',
 		});
+		$('.selectpicker').on('shown.bs.select', function(e){
+			console.log('shown.bs.select')
+			$('[data-toggle="tooltip"]').tooltip({
+				placement: 'auto',
+				container: 'body',
+			});
+		})
 
-		$('[data-toggle="tooltip"]').tooltip({
-			placement: 'left',
-			container: 'body',
-		});
 		return this;
 	},
 
