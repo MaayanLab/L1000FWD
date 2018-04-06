@@ -119,12 +119,16 @@ var Controler = Backbone.View.extend({
 		var scatterPlot = this.scatterPlot;
 
 		this.listenTo(scatterPlot, 'shapeChanged', this.changeSelection)
-
+		var self = this;
 		scatterPlot.listenTo(this, 'shapeChanged', function(selectedMetaKey){
-			scatterPlot.shapeBy(selectedMetaKey);
+			if (selectedMetaKey != self.scatterPlot.shapeKey){
+				scatterPlot.shapeBy(selectedMetaKey);	
+			}
 		});
 		scatterPlot.listenTo(this, 'colorChanged', function(selectedMetaKey){
-			scatterPlot.colorBy(selectedMetaKey);
+			if (selectedMetaKey != self.scatterPlot.colorKey){
+				scatterPlot.colorBy(selectedMetaKey);	
+			}
 		});
 
 	},
@@ -221,15 +225,12 @@ var Controler = Backbone.View.extend({
 			placement: 'left',
 			container: 'body',
 		});
-
 		return this;
 	},
 
 	changeSelection: function(){
 		// change the current selected option to value
-		$('#shape').val(this.scatterPlot.shapeKey); 
 		$('#shape').selectpicker('val', this.scatterPlot.shapeKey)
-		$('#color').val(this.scatterPlot.colorKey);
 		$('#color').selectpicker('val', this.scatterPlot.colorKey)
 	},
 

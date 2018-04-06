@@ -23,17 +23,17 @@ var selectizeDom = $("#main-search-box").selectize({
         option: function(item, escape){
             var html = '<ul class="list-unstyled">'
             if (item.type == 'drug') {
-                html += '<span class="label label-primary">D</span>'
+                html += '<span class="badge badge-primary">D</span>'
                 html += '<li>' + item.name + '</li>'
                 html += '<li>pert_id: ' + item.id + '</li>'
                 html += '<li>MOA: ' + item.MOA + '</li>'
                 html += '<li>Phase: ' + item.Phase + '</li>'
             } else if (item.type == 'cell') {
-                html += '<span class="label label-success">C</span>'
+                html += '<span class="badge badge-success">C</span>'
                 html += '<li>' + item.id + '</li>'
                 html += '<li>#signatures: ' + item.n_sigs + '</li>'
             } else {
-                html += '<span class="label label-info">S</span>'
+                html += '<span class="badge badge-info">S</span>'
                 html += '<li>sig_id: ' + item.id + '</li>'
                 html += '<li>drug: ' + item.Perturbation + '</li>'
                 html += '<li>cell: ' + item.Cell + '</li>'
