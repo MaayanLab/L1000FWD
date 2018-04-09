@@ -10,11 +10,11 @@
   </div>  
 </div>
 
-<div class="row justify-content-center">
+<div class="row justify-content-center" id="header-btns">
   {% if graph_rec is defined%}
     <a id="info-modal-btn" class="mx-3 btn btn-lg btn-warning">{{ graph_rec['display_name'] }} <i class="fas fa-info-circle"></i></a>
   {% else %}
-    <a href="main" class="mx-3 btn btn-lg btn-dark">Map</a>
+    <a href="main" class="mx-3 btn btn-lg btn-secondary">Map</a>
   {% endif %}
 
   <select id="cell-selectpicker" class="selectpicker" data-live-search="true">
@@ -24,8 +24,8 @@
   </select>
 
 
-  <a href="search_drug" class="mx-3 btn btn-lg btn-primary">Drugs</a>
-  <a href="subset_page" class="mx-3 btn btn-lg btn-info">Signatures</a>
-  <a href="download_page" class="mx-3 btn btn-lg btn-success">Download</a>
-  <a href="api_page" class="mx-3 btn btn-lg btn-danger">API</a>
+  <a href="search_drug" class="mx-3 btn btn-lg btn-secondary">Drugs</a>
+  <a href="subset_page" class="mx-3 btn btn-lg btn-secondary">Signatures</a>
+  <a href="download_page" class="mx-3 btn btn-lg btn-secondary">Download</a>
+  <a href="api_page" class="mx-3 btn btn-lg btn-secondary">API</a>
 </div>

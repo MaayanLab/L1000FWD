@@ -99,12 +99,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.0-beta/js/bootstrap-select.min.js"></script>
 
 <script>
-  // toggle header active tab
+  // toggle header active button
   var currentUrlRoute = window.location.pathname.split('/')[2];
-  $(".navbar-nav > li").each(function(){
-    $(this).removeClass('active');
+  $("#header-btns > .btn").slice(2).each(function(){
+    $(this).removeClass('btn-warning');
   });
-  $("#" + currentUrlRoute).addClass("active");
+  $("[href='" + currentUrlRoute + "']" ).addClass("btn-warning");
 
   // modal btn
   $("#info-modal-btn").click(function(e){

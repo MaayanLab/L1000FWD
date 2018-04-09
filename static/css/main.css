@@ -30,6 +30,7 @@ a {
 	margin-left: 20px; 
 	margin-right: 20px; 
   margin-top: 20px;
+  margin-bottom: 100px;
 	padding: 0; 
 	position: relative; 
 }
@@ -172,6 +173,7 @@ text.legendTitle{
   border-top: solid #e7e7e7;
   bottom: 0;
   width: 100%;
+  margin-top: 10px;
 }
 .footer a,
 .footer li,
@@ -233,4 +235,8 @@ ul.list-unstyled > li {
 body > div:nth-child(1) > div:nth-child(3) > div, body > div:nth-child(3) > div {
   width: auto!important;
   margin-right: 2rem!important;
+}
+
+[data-id="cell-selectpicker"] {
+  color: white!important;
 }
