@@ -5,7 +5,7 @@
   }
 </style>
 <div class="row justify-content-center">
-  <div class="col-12">
+  <div class="col-10">
     <h2 class="text-center font-weight-bold"><a class="unstyled" href="#">L1000FWD: Large-scale Visualization of Drug-induced Transcriptomic Signatures</a></h2>
   </div>  
 </div>
@@ -14,8 +14,9 @@
   {% if graph_rec is defined%}
     <a id="info-modal-btn" class="mx-3 btn btn-lg btn-warning">{{ graph_rec['display_name'] }} <span class="glyphicon glyphicon-info-sign"></span></a>
   {% else %}
-    <a href="main" class="mx-3 btn btn-lg btn-warning">Visualization</a>
+    <a href="main" class="mx-3 btn btn-lg btn-dark">Map</a>
   {% endif %}
+  <a href="main" class="mx-3 btn btn-lg btn-secondary">Cells</a>
   <a href="search_drug" class="mx-3 btn btn-lg btn-primary">Drugs</a>
   <a href="subset_page" class="mx-3 btn btn-lg btn-info">Signatures</a>
   <a href="download_page" class="mx-3 btn btn-lg btn-success">Download</a>
