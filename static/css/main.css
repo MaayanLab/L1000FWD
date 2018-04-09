@@ -226,4 +226,11 @@ ul.list-unstyled > li {
 
 }
 
+.selectize-input {
+  overflow: inherit;
+}
 
+body > div:nth-child(1) > div:nth-child(3) > div, body > div:nth-child(3) > div {
+  width: auto!important;
+  margin-right: 2rem!important;
+}

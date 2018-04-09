@@ -108,9 +108,22 @@
   <script src="lib/d3.v3.min.js"></script>
   <script src="lib/d3-legend.min.js"></script>
   <script src="node_modules/selectizebootstrap/dist/js/selectize/standalone/selectize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.0-beta/js/bootstrap-select.min.js"></script>
 
   <script src="node_modules/highcharts/highcharts.js"></script>
   <script src="node_modules/highcharts/modules/exporting.js"></script>
+
+  <script>
+$('#cell-selectpicker').selectpicker({
+  style: 'mx-3 btn btn-lg btn-secondary',
+  title: 'Cells',
+});
+
+$('#cell-selectpicker').on('changed.bs.select', function(e, clickedIdx, newValue, oldValue){
+  location.href = $(this).val();
+});
+
+  </script>
 
   <script src="js/index.js"></script>
 

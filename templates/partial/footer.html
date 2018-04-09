@@ -56,15 +56,15 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
+          <h5 class="modal-title" id="myModalLabel">{{graph_rec['display_name']}}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">{{graph_rec['display_name']}}</h4>
         </div>
         <div class="modal-body">
-          <dl class="dl-horizontal">
-            <dt>Cell line(s)</dt>
-            <dd>{{graph_rec['cell']}}</dd>
-            <dt>Number os signatures</dt>
-            <dd>{{graph_rec['n_sigs']}}</dd>
+          <dl class="row">
+            <dt class="col-6">Cell line(s)</dt>
+            <dd class="col-6">{{graph_rec['cell']}}</dd>
+            <dt class="col-6">Number os signatures</dt>
+            <dd class="col-6">{{graph_rec['n_sigs']}}</dd>
           </dl>
         </div>
       </div>
@@ -110,6 +110,16 @@
   $("#info-modal-btn").click(function(e){
     e.preventDefault();
     $('#info-modal').modal('show')
+  });
+
+  // selectpicker in the header
+  $('#cell-selectpicker').selectpicker({
+    style: 'mx-3 btn btn-lg btn-secondary',
+    title: 'Cells',
+  });
+
+  $('#cell-selectpicker').on('changed.bs.select', function(e, clickedIdx, newValue, oldValue){
+    location.href = $(this).val();
   });
 
 </script>

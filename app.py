@@ -108,6 +108,7 @@ def load_globals():
 @app.route(ENTER_POINT + '/')
 def index_page():
 	return render_template('index.html', 
+		graphs=graphs,
 		ENTER_POINT=ENTER_POINT)
 
 @app.route(ENTER_POINT + '/search_all/<string:query_string>')
@@ -189,6 +190,7 @@ def main_page():
 		result_id='hello',
 		graph_rec=graph_rec,
 		graph_name=graph_name_full,
+		graphs=graphs,
 		sdvConfig=json.dumps(sdvConfig),
 		)
 
@@ -221,6 +223,7 @@ def graph_page(graph_name):
 		result_id='hello',
 		graph_rec=graph_rec,
 		graph_name=graph_name,
+		graphs=graphs,
 		sdvConfig=json.dumps(sdvConfig),
 		)
 

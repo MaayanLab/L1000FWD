@@ -12,11 +12,18 @@
 
 <div class="row justify-content-center">
   {% if graph_rec is defined%}
-    <a id="info-modal-btn" class="mx-3 btn btn-lg btn-warning">{{ graph_rec['display_name'] }} <span class="glyphicon glyphicon-info-sign"></span></a>
+    <a id="info-modal-btn" class="mx-3 btn btn-lg btn-warning">{{ graph_rec['display_name'] }} <i class="fas fa-info-circle"></i></a>
   {% else %}
     <a href="main" class="mx-3 btn btn-lg btn-dark">Map</a>
   {% endif %}
-  <a href="main" class="mx-3 btn btn-lg btn-secondary">Cells</a>
+
+  <select id="cell-selectpicker" class="selectpicker" data-live-search="true">
+    {% for graph in graphs['cells'] %}
+      <option data-tokens="{{ graph.display_name }}" value="graph_page/{{ graph.name }}">{{ graph.display_name }}</option>
+    {% endfor %}  
+  </select>
+
+
   <a href="search_drug" class="mx-3 btn btn-lg btn-primary">Drugs</a>
   <a href="subset_page" class="mx-3 btn btn-lg btn-info">Signatures</a>
   <a href="download_page" class="mx-3 btn btn-lg btn-success">Download</a>
