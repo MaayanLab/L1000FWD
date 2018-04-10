@@ -676,8 +676,8 @@ var Overlay = Backbone.View.extend({
 			h = $(this.container).height();
 		this.el = d3.select(this.container)
 			.append(this.tagName)
-			.style('width', w)
-			.style('height', h)
+			.style('width', w + 'px')
+			.style('height', h + 'px')
 			.style('z-index', 10)
 			.style('position', 'absolute')
 			.style('right', '0px')
