@@ -222,9 +222,8 @@ var Controler = Backbone.View.extend({
 			style: 'btn-outline-secondary btn-sm',
 		});
 		$('.selectpicker').on('shown.bs.select', function(e){
-			console.log('shown.bs.select')
 			$('[data-toggle="tooltip"]').tooltip({
-				placement: 'auto',
+				placement: 'bottom',
 				container: 'body',
 			});
 		})
