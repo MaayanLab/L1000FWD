@@ -31,7 +31,7 @@ var search = new SearchSelectize({scatterPlot: sdv, container: "#controls", syno
 var sigSimSearch = new SigSimSearchForm({
 	scatterPlot: sdv, 
 	container: "#controls",
-	action: 'search/' + graph_name
+	action: sigSimSearchAction
 })
 
 var overlay = new Overlay({scatterPlot: sdv})

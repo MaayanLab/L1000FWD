@@ -32,7 +32,7 @@ var sigSimSearch = new SigSimSearchForm({
 	scatterPlot: sdv, 
 	container: "#controls", 
 	result_id: result_id,
-	action: 'search/' + graph_name
+	action: sigSimSearchAction
 
 })
 

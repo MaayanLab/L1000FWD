@@ -194,6 +194,57 @@ def main_page():
 		sdvConfig=json.dumps(sdvConfig),
 		)
 
+@app.route(ENTER_POINT + '/vanilla/<string:endpoint>', methods=['GET', 'POST'])
+def vanilla_pages(endpoint):
+	sdvConfig = {
+		'colorKey': 'MOA',
+		'shapeKey': 'Time',
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
+	}
+
+	if endpoint == 'main':
+		# The default main page
+		return render_template('scatter-vanilla.html', 
+			script='main',
+			ENTER_POINT=ENTER_POINT,
+			result_id='hello',
+			graph_name=graph_name_full,
+			graphs=graphs,
+			sdvConfig=json.dumps(sdvConfig),
+			)
+	elif endpoint == 'search':
+		if request.method == 'POST':
+			# retrieve data from the form 
+			up_genes = request.form.get('upGenes', '').split()
+			down_genes = request.form.get('dnGenes', '').split()
+			# init GeneSets instance
+			gene_sets = GeneSets(up_genes, down_genes)
+			# perform similarity search
+			graph_df_ = d_all_graphs[graph_name_full]
+			result = gene_sets.enrich(graph_df_, graph_name_full)
+			# save gene_sets and results to MongoDB
+			rid = gene_sets.save()
+
+			return redirect(ENTER_POINT + '/vanilla/result/' + rid, code=302)
+			
+
+@app.route(ENTER_POINT + '/vanilla/result/<string:rid>', methods=['GET'])
+def vanilla_result_page(rid):
+	sdvConfig = {
+		'colorKey': 'Scores',
+		'shapeKey': 'Time',
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
+	}
+	return render_template('scatter-vanilla.html', 
+		script='result', 
+		ENTER_POINT=ENTER_POINT,
+		result_id=rid,
+		graphs=graphs,
+		graph_name=graph_name_full,
+		sdvConfig=json.dumps(sdvConfig),
+		)
+
+
 @app.route(ENTER_POINT + '/graph_page/<string:graph_name>')
 def graph_page(graph_name):
 	url = 'graph/%s' % graph_name
