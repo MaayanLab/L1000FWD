@@ -278,6 +278,7 @@ def get_download_meta():
 	('CD_signatures_LM_42809x978.gctx', 'CD signature matrix in the Landmark gene space.'), 
 	('CD_signatures_full_42809x22268.gctx', 'CD signature matrix in the full space (22268 probes).'), 
 	('CD_signature_metadata.csv', 'Metadata of the signatures indexed by the `sig_id`.'), 
+	('Drugs_metadata.csv', 'Metadata of the drugs indexed by the `pert_id`'),
 	('Probes_L1000_metadata.csv', 'Metadata of the probes of the Landmark genes.'),
 	('Probes_full_metadata.csv', 'Metadata of the probes used in the full space.'), 	
 	]
