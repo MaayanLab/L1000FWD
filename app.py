@@ -181,7 +181,7 @@ def main_page():
 	sdvConfig = {
 		'colorKey': 'MOA',
 		'shapeKey': 'Time',
-		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
+		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA', 'R2_Score'],
 	}
 	graph_rec = [x for x in graphs['cells'] if x['name'] == graph_name_full][0]
 	return render_template('scatter.html', 

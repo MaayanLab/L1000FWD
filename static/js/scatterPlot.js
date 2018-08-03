@@ -766,7 +766,7 @@ var Scatter3dView = Backbone.View.extend({
 		}
 
 		// make colorScale
-		if (meta.name === 'Scores') { // similarity scores should center at 0
+		if (meta.name === 'Scores' || meta.name == 'R2_Score') { // similarity scores should center at 0
 			var colorExtent = d3.extent(metas);
 			var colorScale = d3.scale.pow()
 				.domain([colorExtent[0], 0, colorExtent[1]])

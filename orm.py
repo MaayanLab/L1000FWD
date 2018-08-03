@@ -108,6 +108,10 @@ def load_predicted_MOAs(filename, name='predicted_MOA'):
 		index=drug_moa_preds_df.index)
 	return predicted_MOAs
 
+def load_GE_predictabilities(filename):
+	drug_GE_predictability_df = pd.read_csv(filename).set_index('Pert_id')\
+		.drop('Unnamed: 0', axis=1)
+	return drug_GE_predictability_df
 
 def load_drug_meta_from_db():
 	drug_meta_df = pd.read_sql_query('''
@@ -132,6 +136,10 @@ def load_drug_meta_from_db():
 
 	predicted_MOAs = load_predicted_MOAs('data/agg_MOA_preds_at_pert_level_XGB680.csv')
 	drug_meta_df = drug_meta_df.merge(predicted_MOAs, left_index=True, right_index=True
+		, how='left')
+
+	drug_GE_predictability_df = load_GE_predictabilities('data/Pred_vect.csv')
+	drug_meta_df = drug_meta_df.merge(drug_GE_predictability_df, left_index=True, right_index=True
 		, how='left')
 
 	# predicted_MOAs_GE = load_predicted_MOAs('data/agg_MOA_preds_at_pert_level_kNN15_GE.csv',
