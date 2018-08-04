@@ -1,7 +1,7 @@
 FROM python:2.7
 
 # Get pip and install numpy/scipy dependencies
-RUN apt-get update && apt-get install -y build-essential gfortran libatlas-base-dev libmysqlclient-dev
+RUN apt-get update && apt-get install -y build-essential gfortran libatlas-base-dev default-libmysqlclient-dev
 
 # Update pip
 RUN pip install --upgrade pip
