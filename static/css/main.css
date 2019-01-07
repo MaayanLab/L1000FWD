@@ -182,6 +182,7 @@ text.legendTitle{
   font-family: 'Roboto', arial, sans-serif;
   font-size: 14px;
   font-weight: 100;
+  margin-bottom: 0.4rem;
 }
 .footer h3 {
   color: black;
