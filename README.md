@@ -10,3 +10,17 @@ L1000 fireworks display (L1000FWD) is a web application that provides interactiv
 
 Wang Z, Lachmann A, Keenan AB, Ma'ayan A (2018) **L1000FWD: fireworks visualization of drug-induced transcriptomic signatures.** _Bioinformatics_ doi: [10.1093/bioinformatics/bty060](https://doi.org/10.1093/bioinformatics/bty060)
 
+
+## Use
+
+L1000FWD's web-based tools and services are free for academic, non-profit use, but for commercial uses please contact [MSIP](http://www.ip.mountsinai.org/) for a license.
+
+
+## Disclaimer
+
+L1000FWD IS NOT TO BE USED FOR TREATING OR DIAGNOSING HUMAN SUBJECTS.
+
+L1000FWD or any documents available from this server ARE PROVIDED AS IS WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND FREEDOM FROM INFRINGEMENT, OR THAT L1000FWD or any documents available from this server WILL BE ERROR FREE. The Ma'ayan lab MAKES NO REPRESENTATIONS THAT THE USE OF L1000FWD or any documents available from this server WILL NOT INFRINGE ANY PATENT OR PROPRIETATY RIGHTS OF THIRD PARTIES.
+
+In no event will the Ma'ayan lab or any of its members be liable for any damages, including but not limited to direct, indirect, special or consequential damages, arising out of, resulting from, or in any way connected with the use of L1000FWD or documents available from this server.
+
