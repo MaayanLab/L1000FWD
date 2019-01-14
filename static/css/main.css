@@ -178,7 +178,7 @@ text.legendTitle{
 .footer a,
 .footer li,
 .footer p {
-  color: black;
+  color: #6c757d;
   font-family: 'Roboto', arial, sans-serif;
   font-size: 14px;
   font-weight: 100;
@@ -188,7 +188,7 @@ text.legendTitle{
   color: black;
 }
 .footer a {
-  color: #777;
+  color:#6c757d;
   text-decoration: none;
 }
 .footer a:hover {
@@ -244,4 +244,7 @@ body > div:nth-child(1) > div:nth-child(3) > div, body > div:nth-child(3) > div 
 
 p.disclaimer {
   font-size: 10px;
+}
+.footer * h4 {
+  margin-top: 1rem;
 }
