@@ -241,3 +241,7 @@ body > div:nth-child(1) > div:nth-child(3) > div, body > div:nth-child(3) > div 
 [data-id="cell-selectpicker"] {
   color: white!important;
 }
+
+p.disclaimer {
+  font-size: 10px;
+}
