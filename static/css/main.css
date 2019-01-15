@@ -249,3 +249,8 @@ p.disclaimer {
   margin-top: 1rem;
   color: #6c757d;
 }
+h2.text-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
