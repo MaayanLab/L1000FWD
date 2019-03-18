@@ -44,6 +44,22 @@ var Legend = Backbone.View.extend({
 
 	},
 
+	addScoreHints: function(){
+		this.removeScoreHints();
+		this.g.select('#legendColor > g').append('text')
+			.text('(reverse)')
+			.attr('class', 'scoresHint')
+			.attr("transform", "translate(0, -7.5)");
+		this.g.select('#legendColor > g').append('text')
+			.text('(mimic)')
+			.attr('class', 'scoresHint')
+			.attr("transform", "translate(0, 97.5)");
+	},
+
+	removeScoreHints: function(){
+		this.g.selectAll('.scoresHint').remove();
+	},
+
 	render: function(){
 		// set up legend
 		// shape legend
@@ -69,6 +85,11 @@ var Legend = Backbone.View.extend({
 		this.g.select("#legendColor")
 			.call(legendColor);
 
+		if (scatterPlot.colorKey === 'Scores'){
+			this.addScoreHints()
+		} else {
+			this.removeScoreHints()
+		}
 		return this;
 	},
 
