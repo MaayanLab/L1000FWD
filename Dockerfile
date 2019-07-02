@@ -7,18 +7,8 @@ RUN apt-get update && apt-get install -y build-essential gfortran libatlas-base-
 RUN pip install --upgrade pip
 
 # Install required python packages
-RUN pip install \
-	h5py==2.6.0\
-	pandas==0.20.1\
-	requests==2.6.2\
-	flask==0.12\
-	networkx==1.11\
-	scipy==0.15.1\
-	scikit-learn==0.19\
-	MySQL-python\
-	SQLAlchemy==0.9.9\
-	pymongo==3.2.2\
-	flask_pymongo==0.5.1
+ADD requirements.txt /requirements.txt
+RUN pip install -r /requirements.txt
 
 
 # Copy the application folder inside the container
