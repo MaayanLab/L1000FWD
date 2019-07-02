@@ -1,13 +1,42 @@
-html { height: 100% }
+html { 
+  height: 100%;
+  position:relative;
+}
 body { 
 	height: 100%; 
-  min-height: 650px;
+  min-height: 100%;
 	margin: 0; 
 	padding: 0; 
 	position: relative; 
 	font-family: 'Roboto', arial, sans-serif;
 	font-size: 14px;
 }
+
+.subtitle {
+  font-size: 20px;
+}
+
+.row-color {
+  background-color: #47bdf2;
+}
+
+.navitem {
+  font-size: 20px;
+  color:black !important;
+  background-color: #47bdf2; 
+}
+
+.navitem:hover{
+  background-color: #eee;
+  border-color: #eee;
+  color:black;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+
 canvas { width: 100%; height: 100% }
 
 a {
@@ -94,6 +123,8 @@ text.legendTitle{
   width: 100%;
 }
 
+
+
 #header {
   background-color: #ddd;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
@@ -168,6 +199,16 @@ text.legendTitle{
   float: none;
 }
 
+.container-fluid {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.container-fluid:first-child{
+  min-height: 100vh;
+  min-height: -webkit-calc(100vh - 260px);
+  min-height: -moz-calc(100vh - 260px);
+  min-height: calc(100vh - 260px);
+}
 .footer {
   background-color: #f8f8f8;
   border-top: solid #e7e7e7;
@@ -175,6 +216,13 @@ text.legendTitle{
   width: 100%;
   margin-top: 10px;
 }
+.flex-wrapper {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: space-between
+}
+
 .footer a,
 .footer li,
 .footer p {
@@ -239,7 +287,7 @@ body > div:nth-child(1) > div:nth-child(3) > div, body > div:nth-child(3) > div 
 }
 
 [data-id="cell-selectpicker"] {
-  color: white!important;
+  color: black!important;
 }
 
 p.disclaimer {

@@ -9,16 +9,17 @@
     
     <h2 class="text-center">
       <img src="images/logo.png" alt="" height="80px">
-      <a id="unstyled" href="#"><span class="font-weight-bold">L1000FWD</span> 
-        Large Scale Visualization of Drug Induced Transcriptomic Signatures</a></h2>
+      <a id="unstyled" href="#"><span class="font-weight-bold">L1000FWD</span> <br />
+        <span class="subtitle">Large Scale Visualization of Drug Induced Transcriptomic Signatures</span>
+      </a></h2>
   </div>  
 </div>
 
-<div class="row justify-content-center" id="header-btns">
+<div class="row row-color justify-content-center" id="header-btns">
   {% if graph_rec is defined%}
     <a id="info-modal-btn" class="mx-3 btn btn-lg btn-warning">{{ graph_rec['display_name'] }} <i class="fas fa-info-circle"></i></a>
   {% else %}
-    <a href="main" class="mx-3 btn btn-lg btn-secondary">Map</a>
+    <a href="main" class="mx-3 btn btn-lg navitem">Map</a>
   {% endif %}
 
   <select id="cell-selectpicker" class="selectpicker" data-live-search="true">
@@ -28,8 +29,8 @@
   </select>
 
 
-  <a href="search_drug" class="mx-3 btn btn-lg btn-secondary">Drugs</a>
-  <a href="subset_page" class="mx-3 btn btn-lg btn-secondary">Signatures</a>
-  <a href="download_page" class="mx-3 btn btn-lg btn-secondary">Download</a>
-  <a href="api_page" class="mx-3 btn btn-lg btn-secondary">API</a>
+  <a href="search_drug" class="mx-3 btn btn-lg navitem">Drugs</a>
+  <a href="subset_page" class="mx-3 btn btn-lg navitem">Signatures</a>
+  <a href="download_page" class="mx-3 btn btn-lg navitem">Download</a>
+  <a href="api_page" class="mx-3 btn btn-lg navitem">API</a>
 </div>
