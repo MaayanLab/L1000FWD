@@ -24,3 +24,6 @@ L1000FWD or any documents available from this server ARE PROVIDED AS IS WITHOUT 
 
 In no event will the Ma'ayan lab or any of its members be liable for any damages, including but not limited to direct, indirect, special or consequential damages, arising out of, resulting from, or in any way connected with the use of L1000FWD or documents available from this server.
 
+##Running instructions
+
+Run package.json to get the node_modules by npm install
