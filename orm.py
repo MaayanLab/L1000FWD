@@ -285,6 +285,8 @@ def get_download_meta():
 	('Adjacency_matrix_LM_space_42809x42809.gctx', 'Adjacency matrix of all significant CD signatures. Cosine similarity is used to compute the signature similarity.'),
 	('CD_signatures_LM_42809x978.gctx', 'CD signature matrix in the Landmark gene space.'), 
 	('CD_signatures_full_42809x22268.gctx', 'CD signature matrix in the full space (22268 probes).'), 
+	('CD_signatures_binary_42809.gmt', 'CD signatures (up/down gene sets) in the full space in gmt format.'),
+	('CD_signatures_binary_42809.json', 'CD signatures (up/down gene sets) in the full space in json format.'),
 	('CD_signature_metadata.csv', 'Metadata of the signatures indexed by the `sig_id`.'), 
 	('Drugs_metadata.csv', 'Metadata of the drugs indexed by the `pert_id`'),
 	('Probes_L1000_metadata.csv', 'Metadata of the probes of the Landmark genes.'),
