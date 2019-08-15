@@ -373,6 +373,7 @@ def search_drug():
 
 
 @app.route(ENTER_POINT + '/graph/<string:graph_name>', methods=['GET'])
+@crossdomain(origin='*')
 def load_graph_layout_coords(graph_name):
 	'''API for different graphs'''
 	if request.method == 'GET':
