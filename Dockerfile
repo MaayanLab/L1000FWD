@@ -23,6 +23,10 @@ EXPOSE 5000
 # Set the default directory where CMD will execute
 WORKDIR /my_application
 
+# Setup entrypoint
+RUN chmod +x /my_application/entrypoint.sh
+ENTRYPOINT [ "/my_application/entrypoint.sh" ]
+
 # Set the default command to execute    
 # when creating a new container
 CMD python app.py
