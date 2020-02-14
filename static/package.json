@@ -18,7 +18,7 @@
     "datatables.net-bs4": "^1.10.16",
     "datatables.net-buttons-bs4": "^1.5.1",
     "highcharts": "^6.0.7",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.0",
     "popper.js": "^1.14.3",
     "selectizebootstrap": "git+https://github.com/papakay/selectize-bootstrap-4-style.git",
     "three": "^0.77.1",
