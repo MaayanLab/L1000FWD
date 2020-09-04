@@ -13,7 +13,7 @@ from werkzeug.routing import Rule, RequestRedirect
 class CIRule(Rule):
 	def compile(self):
 		Rule.compile(self)
-		self._regex = re.compile(self._regex.pattern, 
+		self._regex = re.compile(self._regex.pattern,
 			re.UNICODE | re.IGNORECASE)
 
 
@@ -28,13 +28,17 @@ from orm import *
 # from subset_signatures import *
 from crossdomain import crossdomain
 
-ENTER_POINT = os.environ['ENTER_POINT']
+ENTER_POINT = os.environ.get('ENTER_POINT', '/L1000FWD')
 SCRIPT_PATH = os 
-app = CIFlask(__name__, static_url_path=ENTER_POINT, 
+app = CIFlask(__name__, static_url_path=ENTER_POINT,
 	static_folder=os.path.join(os.getcwd(), 'static'))
 app.debug = True
+app.config['ENTER_POINT'] = ENTER_POINT
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
 app.config['MONGO_URI'] = MONGOURI
+app.config['ORIGIN'] = os.environ.get('ORIGIN', 'https://amp.pharm.mssm.edu')
+app.config['DMOA_URL'] = os.environ.get('DMOA_URL', app.config['ORIGIN'] + '/dmoa')
+app.config['CREEDS_URL'] = os.environ.get('CREEDS_URL', app.config['ORIGIN'] + '/CREEDS')
 
 mongo.init_app(app)
 
@@ -81,14 +85,14 @@ def load_globals():
 		d_all_graphs[graph_name] = graph_df_
 
 	# The full metadata for all_sig_ids, then filter out signatures from poscons
-	meta_df_full = load_signature_meta_from_db('sigs', 
+	meta_df_full = load_signature_meta_from_db('sigs',
 		query={'sig_id': {'$in': all_sig_ids}},
 		drug_meta_df=drug_meta_df[['pert_desc', 'MOA', 'Phase']]
 		)
 	meta_df_full.rename(
-		index=str, 
+		index=str,
 		columns={
-			'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time', 
+			'SCS_centered_by_batch': 'p-value', 'cell': 'Cell', 'pert_time': 'Time',
 			'drug_class': 'Drug class', 'dose': 'Dose',
 			'pert_desc': 'Perturbation',
 			'pert_id': 'Perturbation_ID',
@@ -107,7 +111,7 @@ def load_globals():
 
 @app.route(ENTER_POINT + '/')
 def index_page():
-	return render_template('index.html', 
+	return render_template('index.html',
 		graphs=graphs,
 		ENTER_POINT=ENTER_POINT)
 
@@ -184,9 +188,8 @@ def main_page():
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA', 'R2_Score'],
 	}
 	graph_rec = [x for x in graphs['cells'] if x['name'] == graph_name_full][0]
-	return render_template('scatter.html', 
+	return render_template('scatter.html',
 		script='main',
-		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
 		graph_rec=graph_rec,
 		graph_name=graph_name_full,
@@ -204,7 +207,7 @@ def vanilla_pages(endpoint):
 
 	if endpoint == 'main':
 		# The default main page
-		return render_template('scatter-vanilla.html', 
+		return render_template('scatter-vanilla.html',
 			script='main',
 			ENTER_POINT=ENTER_POINT,
 			result_id='hello',
@@ -235,9 +238,8 @@ def vanilla_result_page(rid):
 		'shapeKey': 'Time',
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
-	return render_template('scatter-vanilla.html', 
-		script='result', 
-		ENTER_POINT=ENTER_POINT,
+	return render_template('scatter-vanilla.html',
+		script='result',
 		result_id=rid,
 		graphs=graphs,
 		graph_name=graph_name_full,
@@ -259,18 +261,17 @@ def graph_page(graph_name):
 		# Signatures aggregated for pert_id x cell_id
 		sdvConfig['colorKey'] = 'Cell'
 		sdvConfig['shapeKey'] = 'avg_time'
-		sdvConfig['labelKey'] = ['Perturbation', 'Cell', 'avg_dose', 'avg_time', 
+		sdvConfig['labelKey'] = ['Perturbation', 'Cell', 'avg_dose', 'avg_time',
 			'Phase', 'MOA', 'n_signatures_aggregated']
 	elif graph_name in ('kNN_5_layout', 'threshold_99.5'):
 		# Signatures aggregated for pert_id
 		sdvConfig['shapeKey'] = 'avg_pvalue'
-		sdvConfig['labelKey'] = ['Perturbation', 'avg_dose', 'avg_time', 'avg_pvalue', 
+		sdvConfig['labelKey'] = ['Perturbation', 'avg_dose', 'avg_time', 'avg_pvalue',
 					'Phase', 'MOA', 'n_signatures_aggregated']
 
 	graph_rec = [x for x in graphs['cells'] if x['name'] == graph_name][0]
-	return render_template('scatter.html', 
+	return render_template('scatter.html',
 		script='main',
-		ENTER_POINT=ENTER_POINT,
 		result_id='hello',
 		graph_rec=graph_rec,
 		graph_name=graph_name,
@@ -283,7 +284,6 @@ def graph_page(graph_name):
 @app.route(ENTER_POINT + '/subset_page', methods=['GET'])
 def send_subset_input_page():
 	return render_template('subset.html',
-		ENTER_POINT=ENTER_POINT,
 		graphs=graphs,
 
 		)
@@ -314,7 +314,7 @@ def create_graph_from_user_subset():
 			sig_id = graph_df_sub.index[0]
 			# sig_id = sig_ids_sub[0]
 			return json.dumps({
-				'url': 'http://amp.pharm.mssm.edu/dmoa/sig/%s'%sig_id,
+				'url': app.config['DMOA_URL'] + '/sig/%s'%sig_id,
 				'absolute': True
 				})
 		# elif len(sig_ids_sub) == 0:
@@ -334,8 +334,7 @@ def send_subset_result_page(subset_id):
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
 
-	return render_template('scatter.html', 
-		ENTER_POINT=ENTER_POINT,
+	return render_template('scatter.html',
 		subset_id=subset_id,
 		script='subset',
 		sdvConfig=json.dumps(sdvConfig),
@@ -348,7 +347,7 @@ def retrieve_subset_id_and_subset_graph(subset_id):
 	user_subset = UserSubset.get(subset_id)
 	graph_df_sub = user_subset.subset_graph(d_all_graphs)
 	# coords_df = subset_mat_and_do_tsne(user_subset)
-	# graph_df_sub = meta_df_full.merge(coords_df, 
+	# graph_df_sub = meta_df_full.merge(coords_df,
 	# 	left_index=True,
 	# 	right_index=True,
 	# 	how='inner'
@@ -369,7 +368,7 @@ def serve_static_file(filename):
 def search_drug():
 	'''Redirect to drug search page.
 	'''
-	return redirect('http://amp.pharm.mssm.edu/dmoa/search_drug', code=302)	
+	return redirect(app.config['DMOA_URL'] + '/search_drug', code=302)	
 
 
 @app.route(ENTER_POINT + '/graph/<string:graph_name>', methods=['GET'])
@@ -481,11 +480,10 @@ def search_signature_from_creeds(query_string):
 
 @app.route(ENTER_POINT + '/CREEDS/genes/<string:creeds_id>', methods=['GET'])
 def retrieve_creeds_genes_by_id(creeds_id):
-	CREEDS_URL = 'http://amp.pharm.mssm.edu/CREEDS/'
-	response = requests.get(CREEDS_URL + 'api', params={'id': creeds_id})
+	response = requests.get(app.config['CREEDS_URL'] + '/api', params={'id': creeds_id})
 	signature = response.json()
 	gene_sets = {
-		'upGenes': map(lambda x:x[0], signature['up_genes']), 
+		'upGenes': map(lambda x:x[0], signature['up_genes']),
 		'dnGenes': map(lambda x:x[0], signature['down_genes']),
 		}
 	return json.dumps(gene_sets)
@@ -550,7 +548,7 @@ def result_modal(result_id):
 		rec['perturbation'] = graph_df_.ix[sig_id]['Perturbation']
 		topn['opposite'][i] = rec
 
-	return render_template('result-modal.html', 
+	return render_template('result-modal.html',
 		topn=topn,
 		result_id=result_id)
 
@@ -563,7 +561,7 @@ def result_download(result_id):
 	# Prepare a DataFrame for the result
 	scores = result_obj.result['scores']
 	graph_df_ = d_all_graphs[result_obj.graph_name]
-	result_df = pd.DataFrame({'similarity_scores': scores, 
+	result_df = pd.DataFrame({'similarity_scores': scores,
 		'drug': graph_df_['Perturbation'],
 		'pert_id': graph_df_.index.map(lambda x:x.split(':')[1]),
 		}, index=graph_df_.index)\
@@ -588,9 +586,8 @@ def result_page(result_id):
 		'labelKey': ['Batch', 'Perturbation', 'Cell', 'Dose', 'Time', 'Phase', 'MOA', 'predicted_MOA'],
 	}
 	result_obj = EnrichmentResult(result_id)
-	return render_template('scatter.html', 
-		script='result', 
-		ENTER_POINT=ENTER_POINT,
+	return render_template('scatter.html',
+		script='result',
 		result_id=result_id,
 		graphs=graphs,
 		graph_name=result_obj.graph_name,
@@ -600,8 +597,7 @@ def result_page(result_id):
 
 @app.route(ENTER_POINT + '/download_page', methods=['GET'])
 def download_page():
-	return render_template('download.html', 
-		ENTER_POINT=ENTER_POINT,
+	return render_template('download.html',
 		graphs=graphs,
 		download_files_meta=download_files_meta
 		)
@@ -628,14 +624,14 @@ def download_graph_by_name(name):
 
 @app.route(ENTER_POINT + '/api_page', methods=['GET'])
 def api_doc_page():
-	return render_template('apis.html', 
-		ENTER_POINT=ENTER_POINT,
+	return render_template('apis.html',
 		graphs=graphs,
 		api_docs=api_docs
 		)
 
 from jinja2 import Markup
 app.jinja_env.globals['include_raw'] = lambda filename : Markup(app.jinja_loader.get_source(app.jinja_env, filename)[0])
+app.jinja_env.globals['config'] = app.config
 
 
 if __name__ == '__main__':

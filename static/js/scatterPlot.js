@@ -656,9 +656,9 @@ var Scatter3dView = Backbone.View.extend({
 			var idx = intersect.index;
 			var geometry = intersect.object.geometry;
 			// var pert_id = geometry.attributes.pert_id.array[idx];
-			// var url = 'http://amp.pharm.mssm.edu/dmoa/report/' + pert_id;
+			// var url = window._config.DMOA_URL + '/report/' + pert_id;
 			var sig_id = geometry.attributes.sig_id.array[idx];
-			var url = 'http://amp.pharm.mssm.edu/dmoa/sig/' + sig_id;
+			var url = window._config.DMOA_URL + '/sig/' + sig_id;
 			window.open(url);
 		}
 	},

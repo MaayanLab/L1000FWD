@@ -32,10 +32,10 @@
 				{% for row in topn['similar'] %}
 				<tr>
 					<td>
-						<a href="http://amp.pharm.mssm.edu/dmoa/sig/{{ row['sig_id'] }}" target="_blank">{{ row['sig_id'] }}</a>
+						<a href="{{ config['DMOA_URL'] }}/sig/{{ row['sig_id'] }}" target="_blank">{{ row['sig_id'] }}</a>
 					</td>
 					<td>
-						<a href="http://amp.pharm.mssm.edu/dmoa/report/{{ row['pert_id'] }}" target="_blank">{{ row['perturbation'] }}</a>
+						<a href="{{ config['DMOA_URL'] }}/report/{{ row['pert_id'] }}" target="_blank">{{ row['perturbation'] }}</a>
 					</td>
 					<td>{{ '%.4f' % row['scores'] }}</td>
 					<td>{{ '%.2e' % row['pvals'] }}</td>
@@ -75,10 +75,10 @@
 				{% for row in topn['opposite'] %}
 				<tr>
 					<td>
-						<a href="http://amp.pharm.mssm.edu/dmoa/sig/{{ row['sig_id'] }}" target="_blank">{{ row['sig_id'] }}</a>
+						<a href="{{ config['DMOA_URL'] }}/sig/{{ row['sig_id'] }}" target="_blank">{{ row['sig_id'] }}</a>
 					</td>
 					<td>
-						<a href="http://amp.pharm.mssm.edu/dmoa/report/{{ row['pert_id'] }}" target="_blank">{{ row['perturbation'] }}</a>
+						<a href="{{ config['DMOA_URL'] }}/report/{{ row['pert_id'] }}" target="_blank">{{ row['perturbation'] }}</a>
 					</td>
 					<td>{{ '%.4f' % row['scores'] }}</td>
 					<td>{{ '%.2e' % row['pvals'] }}</td>

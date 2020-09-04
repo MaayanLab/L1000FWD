@@ -64,11 +64,11 @@ var selectizeDom = $("#main-search-box").selectize({
         var item = this.options[value];
         var url = '';
         if (item.type == 'drug') {
-            url = 'http://amp.pharm.mssm.edu/dmoa/report/' + item.id;
+            url = window._config.DMOA_URL + '/report/' + item.id;
         } else if (item.type == 'cell') {
             url = 'graph_page/' + item.name[0];
         } else {
-            url = 'http://amp.pharm.mssm.edu/dmoa/sig/' + item.id;
+            url = window._config.DMOA_URL + '/sig/' + item.id;
         }
         
         location.href = url;
