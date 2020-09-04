@@ -9,13 +9,10 @@ from bson.objectid import ObjectId
 # from pymongo import MongoClient
 from flask_pymongo import PyMongo
 
+# gets uri from app.config['MONGO_URI']
 mongo = PyMongo()
 
 RURL = os.environ['RURL']
-MONGOURI = os.environ['MONGOURI']
-# client = MongoClient(MONGOURI)
-# DB = client['DMOA']
-# COLL_RES = DB['userResults']
 
 MYSQLURI = os.environ['MYSQLURI']
 engine = create_engine(MYSQLURI)

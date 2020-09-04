@@ -35,7 +35,7 @@ app = CIFlask(__name__, static_url_path=ENTER_POINT,
 app.debug = True
 app.config['ENTER_POINT'] = ENTER_POINT
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 6
-app.config['MONGO_URI'] = MONGOURI
+app.config['MONGO_URI'] = os.environ['MONGOURI']
 app.config['ORIGIN'] = os.environ.get('ORIGIN', 'https://amp.pharm.mssm.edu')
 app.config['DMOA_URL'] = os.environ.get('DMOA_URL', app.config['ORIGIN'] + '/dmoa')
 app.config['CREEDS_URL'] = os.environ.get('CREEDS_URL', app.config['ORIGIN'] + '/CREEDS')
