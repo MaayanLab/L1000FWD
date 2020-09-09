@@ -630,7 +630,7 @@ def api_doc_page():
 		)
 
 from jinja2 import Markup
-app.jinja_env.globals['include_raw'] = lambda filename : Markup(app.jinja_loader.get_source(app.jinja_env, filename)[0])
+app.jinja_env.globals['include_raw'] = lambda filename : Markup(render_template(filename))
 app.jinja_env.globals['config'] = app.config
 
 

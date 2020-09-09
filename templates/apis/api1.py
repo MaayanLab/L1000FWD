@@ -1,7 +1,7 @@
 import json, requests
 from pprint import pprint
 
-L1000FWD_URL = 'http://amp.pharm.mssm.edu/L1000FWD/'
+L1000FWD_URL = '{{ config.ORIGIN }}{{ config.ENTER_POINT }}/'
 
 query_string = 'dex'
 response = requests.get(L1000FWD_URL + 'synonyms/' + query_string)
