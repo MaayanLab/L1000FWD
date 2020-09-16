@@ -13,6 +13,7 @@ RUN pip install -r /requirements.txt
 
 # Copy the application folder inside the container
 ADD . /my_application
+RUN chmod +x /my_application/boot.sh
 
 # # Install required python packages
 # RUN pip install -r /my_application/requirements.txt
@@ -23,6 +24,6 @@ EXPOSE 5000
 # Set the default directory where CMD will execute
 WORKDIR /my_application
 
-# Set the default command to execute    
+# Set the default command to execute
 # when creating a new container
-CMD python app.py
+CMD /my_application/boot.sh
