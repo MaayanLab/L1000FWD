@@ -1,7 +1,10 @@
-*.pyc
-data/*
 !data/.gitignore
-log/
+*.pyc
 .DS_Store
+.env
+.idea
+data/*
+log/
 notebooks/*
 static/node_modules/
+venv

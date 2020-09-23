@@ -17,19 +17,19 @@ body {
 }
 
 .row-color {
-  background-color: #47bdf2;
+  background-color: black;
 }
 
 .navitem {
   font-size: 20px;
-  color:black !important;
-  background-color: #47bdf2; 
+  color:white !important;
+  background-color: black;
 }
 
 .navitem:hover{
-  background-color: #eee;
-  border-color: #eee;
-  color:black;
+  background-color: #999;
+  border-color: #999;
+  color:white;
 }
 
 .btn-warning {

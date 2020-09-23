@@ -1,5 +1,7 @@
 import os, sys
 import json
+from dotenv import load_dotenv
+load_dotenv(verbose=True)
 import time
 import StringIO
 import numpy as np

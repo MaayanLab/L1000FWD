@@ -3,6 +3,11 @@ import json, requests
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
 
 from sqlalchemy import create_engine
 from bson.objectid import ObjectId
