@@ -44,7 +44,7 @@ app.config['CREEDS_URL'] = os.environ.get('CREEDS_URL', app.config['ORIGIN'] + '
 
 mongo.init_app(app)
 
-@app.before_first_request
+# @app.before_first_request
 def load_globals():
 	global meta_df, graph_df, drug_synonyms, drug_meta_df
 	global graphs # meta data of the graphs for the header
@@ -114,7 +114,7 @@ def load_globals():
 @app.route(ENTER_POINT + '/')
 def index_page():
 	return render_template('index.html',
-		graphs=graphs,
+		graphs=None,
 		ENTER_POINT=ENTER_POINT)
 
 @app.route(ENTER_POINT + '/search_all/<string:query_string>')

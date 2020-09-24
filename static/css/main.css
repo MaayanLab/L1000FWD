@@ -210,8 +210,7 @@ text.legendTitle{
   min-height: calc(100vh - 260px);
 }
 .footer {
-  background-color: #f8f8f8;
-  border-top: solid #e7e7e7;
+  background-color: #e8e8e8;
   bottom: 0;
   width: 100%;
   margin-top: 10px;
@@ -226,7 +225,7 @@ text.legendTitle{
 .footer a,
 .footer li,
 .footer p {
-  color: #6c757d;
+  color: #4b4b4b;
   font-family: 'Roboto', arial, sans-serif;
   font-size: 14px;
   font-weight: 100;
@@ -236,7 +235,7 @@ text.legendTitle{
   color: black;
 }
 .footer a {
-  color:#6c757d;
+  color:#4b4b4b;
   text-decoration: none;
 }
 .footer a:hover {
@@ -295,7 +294,7 @@ p.disclaimer {
 }
 .footer * h5 {
   margin-top: 1rem;
-  color: #6c757d;
+  color: #4b4b4b;
 }
 h2.text-center {
   display: flex;
