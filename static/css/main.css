@@ -23,7 +23,7 @@ body {
 .navitem {
   font-size: 20px;
   color:white !important;
-  background-color: black;
+  background-color: #222222c4;
 }
 
 .navitem:hover{
@@ -286,7 +286,7 @@ body > div:nth-child(1) > div:nth-child(3) > div, body > div:nth-child(3) > div 
 }
 
 [data-id="cell-selectpicker"] {
-  color: black!important;
+  color: white !important;
 }
 
 p.disclaimer {
@@ -300,4 +300,21 @@ h2.text-center {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.filter-option {
+  color: white;
+}
+
+.caret{
+  border-top:4px solid white;
+}
+
+.dropdown {
+  width: 150px !important;
+  margin-right: 30px;
+}
+
+.bs-caret {
+  margin-left: -10px;
 }
