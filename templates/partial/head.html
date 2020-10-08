@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="author" content="Zichen Wang (zichen.wang@mssm.edu)">    
 	<title>L1000 Fireworks Display</title>
-	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="shortcut icon" href="images/L1000-new-icon.png">
 	<link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="node_modules/selectizebootstrap/dist/css/selectize.bootstrap4.css">
     <link rel="stylesheet" type="text/css" href="node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css"> 
@@ -17,6 +17,12 @@
 	<meta name="description" content="L1000 fireworks display (L1000FWD) provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. It enables overlaying various drug attributes such as MOA and clinical usages extracted from the EMR/EHR.">
 	<meta name="keywords" content="L1000, data visualization, drug discovery, drug reporposing, drug repositioning, drugs, big data, lincs, biomedical, ehr, emr, bioinformatics, biomedical informatics, systems pharmacology, systems biology, transcriptomics, bd2k, lincs, bd2k-lincs dcic, data integration, avi ma'ayan, avi maayan, maayan lab, zichen wang">
 	<meta name="robots" content="index, follow">
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="{{ config['ORIGIN'] }}{{ config['ENTER_POINT'] }}/images/logo.png"/>
+    <meta property="og:url" content="https://maayanlab.cloud/L1000FWD"/>
+    <meta property="og:title" content="The COVID-19 Drug and Gene Set Library"/>
+    <meta property="og:description"
+          content="L1000 fireworks display (L1000FWD) provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. It enables overlaying various drug attributes such as MOA and clinical usages extracted from the EMR/EHR."/>
 </head>
 <script type="application/ld+json">{
 	"@context":  "http://schema.org",
@@ -24,7 +30,7 @@
 	"name": "L1000FWD",
 	"applicationCategory": "Science, Drug Discovery",
 	"operatingSystem": "cross platforms",
-	"thumbnailUrl": "{{ config['ORIGIN'] }}{{ config['ENTER_POINT'] }}/images/favicon.ico",
+	"thumbnailUrl": "{{ config['ORIGIN'] }}{{ config['ENTER_POINT'] }}/images/L1000-new-icon.png",
 	"text": "L1000 fireworks display (L1000FWD) is a web application that provides interactive visualization of over 16,000 drug and small-molecule induced gene expression signatures. L1000FWD enables coloring of signatures by different attributes such as cell type, time point, concentration, as well as drug attributes such as MOA and clinical phase. Signature similarity search is implemented to enable the search for mimicking or opposing signatures given as input of up and down gene sets. Each point on the L1000FWD interactive map is linked to a signature landing page, which provides multifaceted knowledge from various sources about the signature and the drug. Notably such information includes most frequent diagnoses, co-prescribed drugs and age distribution of prescriptions as extracted from the Mount Sinai Health System electronic medical records (EMR). Overall, L1000FWD serves as a platform for identifying functions for novel small molecules using unsupervised clustering, as well as for exploring drug MOA.",
 	"author": [
 		{

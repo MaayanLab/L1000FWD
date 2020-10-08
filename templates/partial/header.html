@@ -1,20 +1,20 @@
-<style type="text/css">
-  a#unstyled, a#unstyled:hover, a#unstyled:focus {
-    text-decoration: none;
-    color: black;
-  }
-</style>
-<div class="row justify-content-center">
-  <div class="col-10 my-4">
-    
-    <h2 class="text-center">
-      <img src="images/logo.png" alt="" height="80px">
-      <a id="unstyled" href="#"><span class="font-weight-bold">L1000FWD</span> <br />
-        <span class="subtitle">Large Scale Visualization of Drug Induced Transcriptomic Signatures</span>
-      </a></h2>
-  </div>  
-</div>
-
+<nav class="navbar navbar-dark bg-dark" style="background: black !important;">
+  <a class="navbar-brand" href="#">
+    <img src="images/L1000-new-icon.png" width="100" height="100" class="d-inline-block align-top" alt="">
+      <div class="d-inline-block align-top text-center">
+          <span style="font-weight: bold; font-size: 24px">
+              L1000FWD
+          </span>
+          <br/>
+          <span style="font-style: italic; font-size: 18px;">
+            Large Scale Visualization of Drug
+          </span>
+          <br/>
+          <span style="font-style: italic; font-size: 18px;">
+            Induced Transcriptomic Signatures
+          </span>
+      </div>
+  </a>
 <div class="row row-color justify-content-center" id="header-btns">
   {% if graph_rec is defined%}
     <a id="info-modal-btn" class="mx-3 btn btn-lg btn-warning">{{ graph_rec['display_name'] }} <i class="fas fa-info-circle"></i></a>
@@ -25,12 +25,11 @@
   <select id="cell-selectpicker" class="selectpicker" data-live-search="true">
     {% for graph in graphs['cells'] %}
       <option data-tokens="{{ graph.display_name }}" value="graph_page/{{ graph.name }}">{{ graph.display_name }}</option>
-    {% endfor %}  
+    {% endfor %}
   </select>
-
-
   <a href="search_drug" class="mx-3 btn btn-lg navitem">Drugs</a>
   <a href="subset_page" class="mx-3 btn btn-lg navitem">Signatures</a>
   <a href="download_page" class="mx-3 btn btn-lg navitem">Download</a>
   <a href="api_page" class="mx-3 btn btn-lg navitem">API</a>
 </div>
+</nav>
