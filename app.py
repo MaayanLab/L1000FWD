@@ -1,7 +1,10 @@
 import os, sys
 import json
-from dotenv import load_dotenv
-load_dotenv(verbose=True)
+try:
+	from dotenv import load_dotenv
+	load_dotenv(verbose=True)
+except:
+	print('Warning, dotenv is not installed, .env will not be loaded')
 import time
 import StringIO
 import numpy as np
