@@ -15,7 +15,11 @@ while true; do
   if [ "${PROBE}" -eq "200" ]; then
     touch ready
   elif [ "${PROBE}" -eq "000" ]; then
-    echo ""
+    if ps -p $PID > /dev/null; then
+      echo ""
+    else
+      exit 1
+    fi
   else
     exit ${PROBE}
   fi
